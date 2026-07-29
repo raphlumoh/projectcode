@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INCRESAE AND DECREASE</title>
+
+<style>
+    body{
+        background-color: black;
+        height: 100vh;
+        display: flex;    
+        justify-content: center;
+        align-items: center;
+    }
+    .container{
+        background-color: beige;
+       /* border: 2px solid blueviolet;*/
+        width: 450px;
+        border-radius: 10px;
+    }
+   #value{
+    text-align: center;
+    text-align: 40px;
+    font-size: 70px;
+    font-weight: bold;
+    text-shadow: 3px 3px 5px gray;
+    margin-top: 10px;
+   }
+   div{
+    text-align: center;
+   }
+   button{
+    height: 40px;
+    width: 120px;
+    padding: 2px;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    font-size: large;
+    font-weight: bold;
+    color: rgb(242, 240, 244);
+    border-radius: 5px;
+   }
+   #inrease{
+    background-color: green;
+    border-color: green;
+   }
+   #decrease{
+    background-color: rgb(57, 47, 255);
+    border-color: rgb(19, 45, 238);
+   }
+   #reset{
+    background-color: rgb(240, 8, 178);
+    border-color: rgb(234, 216, 21);
+   }
+   h2{
+    color: bisque;
+    background-color: black;
+   }
+
+
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>INCREAMENT & DECREAMENT</h2>
+    <h1 id="value">0</h1>
+
+    <div>
+        <button id="inrease">increament</button>
+        <button id="decrease">Decreament</button>
+        <button id="reset">Reset</button>
+    </div>
+</div>
+ <script>
+    let increament = document.getElementById("inrease");
+    let decreament = document.getElementById("decrease");
+    let res = document.getElementById("reset");
+    let val = document.getElementById("value");
+
+    increament.addEventListener("click", ()=>{
+        val.innerHTML = parseInt(val.innerHTML) +1;//parseInt meanwhole number
+    })
+    decreament.addEventListener("click", ()=>{
+        val.innerHTML = parseInt(val.innerHTML) -1;
+    })
+    res.addEventListener("click", ()=>{
+        val.innerHTML = 0;
+    })
+ </script>
+</body>
+</html>
