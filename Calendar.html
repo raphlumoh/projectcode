@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Calendar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f4f6f9;
+    }
+    .calendar {
+      width: 300px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      padding: 20px;
+      text-align: center;
+    }
+    .calendar header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .calendar header button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .calendar header button:hover {
+      background: #0056b3;
+    }
+    .calendar table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .calendar th {
+      color: #007bff;
+      padding: 5px;
+    }
+    .calendar td {
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .calendar td:hover {
+      background: #eaf3ff;
+    }
+    .today {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="calendar">
+    <header>
+      <button onclick="prevMonth()">◀</button>
+      <h3 id="month-year"></h3>
+      <button onclick="nextMonth()">▶</button>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th>
+          <th>Thu</th><th>Fri</th><th>Sat</th>
+        </tr>
+      </thead>
+      <tbody id="calendar-body"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const monthYear = document.getElementById("month-year");
+    const calendarBody = document.getElementById("calendar-body");
+
+    let today = new Date();
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    const months = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December"
+    ];
+
+    function renderCalendar(month, year) {
+  calendarBody.innerHTML = ""; // Clear old calendar first
+  monthYear.textContent = `${months[month]} ${year}`; // Show "August 2025" etc.
+
+  let firstDay = new Date(year, month).getDay(); // Which weekday the 1st falls on
+  let daysInMonth = new Date(year, month + 1, 0).getDate(); // Total days in that month
+
+  let date = 1; // Start filling from day 1
+  for (let i = 0; i < 6; i++) {        // Max 6 rows in a calendar
+    let row = document.createElement("tr");
+
+    for (let j = 0; j < 7; j++) {      // 7 columns (Sun → Sat)
+      let cell = document.createElement("td");
+
+      if (i === 0 && j < firstDay) {
+        // Empty cells before the 1st day
+        cell.textContent = "";
+      } else if (date > daysInMonth) {
+        // Stop if we run out of days
+        break;
+      } else {
+        // Put the date number
+        cell.textContent = date;
+
+        // Highlight today's date
+        if (
+          date === today.getDate() &&
+          year === today.getFullYear() &&
+          month === today.getMonth()
+        ) {
+          cell.classList.add("today");
+        }
+
+        date++; // Move to next day
+      }
+
+      row.appendChild(cell);
+    }
+
+    calendarBody.appendChild(row);
+  }
+}
+
+
+    function prevMonth() {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar(currentMonth, currentYear);
+    }
+
+    function nextMonth() {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar(currentMonth, currentYear);
+    }
+
+    renderCalendar(currentMonth, currentYear);
+  </script>
+</body>
+</html>
