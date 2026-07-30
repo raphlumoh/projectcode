@@ -83,10 +83,28 @@ Variables, functions, loops, arrays, objects.<br><b>=> Practice small projects d
   </div>
 
   <script>
+    /* FAQ behave like an accordion (only one FAQ can be open at a time),
 const faqs = document.querySelectorAll('.faq');
 
 faqs.forEach(faq => {
   faq.querySelector('.faq-question').addEventListener('click', () => {
+    faq.classList.toggle('active');
+  });
+});
+*/
+const faqs = document.querySelectorAll('.faq');
+
+faqs.forEach(faq => {
+  faq.querySelector('.faq-question').addEventListener('click', () => {
+
+    // Close all other FAQs
+    faqs.forEach(item => {
+      if (item !== faq) {
+        item.classList.remove('active');
+      }
+    });
+
+    // Toggle the clicked FAQ
     faq.classList.toggle('active');
   });
 });
