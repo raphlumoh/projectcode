@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FAQ Accordion</title>
+  <style>
+  body {
+  font-family: Arial, sans-serif;
+  background: #fede;
+  padding: 40px;
+}
+
+.faq-container {
+  max-width: 600px;
+  margin: auto;
+  background: #eff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.faq {
+  border-bottom: 1px solid #ddd;
+}
+
+.faq-question {
+  padding: 15px;
+  cursor: pointer;
+  position: relative;
+  font-weight: bold;
+}
+
+.faq-question::after {
+  content: '+';
+  position: absolute;
+  right: 20px;
+  font-size: 20px;
+  transition: transform 0.3s;
+}
+
+.faq.active .faq-question::after {
+  content: '-';
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  padding: 0 15px 15px;
+  display: none;
+  color: #555;
+}
+
+.faq.active .faq-answer {
+  display: block;
+}
+</style>
+</head>
+<body>
+  <div class="faq-container">
+    <h1>Frequently Asked Questions</h1>
+    
+<div class="faq">
+      <div class="faq-question">How can I help you?</div>
+      <div class="faq-answer">wish to learn Javascript in 7 days.</div>
+    </div>
+    
+    <div class="faq">
+      <div class="faq-question">How do I Learn javascript very Fast?</div>
+      <div class="faq-answer"><b>=> Learn the basics first:</b>
+Variables, functions, loops, arrays, objects.<br><b>=> Practice small projects daily</b> Calculator, to-do list, clock, API fetch.
+</div>
+    </div>
+
+    <div class="faq">
+      <div class="faq-question">How long is shipping?</div>
+      <div class="faq-answer">Shipping typically takes 3-7 business days.</div>
+    </div>
+
+    <div class="faq">
+      	<div class="faq-question">Do you offer customer support?</div>
+      		<div class="faq-answer">Yes! We offer 24/7 customer support via email and 			chat.</div>
+    	</div>
+  </div>
+
+  <script>
+const faqs = document.querySelectorAll('.faq');
+
+faqs.forEach(faq => {
+  faq.querySelector('.faq-question').addEventListener('click', () => {
+    faq.classList.toggle('active');
+  });
+});
+</script>
+
+</body>
+</html>
