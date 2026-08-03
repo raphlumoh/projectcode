@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Weather App</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #246;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 420px;
+            max-width: 95%;
+            background: #fcf;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        #searchForm {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        input,
+        button {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        input {
+            min-width: 0;
+        }
+
+        button {
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #weatherResult img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        #forecast {
+            margin-top: 18px;
+            text-align: left;
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns:  repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .forecast-day {
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow:  0 2px 6px rgba(0, 0, 0, 0.06);
+        }
+
+        .forecast-day img {
+            width: 60px;
+            height: 60px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .noteText {
+            white-space: pre-line;
+        }
+
+        .noteInput {
+            width: 100%;
+            min-height: 60px;
+            margin-top: 8px;
+            padding: 6px;
+            resize: vertical;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>
+            Raphael Modern Tech (RMT)
+            <br>
+            Weather App
+        </h1>
+
+        <!-- SEARCH FORM -->
+
+        <form id="searchForm">
+
+            <input
+                id="cityInput"
+                type="text"
+                placeholder="Enter city e.g. Lagos"
+                required
+            >
+
+            <button type="submit">
+                Get Weather
+            </button>
+
+        </form>
+
+        <!-- UNIT TOGGLE -->
+
+        <div style="margin-top: 10px;">
+
+            <label>
+
+                <input
+                    id="unitToggle"
+                    type="checkbox"
+                >
+
+                Show °F
+                (default °C)
+
+            </label>
+
+        </div>
+
+
+        <!-- CLEAR BUTTON -->
+
+        <div style="margin-top: 8px;">
+
+            <button
+                id="clearBtn"
+                class="hidden"
+                type="button"
+            >
+
+                Clear Last Search
+
+            </button>
+
+        </div>
+
+
+        <!-- WEATHER RESULT -->
+
+        <div
+            id="weatherResult"
+            aria-live="polite"
+            style="margin-top: 14px;"
+        >
+
+            <p class="placeholder">
+
+                Enter a city and press
+                "Get Weather".
+
+            </p>
+
+        </div>
+
+        <!-- FORECAST -->
+
+        <div id="forecast">
+
+            <h3 style="margin: 10px 0 6px 0;">
+
+                5-Day Forecast
+
+            </h3>
+
+
+            <div
+                id="forecastList"
+                class="forecast-grid"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        // ===================================
+        // WAIT FOR PAGE TO LOAD
+        // ===================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+                // ===================================
+                // GET HTML ELEMENTS
+                // ===================================
+
+                const form =  
+                document.getElementById('searchForm' );
+
+                const cityInput =
+                    document.getElementById('cityInput');
+
+                const weatherResult =
+                    document.getElementById('weatherResult');
+
+                const clearBtn =
+                    document.getElementById('clearBtn');
+
+                const unitToggle =
+                    document.getElementById('unitToggle');
+
+                const forecastList =
+                    document.getElementById('forecastList' );
+
+
+                // ===================================
+                // API KEY
+                // ===================================
+
+                // IMPORTANT:
+                // Replace this with your NEW API KEY
+
+                const API_KEY = 'e60bf14a601eaebb5a09d85bf0c0caa1';
+
+
+                // ===================================
+                // CURRENT UNIT
+                // ===================================
+
+                let currentUnit =
+                    localStorage.getItem('unit') || 'metric';
+
+
+                unitToggle.checked =
+                    currentUnit === 'imperial';
+
+
+                // ===================================
+                // HELPER FUNCTIONS
+                // ===================================
+
+                function showPlaceholder() {
+
+                    weatherResult.innerHTML = `
+
+                        <p class="placeholder">
+                            Enter a city and press
+                            "Get Weather".
+                        </p>
+
+                    `;
+
+                }
+
+                function showClearBtn() {
+                    clearBtn.classList.remove(
+                        'hidden'
+                    );
+
+                }
+
+                function hideClearBtn() {
+                    clearBtn.classList.add(
+                        'hidden'
+                    );
+
+                }
+
+                // ===================================
+                // GET CURRENT WEATHER
+                // ===================================
+
+                async function getWeather(city) {
+
+                    if (!city) {
+                        weatherResult.innerHTML = `
+                            <p style="color: crimson;">
+                                Please enter a city name.
+                            </p>
+
+                        `;
+
+                        return;
+                    }
+
+                    weatherResult.innerHTML = `
+                        <p>
+                            Loading weather...
+                        </p>
+                    `;
+
+                    forecastList.innerHTML = '';
+
+                    try {
+
+
+                        // API URL
+
+                        const url =
+
+                            `https://api.openweathermap.org/data/2.5/weather?` +
+
+                            `q=${encodeURIComponent(city)}` +
+
+                            `&appid=${API_KEY}` +
+
+                            `&units=${currentUnit}`;
+
+
+                        const response =
+                            await fetch(url);
+
+
+                        if (!response.ok) {
+
+
+                            let errorMessage =
+                                `HTTP ${response.status}`;
+
+
+                            try {
+
+                                const errorData =
+                                    await response.json();
+
+
+                                if (
+                                    errorData &&
+                                    errorData.message
+                                ) {
+
+                                    errorMessage =
+                                        errorData.message;
+
+                                }
+
+                            } catch (error) {
+
+                                console.log(
+                                    'Error reading error response'
+                                );
+
+                            }
+
+
+                            throw new Error(
+                                errorMessage
+                            );
+
+                        }
+
+
+                        const data =
+                            await response.json();
+
+
+                        // WEATHER DATA
+
+                        const cityName =
+                            `${data.name}, ${data.sys.country}`;
+
+
+                        const unitLabel =
+                            currentUnit === 'metric'
+                                ? '°C'
+                                : '°F';
+
+
+                        const temperature =
+                            `${Math.round(data.main.temp)}${unitLabel}`;
+
+
+                        const feelsLike =
+                            `${Math.round(data.main.feels_like)}${unitLabel}`;
+
+
+                        const description =
+                            data.weather[0].description;
+
+
+                        const icon =
+                            `https://openweathermap.org/img/wn/` +
+
+                            `${data.weather[0].icon}@2x.png`;
+
+
+                        // DISPLAY WEATHER
+
+                        weatherResult.innerHTML = `
+
+                            <h2>
+
+                                ${cityName}
+
+                            </h2>
+
+
+                            <div>
+
+                                <img
+                                    src="${icon}"
+                                    alt="${description}"
+                                >
+
+                            </div>
+
+
+                            <p>
+
+                                <strong>
+
+                                    ${temperature}
+
+                                </strong>
+
+                            </p>
+
+
+                            <p
+                                style="text-transform: capitalize;"
+                            >
+
+                                ${description}
+
+                            </p>
+
+
+                            <p>
+
+                                💧 Humidity:
+                                ${data.main.humidity}%
+
+                            </p>
+
+
+                            <p>
+
+                                🌬️ Wind:
+                                ${data.wind.speed}
+
+                                ${
+                                    currentUnit === 'metric'
+                                        ? 'm/s'
+                                        : 'mph'
+                                }
+
+                            </p>
+
+
+                            <p>
+
+                                🌡️ Feels like:
+                                ${feelsLike}
+
+                            </p>
+
+                        `;
+
+
+                        // SAVE LAST CITY
+
+                        localStorage.setItem(
+                            'lastCity',
+                            city
+                        );
+
+
+                        showClearBtn();
+
+
+                        // LOAD FORECAST
+
+                        getForecast(city);
+
+
+                    } catch (error) {
+
+
+                        console.error(
+                            'Weather error:',
+                            error
+                        );
+
+
+                        weatherResult.innerHTML = `
+
+                            <p
+                                style="color: crimson;"
+                            >
+
+                                ${error.message}
+
+                            </p>
+
+                        `;
+
+
+                        if (
+                            !localStorage.getItem(
+                                'lastCity'
+                            )
+                        ) {
+
+                            hideClearBtn();
+
+                        }
+
+                    }
+
+                }
+
+
+                // ===================================
+                // GET 5-DAY FORECAST
+                // ===================================
+
+                async function getForecast(city) {
+
+
+                    try {
+
+
+                        const url =
+
+                            `https://api.openweathermap.org/data/2.5/forecast?` +
+
+                            `q=${encodeURIComponent(city)}` +
+
+                            `&appid=${API_KEY}` +
+
+                            `&units=${currentUnit}`;
+
+
+                        const response =
+                            await fetch(url);
+
+
+                        if (!response.ok) {
+
+
+                            let errorMessage =
+                                `HTTP ${response.status}`;
+
+
+                            try {
+
+                                const errorData =
+                                    await response.json();
+
+
+                                if (
+                                    errorData &&
+                                    errorData.message
+                                ) {
+
+                                    errorMessage =
+                                        errorData.message;
+
+                                }
+
+                            } catch (error) {
+
+                                console.log(
+                                    'Error reading forecast error'
+                                );
+
+                            }
+
+
+                            throw new Error(
+                                errorMessage
+                            );
+
+                        }
+
+
+                        const data =
+                            await response.json();
+
+
+                        forecastList.innerHTML =
+                            '';
+
+
+                        // GROUP FORECAST BY DATE
+
+                        const days = {};
+
+
+                        data.list.forEach(
+                            item => {
+
+
+                                const dateKey =
+                                    item.dt_txt
+                                        .split(' ')[0];
+
+
+                                if (
+                                    !days[dateKey]
+                                ) {
+
+                                    days[dateKey] =
+                                        [];
+
+                                }
+
+
+                                days[dateKey].push(
+                                    item
+                                );
+
+                            }
+                        );
+
+
+                        // SELECT 5 DAYS
+
+                        const dailyForecast =
+                            Object.keys(days)
+                                .slice(0, 5)
+                                .map(dateKey => {
+
+
+                                    const dayData =
+                                        days[dateKey];
+
+
+                                    const midday =
+                                        dayData.find(
+                                            item =>
+                                                item.dt_txt
+                                                    .includes(
+                                                        '12:00:00'
+                                                    )
+                                        );
+
+
+                                    return midday ||
+                                        dayData[
+                                            Math.floor(
+                                                dayData.length / 2
+                                            )
+                                        ];
+
+                                });
+
+
+                        // DISPLAY EACH DAY
+
+                        dailyForecast.forEach(
+                            day => {
+
+
+                                if (!day) return;
+
+
+                                const date =
+                                    new Date(
+                                        day.dt * 1000
+                                    );
+
+
+                                const dateKey =
+
+                                    city.toLowerCase() +
+
+                                    '_' +
+
+                                    date.toISOString()
+                                        .split('T')[0];
+
+
+                                const dateText =
+                                    date.toLocaleDateString(
+                                        undefined,
+                                        {
+                                            weekday: 'short',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        }
+                                    );
+
+
+                                const unitLabel =
+                                    currentUnit === 'metric'
+                                        ? '°C'
+                                        : '°F';
+
+
+                                const temperature =
+                                    `${Math.round(day.main.temp)}${unitLabel}`;
+
+
+                                const icon =
+                                    `https://openweathermap.org/img/wn/` +
+
+                                    `${day.weather[0].icon}@2x.png`;
+
+
+                                // GET SAVED NOTES
+
+                                const savedNotes =
+                                    JSON.parse(
+                                        localStorage.getItem(
+                                            'weatherNotes'
+                                        ) || '{}'
+                                    );
+
+
+                                const note =
+                                    savedNotes[dateKey] || '';
+
+
+                                // CREATE FORECAST CARD
+
+                                const card =
+                                    document.createElement(
+                                        'div'
+                                    );
+
+
+                                card.className =
+                                    'forecast-day';
+
+
+                                card.innerHTML = `
+
+                                    <div>
+
+                                        <strong>
+
+                                            ${dateText}
+
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <img
+                                            src="${icon}"
+                                            alt="${day.weather[0].description}"
+                                        >
+
+                                    </div>
+
+
+                                    <div>
+
+                                        ${temperature}
+
+                                    </div>
+
+
+                                    <div
+                                        style="
+                                            text-transform: capitalize;
+                                        "
+                                    >
+
+                                        ${day.weather[0].description}
+
+                                    </div>
+
+
+                                    <textarea
+                                        class="
+                                            noteInput
+                                            hidden
+                                        "
+                                        placeholder="
+                                            Write your note...
+                                        "
+                                    ></textarea>
+
+
+                                    <p
+                                        class="noteText"
+                                    >
+
+                                        ${
+                                            note
+                                                ? '📝 ' + note
+                                                : ''
+                                        }
+
+                                    </p>
+
+
+                                    <button
+                                        class="noteBtn"
+                                        type="button"
+                                    >
+
+                                        ${
+                                            note
+                                                ? '✏️ Edit note'
+                                                : '📝 Add note'
+                                        }
+
+                                    </button>
+
+                                `;
+
+
+                                const noteInput =
+                                    card.querySelector(
+                                        '.noteInput'
+                                    );
+
+
+                                const noteText =
+                                    card.querySelector(
+                                        '.noteText'
+                                    );
+
+
+                                const noteButton =
+                                    card.querySelector(
+                                        '.noteBtn'
+                                    );
+
+
+                                // NOTE BUTTON
+
+                                noteButton.addEventListener(
+                                    'click',
+                                    () => {
+
+
+                                        if (
+                                            noteInput
+                                                .classList
+                                                .contains(
+                                                    'hidden'
+                                                )
+                                        ) {
+
+
+                                            noteInput
+                                                .classList
+                                                .remove(
+                                                    'hidden'
+                                                );
+
+
+                                            noteInput.value =
+                                                savedNotes[
+                                                    dateKey
+                                                ] || '';
+
+
+                                            noteInput.focus();
+
+
+                                            noteButton.textContent =
+                                                '💾 Save note';
+
+
+                                        } else {
+
+
+                                            const newNote =
+                                                noteInput.value
+                                                    .trim();
+
+
+                                            const notes =
+                                                JSON.parse(
+                                                    localStorage.getItem(
+                                                        'weatherNotes'
+                                                    ) || '{}'
+                                                );
+
+
+                                            if (
+                                                newNote === ''
+                                            ) {
+
+
+                                                delete notes[
+                                                    dateKey
+                                                ];
+
+
+                                                noteText.textContent =
+                                                    '';
+
+
+                                                noteButton.textContent =
+                                                    '📝 Add note';
+
+
+                                            } else {
+
+
+                                                notes[
+                                                    dateKey
+                                                ] =
+                                                    newNote;
+
+
+                                                noteText.textContent =
+                                                    '📝 ' +
+                                                    newNote;
+
+
+                                                noteButton.textContent =
+                                                    '✏️ Edit note';
+
+                                            }
+
+
+                                            localStorage.setItem(
+                                                'weatherNotes',
+                                                JSON.stringify(
+                                                    notes
+                                                )
+                                            );
+
+
+                                            noteInput
+                                                .classList
+                                                .add(
+                                                    'hidden'
+                                                );
+
+                                        }
+
+                                    }
+                                );
+
+
+                                forecastList.appendChild(
+                                    card
+                                );
+
+                            }
+                        );
+
+
+                    } catch (error) {
+
+
+                        console.error(
+                            'Forecast error:',
+                            error
+                        );
+
+
+                        forecastList.innerHTML = `
+
+                            <p
+                                style="
+                                    color: crimson;
+                                "
+                            >
+
+                                Forecast not available:
+
+                                ${error.message}
+
+                            </p>
+
+                        `;
+
+                    }
+
+                }
+
+
+                // ===================================
+                // SEARCH FORM
+                // ===================================
+
+                form.addEventListener(
+                    'submit',
+                    event => {
+
+
+                        event.preventDefault();
+
+
+                        const city =
+                            cityInput.value.trim();
+
+
+                        getWeather(city);
+
+                    }
+                );
+
+
+                // ===================================
+                // CLEAR BUTTON
+                // ===================================
+
+                clearBtn.addEventListener(
+                    'click',
+                    () => {
+
+
+                        localStorage.removeItem(
+                            'lastCity'
+                        );
+
+
+                        cityInput.value =
+                            '';
+
+
+                        showPlaceholder();
+
+
+                        forecastList.innerHTML =
+                            '';
+
+
+                        hideClearBtn();
+
+                    }
+                );
+
+
+                // ===================================
+                // UNIT TOGGLE
+                // ===================================
+
+                unitToggle.addEventListener(
+                    'change',
+                    () => {
+
+
+                        currentUnit =
+                            unitToggle.checked
+                                ? 'imperial'
+                                : 'metric';
+
+
+                        localStorage.setItem(
+                            'unit',
+                            currentUnit
+                        );
+
+
+                        const lastCity =
+                            localStorage.getItem(
+                                'lastCity'
+                            );
+
+
+                        if (lastCity) {
+
+                            getWeather(
+                                lastCity
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                // ===================================
+                // INITIAL PAGE LOAD
+                // ===================================
+
+                const lastCity =
+                    localStorage.getItem(
+                        'lastCity'
+                    );
+
+
+                if (lastCity) {
+
+
+                    cityInput.value =
+                        lastCity;
+
+
+                    getWeather(
+                        lastCity
+                    );
+
+
+                } else {
+
+
+                    showPlaceholder();
+
+
+                    hideClearBtn();
+
+                }
+
+                // ===================================
+                // AUTO REFRESH EVERY 5 MINUTES
+                // ===================================
+
+                setInterval(
+                    () => {
+
+                        const city =
+                            localStorage.getItem(
+                                'lastCity'
+                            );
+
+                        if (city) {
+
+                            getWeather(
+                                city
+                            );
+
+                        }
+
+                    },
+                    300000
+                );
+
+                console.log(
+                    'Weather App is ready.'
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
