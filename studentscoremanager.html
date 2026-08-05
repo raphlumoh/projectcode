@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Student Score Manager — Array JS Project</title>
+<style>
+  body{font-family:system-ui,Arial;margin:20px;background:#f7fafc;color:#111}
+  .card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 6px 18px rgba(0,0,0,0.08);max-width:900px;margin:auto}
+  h1{margin:0 0 12px}
+  label{display:block;margin-top:8px}
+  input[type="text"],input[type="number"]{width:100%;padding:8px;border-radius:6px;border:1px solid #ddd}
+  .row{display:flex;gap:12px;flex-wrap:wrap}
+  .col{flex:1;min-width:160px}
+  button{padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+  .btn-primary{background:#2563eb;color:#fff}
+  .btn-ghost{background:#eef2ff;color:#111}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .small{font-size:13px;color:#555}
+  .actions button{margin-right:6px}
+  .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef; font-weight:600}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Student Score Manager</h1>
+  <p class="small">Practice arrays: add/edit/delete, sort, filter, compute average, export CSV, and save to LocalStorage.</p>
+
+  <!-- Input form -->
+  <div style="margin-top:12px;">
+    <div class="row">
+      <div class="col">
+        <label>Name</label>
+        <input id="nameInput" type="text" placeholder="Student name">
+      </div>
+      <div class="col">
+        <label>Age</label>
+        <input id="ageInput" type="number" placeholder="Age" min="1">
+      </div>
+      <div class="col">
+        <label>Course</label>
+        <input id="courseInput" type="text" placeholder="Course">
+      </div>
+      <div class="col">
+        <label>Score</label>
+        <input id="scoreInput" type="number" placeholder="Score (0-100)" min="0" max="100">
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="addBtn" class="btn-primary">Add Student</button>
+      <button id="updateBtn" class="btn-ghost" style="display:none">Save Edit</button>
+      <button id="resetForm" class="btn-ghost">Reset</button>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <select id="sortSelect"><option value="">Sort</option><option value="name-asc">Name ↑</option><option value="name-desc">Name ↓</option><option value="score-asc">Score ↑</option><option value="score-desc">Score ↓</option></select>
+        <select id="filterSelect"><option value="all">All</option><option value="passed">Passed (>=51)</option><option value="failed">Failed (&lt;51)</option></select>
+        <button id="exportCsv" class="btn-ghost">Export CSV</button>
+        <button id="clearAll" class="btn-ghost">Clear All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="margin-top:12px;display:flex;gap:12px;align-items:center">
+    <div class="badge" id="countBadge">0 students</div>
+    <div class="small">Average score: <span id="avgScore">-</span></div>
+    <div class="small">Passed: <span id="passedCount">0</span></div>
+    <div class="small">Failed: <span id="failedCount">0</span></div>
+  </div>
+
+  <!-- Table -->
+  <table id="studentsTable" aria-live="polite">
+    <thead>
+      <tr><th>#</th><th>Name</th><th>Age</th><th>Course</th><th>Score</th><th>Result</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <p class="small" style="margin-top:8px">Tip: click "Export CSV" to download current list. Data is saved locally in your browser.</p>
+</div>
+
+<script>
+/*
+ Student Score Manager
+ Demonstrates array methods: push, splice, map, filter, reduce, sort, find, forEach
+*/
+
+const STORAGE_KEY = "student_manager_data_v1";
+
+// Elements
+const nameInput = document.getElementById('nameInput');
+const ageInput = document.getElementById('ageInput');
+const courseInput = document.getElementById('courseInput');
+const scoreInput = document.getElementById('scoreInput');
+
+const addBtn = document.getElementById('addBtn');
+const updateBtn = document.getElementById('updateBtn');
+const resetForm = document.getElementById('resetForm');
+
+const sortSelect = document.getElementById('sortSelect');
+const filterSelect = document.getElementById('filterSelect');
+
+const exportCsv = document.getElementById('exportCsv');
+const clearAll = document.getElementById('clearAll');
+
+const studentsTableBody = document.querySelector('#studentsTable tbody');
+
+const countBadge = document.getElementById('countBadge');
+const avgScoreSpan = document.getElementById('avgScore');
+const passedCountSpan = document.getElementById('passedCount');
+const failedCountSpan = document.getElementById('failedCount');
+
+let students = []; // main array of student objects
+let editingId = null;
+
+// Utilities
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(students)); }
+function load(){ const d = localStorage.getItem(STORAGE_KEY); students = d ? JSON.parse(d) : []; render(); }
+
+// Render table and stats
+function render(){
+  // Apply filter
+  let filtered = students.slice(); // copy
+  const filter = filterSelect.value;
+  if(filter === 'passed') filtered = filtered.filter(s => Number(s.score) >= 51);
+  if(filter === 'failed') filtered = filtered.filter(s => Number(s.score) < 51);
+
+  // Apply sort
+  const sortVal = sortSelect.value;
+  if(sortVal === 'name-asc') filtered.sort((a,b)=> a.name.localeCompare(b.name));
+  if(sortVal === 'name-desc') filtered.sort((a,b)=> b.name.localeCompare(a.name));
+  if(sortVal === 'score-asc') filtered.sort((a,b)=> a.score - b.score);
+  if(sortVal === 'score-desc') filtered.sort((a,b)=> b.score - a.score);
+
+  // Build rows
+  studentsTableBody.innerHTML = "";
+  filtered.forEach((s, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td>${escapeHtml(s.name)}</td>
+      <td>${s.age ?? ''}</td>
+      <td>${escapeHtml(s.course ?? '')}</td>
+      <td>${s.score}</td>
+      <td>${s.score >= 51 ? 'Passed ✅' : 'Failed ❌'}</td>
+      <td class="actions">
+        <button onclick="editStudent('${s.id}')" class="btn btn-ghost">Edit</button>
+        <button onclick="deleteStudent('${s.id}')" class="btn btn-ghost">Delete</button>
+      </td>
+    `;
+    studentsTableBody.appendChild(tr);
+  });
+
+  // Stats using reduce/map/filter
+  countBadge.textContent = `${students.length} student${students.length!==1 ? 's' : ''}`;
+  if(students.length === 0){
+    avgScoreSpan.textContent = '-';
+    passedCountSpan.textContent = '0';
+    failedCountSpan.textContent = '0';
+  } else {
+    const total = students.reduce((acc,s)=> acc + Number(s.score), 0);
+    avgScoreSpan.textContent = (total / students.length).toFixed(2);
+    passedCountSpan.textContent = students.filter(s=> Number(s.score) >= 51).length;
+    failedCountSpan.textContent = students.filter(s=> Number(s.score) < 51).length;
+  }
+  save();
+}
+
+// Escape to prevent simple HTML injection
+function escapeHtml(str){
+  return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// CRUD
+addBtn.addEventListener('click', ()=>{
+  const name = nameInput.value.trim();
+  const age = ageInput.value ? Number(ageInput.value) : '';
+  const course = courseInput.value.trim();
+  const score = scoreInput.value ? Number(scoreInput.value) : 0;
+  if(!name){ alert('Enter a name'); return; }
+  if(score < 0 || score > 100){ alert('Score must be between 0 and 100'); return; }
+
+  const student = { id: uid(), name, age, course, score };
+  students.push(student); // push -> demonstrates push
+  resetFormValues();
+  render();
+});
+
+window.editStudent = function(id){
+  const s = students.find(x => x.id === id); // find -> demonstrates find
+  if(!s) return;
+  editingId = id;
+  nameInput.value = s.name;
+  ageInput.value = s.age;
+  courseInput.value = s.course;
+  scoreInput.value = s.score;
+  addBtn.style.display = 'none';
+  updateBtn.style.display = 'inline-block';
+};
+
+updateBtn.addEventListener('click', ()=>{
+  if(!editingId) return;
+  const s = students.find(x => x.id === editingId);
+  if(!s) return;
+  s.name = nameInput.value.trim() || s.name;
+  s.age = ageInput.value ? Number(ageInput.value) : s.age;
+  s.course = courseInput.value.trim() || s.course;
+  s.score = scoreInput.value ? Number(scoreInput.value) : s.score;
+  editingId = null;
+  addBtn.style.display = 'inline-block';
+  updateBtn.style.display = 'none';
+  resetFormValues();
+  render();
+});
+
+window.deleteStudent = function(id){
+  if(!confirm('Delete this student?')) return;
+  // splice with index -> demonstrates splice
+  const idx = students.findIndex(x => x.id === id);
+  if(idx >= 0) students.splice(idx, 1);
+  render();
+};
+
+resetForm.addEventListener('click', resetFormValues);
+
+function resetFormValues(){
+  nameInput.value = '';
+  ageInput.value = '';
+  courseInput.value = '';
+  scoreInput.value = '';
+  editingId = null;
+  addBtn.style.display = 'inline-block';
+  updateBtn.style.display = 'none';
+}
+
+// Export CSV
+exportCsv.addEventListener('click', ()=>{
+  if(students.length === 0){ alert('No students to export'); return; }
+  const headers = ['id','name','age','course','score'];
+  const rows = students.map(s => [s.id, s.name, s.age, s.course, s.score]);
+  const csv = [headers, ...rows].map(r => r.map(field => `"${String(field).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'students.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// Clear all data
+clearAll.addEventListener('click', ()=>{
+  if(!confirm('Clear all students?')) return;
+  students = [];
+  render();
+  localStorage.removeItem(STORAGE_KEY);
+});
+
+// Sorting and filtering
+sortSelect.addEventListener('change', render);
+filterSelect.addEventListener('change', render);
+
+// Initialize with sample data when first run
+(function initSample(){
+  load();
+  if(students.length === 0){
+    students = [
+      {id:uid(), name:'Odinga', age:11, course:'Statistics', score:50},
+      {id:uid(), name:'Joy', age:12, course:'Math', score:78},
+      {id:uid(), name:'Sam', age:10, course:'English', score:43}
+    ];
+    render();
+  }
+})();
+
+// Optional helpers: map example (list student names)
+function getNames(){
+  return students.map(s => s.name); // map -> demonstrates map
+}
+// Example usage in console: console.log(getNames());
+</script>
+
+</body>
+</html>
