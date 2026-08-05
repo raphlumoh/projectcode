@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BILL CALCULATOR</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #af93af;
+      text-align: center;
+      padding: 50px;
+    }
+    .container {
+      background: #c8ced1;
+      padding: 20px;
+      border-radius: 12px;
+      width: 350px;
+      margin: auto;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 80%;
+      padding: 8px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      text-align: right;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      margin: 8px;
+      font-size: 16px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .reset-btn {
+      background: #dc3545;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 18px;
+      font-weight: 200;
+      color: #555;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    span {
+      font-weight: bold;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bill Calculator</h1>
+    <p>Enter the bill amount and the percentage.</p>
+
+    <label for="bill">Bill amount</label>
+    <input type="text" id="bill" placeholder="Enter amount"><br/>
+
+    <label for="percent">Bill percentage (%)</label>
+    <input type="number" id="percent" placeholder="Enter %"><br/>
+
+    <button id="calculate">CALCULATE</button>
+    <button id="reset" class="reset-btn">RESET</button><br/>
+
+    <label for="total">TOTAL &#8358;</label>
+    <span id="total"></span>
+  </div>
+
+  <script>
+    const billInput = document.getElementById("bill");
+    const percentInput = document.getElementById("percent");
+    const calcBtn = document.getElementById("calculate");
+    const resetBtn = document.getElementById("reset");
+    const billResult = document.getElementById("total");
+
+    // Auto-format bill input with commas
+    billInput.addEventListener("input", function(e) {
+      let value = e.target.value.replace(/,/g, ""); // remove old commas
+      if (!isNaN(value) && value !== "") {
+        e.target.value = Number(value).toLocaleString("en");
+      }
+    });
+
+    // Calculate total bill
+    calcBtn.addEventListener("click", calculateTotal);
+
+    function calculateTotal() {
+      let billValue = billInput.value.replace(/,/g, ""); // remove commas
+      let percentValue = percentInput.value;
+
+      if (billValue === "" || percentValue === "") {
+        billResult.innerHTML = "⚠️ Please enter values";
+        return;
+      }
+
+      let totalValue = Number(billValue) * (1 + (percentValue / 100));
+      billResult.innerHTML = totalValue.toLocaleString("en");
+    }
+
+    // Reset everything
+    resetBtn.addEventListener("click", function() {
+      billInput.value = "";
+      percentInput.value = "";
+      billResult.innerHTML = "";
+    });
+  </script>
+</body>
+</html>
