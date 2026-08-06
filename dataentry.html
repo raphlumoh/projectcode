@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Data Manager with Table & Search</title>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #d3dbea;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .container {
+    background: #c4c5c6;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 600px;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .form, .buttons, .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+
+  input[type="text"], input[type="number"], input[type="file"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    flex: 1;
+  }
+
+  button {
+    padding: 10px;
+    background: #3b82f6;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #2563eb;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  table th {
+    cursor: pointer;
+    background-color: #f0f0f0;
+  }
+
+  table tr:nth-child(even) {
+    background-color: #f5eeee;
+  }
+
+  .actions button {
+    margin-right: 5px;
+    padding: 5px 8px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+  }
+
+  .actions .edit {
+    background-color: #ffc107;
+    color: #000;
+  }
+
+  .actions .delete {
+    background-color: #f44336;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Raphsontech.com <br>Data Export / Import Tool</h2>
+
+    <div class="form">
+      <input type="text" id="name" placeholder="Enter name" />
+      <input type="text" id="email" placeholder="Enter email" />
+      <input type="number" id="age" placeholder="Enter age" />
+      <button onclick="addOrUpdateEntry()">Add</button>
+    </div>
+
+    <div class="buttons">
+      <button onclick="exportJSON()">Export JSON</button>
+      <button onclick="exportCSV()">Export CSV</button>
+      <input type="file" id="fileJSON" accept=".json" onchange="importJSON()" />
+      <input type="file" id="fileCSV" accept=".csv" onchange="importCSV()" />
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by name..." oninput="updateTable()" />
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('name')">Name 🔽</th>
+          <th onclick="sortTable('email')">Email 🔽</th>
+          <th onclick="sortTable('age')">Age 🔽</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="entryTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+  let entries = JSON.parse(localStorage.getItem("entries")) || [];
+  let editIndex = null;
+  let sortDirection = { name: true, email: true, age: true }; // true = asc
+
+  function saveToLocalStorage() {
+    localStorage.setItem("entries", JSON.stringify(entries));
+  }
+
+  function addOrUpdateEntry() {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const age = document.getElementById("age").value.trim();
+
+    if (!name || !email || !age) return alert("Please fill out all fields.");
+
+    if (editIndex !== null) {
+      entries[editIndex] = { name, email, age };
+      editIndex = null;
+    } else {
+      entries.push({ name, email, age });
+    }
+
+    document.getElementById("name").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("age").value = "";
+    document.querySelector("button[onclick='addOrUpdateEntry()']").textContent = "Add";
+
+    saveToLocalStorage();
+    updateTable();
+  }
+
+  function editEntry(index) {
+    document.getElementById("name").value = entries[index].name;
+    document.getElementById("email").value = entries[index].email;
+    document.getElementById("age").value = entries[index].age;
+    editIndex = index;
+    document.querySelector("button[onclick='addOrUpdateEntry()']").textContent = "Update";
+  }
+
+  function deleteEntry(index) {
+    if (confirm("Delete this entry?")) {
+      entries.splice(index, 1);
+      saveToLocalStorage();
+      updateTable();
+    }
+  }
+
+  function updateTable() {
+    const tbody = document.getElementById("entryTable");
+    tbody.innerHTML = "";
+
+    const searchQuery = document.getElementById("searchInput").value.toLowerCase();
+    const filtered = entries.filter(e => e.name.toLowerCase().includes(searchQuery));
+
+    filtered.forEach((entry, index) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${entry.name}</td>
+        <td>${entry.email}</td>
+        <td>${entry.age}</td>
+        <td class="actions">
+          <button class="edit" onclick="editEntry(${index})">Edit</button>
+          <button class="delete" onclick="deleteEntry(${index})">Delete</button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  function sortTable(key) {
+    const direction = sortDirection[key] ? 1 : -1;
+    entries.sort((a, b) => {
+      if (key === 'age') {
+        return direction * (parseInt(a.age) - parseInt(b.age));
+      } else {
+        return direction * a[key].localeCompare(b[key]);
+      }
+    });
+    sortDirection[key] = !sortDirection[key];
+    updateTable();
+  }
+
+  function exportJSON() {
+    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    download(url, "data.json");
+  }
+
+  function importJSON() {
+    const file = document.getElementById("fileJSON").files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const imported = JSON.parse(reader.result);
+        if (Array.isArray(imported)) {
+          entries = imported;
+          saveToLocalStorage();
+          updateTable();
+        } else {
+          alert("Invalid JSON structure.");
+        }
+      } catch {
+        alert("Failed to parse JSON.");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function exportCSV() {
+    const csv = entries.map(e => `${e.name},${e.email},${e.age}`).join("\n");
+    const blob = new Blob([`Name,Email,Age\n${csv}`], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    download(url, "data.csv");
+  }
+
+  function importCSV() {
+    const file = document.getElementById("fileCSV").files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const lines = reader.result.trim().split("\n").slice(1); // Skip header
+      entries = lines.map(line => {
+        const [name, email, age] = line.split(",");
+        return { name: name.trim(), email: email.trim(), age: age.trim() };
+      });
+      saveToLocalStorage();
+      updateTable();
+    };
+    reader.readAsText(file);
+  }
+
+  function download(url, filename) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // Initialize
+  updateTable();
+  </script>
+</body>
+</html>
