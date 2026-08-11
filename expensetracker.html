@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Expense Tracker</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background: #f4f6f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .container { background: #fff; padding: 20px; border-radius: 12px; width: 600px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; margin-bottom: 20px; color: #333; }
+    .balance { text-align: center; margin-bottom: 20px; }
+    .balance h3 { margin-bottom: 5px; }
+    .inc-exp { display: flex; justify-content: space-between; margin: 20px 0; background: #f9f9f9; padding: 10px; border-radius: 8px; }
+    .inc-exp div { text-align: center; flex: 1; }
+    .inc-exp div:first-child { border-right: 1px solid #ddd; }
+    
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    table th, table td { padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
+    table th { cursor: pointer; background: #f4f4f4; }
+    table tr.plus { color: #2ecc71; }
+    table tr.minus { color: #e74c3c; }
+    
+    .delete-btn { cursor: pointer; background: none; border: none; color: #888; font-size: 14px; }
+    form { margin-top: 20px; }
+    form input, form button { width: 100%; padding: 10px; margin: 6px 0; border: 1px solid #ddd; border-radius: 6px; }
+    form button { background: #3498db; color: #fff; border: none; cursor: pointer; }
+    form button:hover { background: #2980b9; }
+    .export-import { margin-top: 15px; display: flex; justify-content: space-between; gap: 10px; }
+    .export-import button, .export-import input { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+    .export-import button { background: #2ecc71; color: #fff; cursor: pointer; }
+    .export-import button:hover { background: #27ae60; }
+    .search-box { margin-top: 10px; }
+    .search-box input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Expense Tracker</h2>
+    <div class="balance">
+      <h3>Your Balance</h3>
+      <h2 id="balance">$0.00</h2>
+    </div>
+    <div class="inc-exp">
+      <div>
+        <h4>Income</h4>
+        <p id="money-plus">+$0.00</p>
+      </div>
+      <div>
+        <h4>Expense</h4>
+        <p id="money-minus">-$0.00</p>
+      </div>
+    </div>
+
+    <h3>History</h3>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search description...">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('text')">Description ⬍</th>
+          <th onclick="sortTable('amount')">Amount ⬍</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+
+    <h3>Add New Transaction</h3>
+    <form id="form">
+      <input type="text" id="text" placeholder="Enter description..." required>
+      <input type="number" id="amount" placeholder="Enter amount..." required>
+      <button type="submit">Add Transaction</button>
+    </form>
+
+    <div class="export-import">
+      <button id="exportBtn">Export CSV</button>
+      <input type="file" id="importFile" accept=".csv">
+    </div>
+  </div>
+
+  <script>
+    const balance = document.getElementById('balance');
+    const money_plus = document.getElementById('money-plus');
+    const money_minus = document.getElementById('money-minus');
+    const tableBody = document.getElementById('table-body');
+    const form = document.getElementById('form');
+    const text = document.getElementById('text');
+    const amount = document.getElementById('amount');
+    const exportBtn = document.getElementById('exportBtn');
+    const importFile = document.getElementById('importFile');
+    const searchInput = document.getElementById('searchInput');
+
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    let sortOrder = { text: 1, amount: 1 };
+
+    function addTransaction(e) {
+      e.preventDefault();
+      const transaction = { id: Date.now(), text: text.value, amount: +amount.value };
+      transactions.push(transaction);
+      updateLocalStorage();
+      init();
+      text.value = '';
+      amount.value = '';
+    }
+
+    function addTransactionDOM(transaction) {
+      const row = document.createElement('tr');
+      row.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
+      row.innerHTML = `
+        <td>${transaction.text}</td>
+        <td>${transaction.amount < 0 ? '-' : '+'}$${Math.abs(transaction.amount)}</td>
+        <td><button class="delete-btn" onclick="removeTransaction(${transaction.id})">x</button></td>
+      `;
+      tableBody.appendChild(row);
+    }
+
+    function updateValues() {
+      const amounts = transactions.map(transaction => transaction.amount);
+      const total = amounts.reduce((acc, item) => acc + item, 0).toFixed(2);
+      const income = amounts.filter(item => item > 0).reduce((acc, item) => acc + item, 0).toFixed(2);
+      const expense = (amounts.filter(item => item < 0).reduce((acc, item) => acc + item, 0) * -1).toFixed(2);
+
+      balance.innerText = `N${total}`;
+      money_plus.innerText = `+N${income}`;
+      money_minus.innerText = `-N${expense}`;
+    }
+
+    function removeTransaction(id) {
+      transactions = transactions.filter(transaction => transaction.id !== id);
+      updateLocalStorage();
+      init();
+    }
+
+    function updateLocalStorage() {
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+    }
+
+    function init() {
+      tableBody.innerHTML = '';
+      let filtered = transactions.filter(t =>
+        t.text.toLowerCase().includes(searchInput.value.toLowerCase())
+      );
+      filtered.forEach(addTransactionDOM);
+      updateValues();
+    }
+
+    // ---- Sorting ----
+    function sortTable(field) {
+      transactions.sort((a, b) => {
+        if (field === 'text') {
+          return sortOrder.text * a.text.localeCompare(b.text);
+        } else {
+          return sortOrder.amount * (a.amount - b.amount);
+        }
+      });
+      sortOrder[field] *= -1;
+      updateLocalStorage();
+      init();
+    }
+
+    // ---- CSV Export ----
+    function exportCSV() {
+      if (transactions.length === 0) {
+        alert("No transactions to export!");
+        return;
+      }
+      let csv = "Description,Amount\n";
+      transactions.forEach(t => {
+        csv += `"${t.text}",${t.amount}\n`;
+      });
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "transactions.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- CSV Import ----
+    function importCSV(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const lines = e.target.result.split("\n").slice(1);
+        lines.forEach(line => {
+          const [desc, amt] = line.split(",");
+          if (desc && amt) {
+            const transaction = { id: Date.now() + Math.random(), text: desc.replace(/"/g, ""), amount: +amt };
+            transactions.push(transaction);
+          }
+        });
+        updateLocalStorage();
+        init();
+      };
+      reader.readAsText(file);
+    }
+
+    exportBtn.addEventListener("click", exportCSV);
+    importFile.addEventListener("change", importCSV);
+    form.addEventListener('submit', addTransaction);
+    searchInput.addEventListener("input", init);
+
+    init();
+  </script>
+</body>
+</html>
