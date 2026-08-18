@@ -1,116 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FAQ Accordion</title>
-  <style>
-  body {
-  font-family: Arial, sans-serif;
-  background: #fede;
-  padding: 40px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-.faq-container {
-  max-width: 600px;
-  margin: auto;
-  background: #eff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+    <title>Raph's Project Hub</title>
 
-.faq {
-  border-bottom: 1px solid #ddd;
-}
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-.faq-question {
-  padding: 15px;
-  cursor: pointer;
-  position: relative;
-  font-weight: bold;
-}
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
 
-.faq-question::after {
-  content: '+';
-  position: absolute;
-  right: 20px;
-  font-size: 20px;
-  transition: transform 0.3s;
-}
+        /* HEADER */
+        header {
+            background: linear-gradient(135deg, #111827, #2563eb);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
 
-.faq.active .faq-question::after {
-  content: '-';
-  transform: rotate(180deg);
-}
+        header h1 {
+            font-size: 42px;
+            margin-bottom: 12px;
+        }
 
-.faq-answer {
-  padding: 0 15px 15px;
-  display: none;
-  color: #555;
-}
+        header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
 
-.faq.active .faq-answer {
-  display: block;
-}
-</style>
+        /* SEARCH */
+        .search-container {
+            max-width: 600px;
+            margin: -25px auto 40px;
+            padding: 0 20px;
+        }
+
+        #search {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            outline: none;
+        }
+
+        /* PROJECT GRID */
+        .projects {
+            max-width: 1100px;
+            margin: auto;
+            padding: 0 20px 50px;
+
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .button {
+            display: inline-block;
+            text-align: center;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .button:hover {
+            background: #1d4ed8;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #111827;
+            color: white;
+        }
+
+        /* MOBILE */
+        @media (max-width: 600px) {
+
+            header h1 {
+                font-size: 30px;
+            }
+
+            header p {
+                font-size: 15px;
+            }
+
+            .projects {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="faq-container">
-    <h1>Frequently Asked Questions</h1>
-    
-<div class="faq">
-      <div class="faq-question">How can I help you?</div>
-      <div class="faq-answer">wish to learn Javascript in 7 days.</div>
-    </div>
-    
-    <div class="faq">
-      <div class="faq-question">How do I Learn javascript very Fast?</div>
-      <div class="faq-answer"><b>=> Learn the basics first:</b>
-Variables, functions, loops, arrays, objects.<br><b>=> Practice small projects daily</b> Calculator, to-do list, clock, API fetch.
-</div>
-    </div>
 
-    <div class="faq">
-      <div class="faq-question">How long is shipping?</div>
-      <div class="faq-answer">Shipping typically takes 3-7 business days.</div>
+    <header>
+        <h1>Raph's Project Hub</h1>
+        <p>HTML, CSS & JavaScript Projects</p>
+    </header>
+
+    <div class="search-container">
+        <input
+            type="text"
+            id="search"
+            placeholder="Search projects..."
+            onkeyup="searchProjects()"
+        >
     </div>
 
-    <div class="faq">
-      	<div class="faq-question">Do you offer customer support?</div>
-      		<div class="faq-answer">Yes! We offer 24/7 customer support via email and 			chat.</div>
-    	</div>
-  </div>
+    <main class="projects" id="projectList">
 
-  <script>
-    /*
-const faqs = document.querySelectorAll('.faq');
+        <div class="card">
+            <div class="icon">🕐</div>
+            <h2>Analog Clock</h2>
+            <p>A simple and elegant analog clock built with HTML, CSS and JavaScript.</p>
+            <a class="button" href="Analogclock.html">Open Project</a>
+        </div>
 
-faqs.forEach(faq => {
-  faq.querySelector('.faq-question').addEventListener('click', () => {
-    faq.classList.toggle('active');
-  });
-});
-*/
-    
-    /* FAQ behave like an accordion (only one FAQ can be open at a time),*/
-const faqs = document.querySelectorAll('.faq');
+        <div class="card">
+            <div class="icon">📅</div>
+            <h2>Calendar</h2>
+            <p>Interactive calendar application for viewing months and dates.</p>
+            <a class="button" href="Calendar.html">Open Project</a>
+        </div>
 
-faqs.forEach(faq => {
-  faq.querySelector('.faq-question').addEventListener('click', () => {
+        <div class="card">
+            <div class="icon">🧮</div>
+            <h2>Age Calculator</h2>
+            <p>Calculate age based on date of birth.</p>
+            <a class="button" href="agecalculator.html">Open Project</a>
+        </div>
 
-    // Close all other FAQs
-    faqs.forEach(item => {
-      if (item !== faq) {
-        item.classList.remove('active');
-      }
-    });
+        <div class="card">
+            <div class="icon">💰</div>
+            <h2>Expense Tracker</h2>
+            <p>Track income, expenses and financial balance.</p>
+            <a class="button" href="expensetracker.html">Open Project</a>
+        </div>
 
-    // Toggle the clicked FAQ
-    faq.classList.toggle('active');
-  });
-});
-</script>
+        <div class="card">
+            <div class="icon">🌤️</div>
+            <h2>Weather App</h2>
+            <p>Check current weather information for different locations.</p>
+            <a class="button" href="weather.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">👥</div>
+            <h2>Staff Information</h2>
+            <p>A staff information and management interface.</p>
+            <a class="button" href="staffinfo.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">📊</div>
+            <h2>Student Score Manager</h2>
+            <p>Manage and display student scores.</p>
+            <a class="button" href="studentscoremanager.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">🧾</div>
+            <h2>Supermarket Invoice</h2>
+            <p>Create and manage supermarket bills and invoices.</p>
+            <a class="button" href="raphsupermarket.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">⏳</div>
+            <h2>Button Loader</h2>
+            <p>A button loading animation using HTML, CSS and JavaScript.</p>
+            <a class="button" href="btnloader.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">📝</div>
+            <h2>Data Entry</h2>
+            <p>Enter, edit and manage data records.</p>
+            <a class="button" href="dataentry.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">🕰️</div>
+            <h2>Analog Clock 2</h2>
+            <p>Another version of the analog clock project.</p>
+            <a class="button" href="analogclock2.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">📈</div>
+            <h2>Increase Calculator</h2>
+            <p>A simple tool for calculating increases.</p>
+            <a class="button" href="Increase.html">Open Project</a>
+        </div>
+
+        <div class="card">
+            <div class="icon">🧮</div>
+            <h2>Bill Calculator</h2>
+            <p>Calculate bills with formatted numbers and commas.</p>
+            <a class="button" href="billcalwithcomma.html">Open Project</a>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>© 2026 Raph's Project Hub</p>
+        <p>Built with HTML, CSS & JavaScript</p>
+    </footer>
+
+    <script>
+        function searchProjects() {
+
+            const search =
+                document.getElementById("search")
+                .value
+                .toLowerCase();
+
+            const cards =
+                document.querySelectorAll(".card");
+
+            cards.forEach(card => {
+
+                const text =
+                    card.innerText.toLowerCase();
+
+                if (text.includes(search)) {
+                    card.style.display = "flex";
+                } else {
+                    card.style.display = "none";
+                }
+
+            });
+        }
+    </script>
 
 </body>
 </html>
