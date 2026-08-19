@@ -1,285 +1,2693 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>STAFF IMFORMATION</title>
-  <style>
-```css
-.container {
-  background: #c4c5c6;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  width: 600px;
-}
-.staff {
-  background: blue;
-  color: white;
-  font-size: 25px;
-  font-weight: bold;
-  text-align: center;
-}
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
 
-.form, .buttons, .search-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
-}
+    <meta charset="UTF-8">
 
-input[type="text"],
-input[type="number"],
-input[type="tel"],
-input[type="file"] {
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  flex: 1;
-}
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-button {
-  padding: 10px;
-  background: #3b82f6;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    <title>Staff Information Management System</title>
 
-button:hover {
-  background: #2563eb;
-}
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-}
+    <style>
 
-table th,
-table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
+        /* =========================================
+           RESET
+        ========================================== */
 
-table th {
-  cursor: pointer;
-  background-color: #f0f0f0;
-}
-
-table tr:nth-child(even) {
-  background-color: #f5eeee;
-}
-
-.actions button {
-  margin-right: 5px;
-  padding: 5px 8px;
-  font-size: 12px;
-  border: none;
-  border-radius: 4px;
-}
-
-.actions .edit {
-  background-color: #ffc107;
-  color: #000;
-}
-
-.actions .delete {
-  background-color: #f44336;
-  color: #fff;
-}
-```
-
-</style>
-</head>
-<body>
-<div class="staff">STAFF INFORMATION</div>
-<div class="form">
-  <input type="text" id="name" placeholder="Enter name" />
-  <input type="text" id="email" placeholder="Enter email" />
-  <input type="tel" id="phone" placeholder="Enter phone number" />
-  <input type="number" id="age" placeholder="Enter age" />
-  <button onclick="addOrUpdateEntry()">Add</button>
-</div>
-
-<div class="buttons">
-  <button onclick="exportJSON()">Export JSON</button>
-  <button onclick="exportCSV()">Export CSV</button>
-  <input type="file" id="fileJSON" accept=".json" onchange="importJSON()" />
-  <input type="file" id="fileCSV" accept=".csv" onchange="importCSV()" />
-</div>
-
-<div class="search-bar">
-  <input type="text" id="searchInput" placeholder="Search by name..." oninput="updateTable()" />
-</div>
-
-<table>
-  <thead>
-    <tr>
-      <th onclick="sortTable('name')">Name 🔽</th>
-      <th onclick="sortTable('email')">Email 🔽</th>
-      <th onclick="sortTable('phone')">Phone Number 🔽</th>
-      <th onclick="sortTable('age')">Age 🔽</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody id="entryTable"></tbody>
-</table>
-```
-
-  <script>
-  let entries = JSON.parse(localStorage.getItem("entries")) || [];
-  let editIndex = null;
-  let sortDirection = { name: true, email: true, age: true }; // true = asc
-
-  function saveToLocalStorage() {
-    localStorage.setItem("entries", JSON.stringify(entries));
-  }
-
-  function addOrUpdateEntry() {
-    const name = document.getElementById("name").value;
-const email = document.getElementById("email").value;
-const phone = document.getElementById("phone").value;
-const age = document.getElementById("age").value;
-
-    if (!name || !email || !phone ||  !age) return alert("Please fill out all fields.");
-
-    if (editIndex !== null) {
-      entries[editIndex] = { name, email, phone, age };
-      editIndex = null;
-    } else {
-      entries.push({ name, email, phone, age });
-    }
-
-    document.getElementById("name").value = "";
-    document.getElementById("email").value = "";
-    document.getElementById("phone").value;
-    document.getElementById("age").value = "";
-    document.querySelector("button[onclick='addOrUpdateEntry()']").textContent = "Add";
-
-    saveToLocalStorage();
-    updateTable();
-  }
-
-  function editEntry(index) {
-    document.getElementById("name").value = entries[index].name;
-    document.getElementById("email").value = entries[index].email;
-    document.getElementById("phone").value = entries[index].phone;
-    document.getElementById("age").value = entries[index].age;
-    editIndex = index;
-    document.querySelector("button[onclick='addOrUpdateEntry()']").textContent = "Update";
-  }
-
-  function deleteEntry(index) {
-    if (confirm("Delete this entry?")) {
-      entries.splice(index, 1);
-      saveToLocalStorage();
-      updateTable();
-    }
-  }
-
-  function updateTable() {
-    const tbody = document.getElementById("entryTable");
-    tbody.innerHTML = "";
-
-    const searchQuery = document.getElementById("searchInput").value.toLowerCase();
-    const filtered = entries.filter(e => e.name.toLowerCase().includes(searchQuery));
-
-    filtered.forEach((entry, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${entry.name}</td>
-        <td>${entry.email}</td>
-        <td>${entry.phone}</td>
-        <td>${entry.age}</td>
-        <td class="actions">
-          <button class="edit" onclick="editEntry(${index})">Edit</button>
-          <button class="delete" onclick="deleteEntry(${index})">Delete</button>
-        </td>
-      `;
-      tbody.appendChild(row);
-    });
-  }
-
-  function sortTable(key) {
-    const direction = sortDirection[key] ? 1 : -1;
-    entries.sort((a, b) => {
-      if (key === 'age') {
-        return direction * (parseInt(a.age) - parseInt(b.age));
-      } else {
-        return direction * a[key].localeCompare(b[key]);
-      }
-    });
-    sortDirection[key] = !sortDirection[key];
-    updateTable();
-  }
-
-  function exportJSON() {
-    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    download(url, "data.json");
-  }
-
-  function importJSON() {
-    const file = document.getElementById("fileJSON").files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const imported = JSON.parse(reader.result);
-        if (Array.isArray(imported)) {
-          entries = imported;
-          saveToLocalStorage();
-          updateTable();
-        } else {
-          alert("Invalid JSON structure.");
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-      } catch {
-        alert("Failed to parse JSON.");
-      }
-    };
-    reader.readAsText(file);
-  }
 
-  function exportCSV() {
-    const csv = entries.map(e => `${e.name},${e.email},${e.phone},${e.age}`).join("\n");
-    const blob = new Blob([`Name,Email,Age\n${csv}`], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    download(url, "data.csv");
-  }
 
-  function importCSV() {
-    const file = document.getElementById("fileCSV").files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const lines = reader.result.trim().split("\n").slice(1); // Skip header
-      entries = lines.map(line => {
-        const [name, email, age] = line.split(",");
-        return { name: name.trim(), email: email.trim(), age: age.trim() };
-      });
-      saveToLocalStorage();
-      updateTable();
-    };
-    reader.readAsText(file);
-  }
+        /* =========================================
+           BODY
+        ========================================== */
 
-  function download(url, filename) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+        body {
 
-  // Initialize
-  updateTable();
-  </script>
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #eef2f7,
+                    #dfe7f1
+                );
+
+            min-height: 100vh;
+
+            color: #1f2937;
+
+            padding: 30px;
+
+        }
+
+
+        /* =========================================
+           MAIN CONTAINER
+        ========================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: auto;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            box-shadow:
+                0 15px 40px
+                rgba(0, 0, 0, 0.12);
+
+            overflow: hidden;
+
+        }
+
+
+        /* =========================================
+           HEADER
+        ========================================== */
+
+        .staff-header {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f4c81,
+                    #2563eb
+                );
+
+            color: white;
+
+            padding: 30px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+        }
+
+
+        .header-left h1 {
+
+            font-size: 30px;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .header-left p {
+
+            font-size: 14px;
+
+            opacity: 0.85;
+
+        }
+
+
+        .header-icon {
+
+            font-size: 55px;
+
+        }
+
+
+        /* =========================================
+           CONTENT
+        ========================================== */
+
+        .content {
+
+            padding: 25px;
+
+        }
+
+
+        /* =========================================
+           STAT CARDS
+        ========================================== */
+
+        .stats {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        .stat-card {
+
+            padding: 18px;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e5e7eb;
+
+        }
+
+
+        .stat-card .number {
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            color: #2563eb;
+
+        }
+
+
+        .stat-card .label {
+
+            color: #6b7280;
+
+            font-size: 14px;
+
+            margin-top: 5px;
+
+        }
+
+
+        /* =========================================
+           FORM SECTION
+        ========================================== */
+
+        .section-title {
+
+            font-size: 20px;
+
+            font-weight: 700;
+
+            margin-bottom: 15px;
+
+            color: #1f2937;
+
+        }
+
+
+        .form {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 15px;
+
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 5px;
+
+        }
+
+
+        .form-group label {
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            color: #4b5563;
+
+        }
+
+
+        input {
+
+            width: 100%;
+
+            padding: 12px;
+
+            border:
+
+                1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: 0.2s;
+
+        }
+
+
+        input:focus {
+
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 99, 235, 0.12);
+
+        }
+
+
+        /* =========================================
+           BUTTONS
+        ========================================== */
+
+        button {
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 11px 16px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+
+        }
+
+
+        button:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .btn-primary {
+
+            background: #2563eb;
+
+            color: white;
+
+        }
+
+
+        .btn-primary:hover {
+
+            background: #1d4ed8;
+
+        }
+
+
+        .btn-secondary {
+
+            background: #64748b;
+
+            color: white;
+
+        }
+
+
+        .btn-success {
+
+            background: #198754;
+
+            color: white;
+
+        }
+
+
+        .btn-danger {
+
+            background: #dc3545;
+
+            color: white;
+
+        }
+
+
+        .btn-warning {
+
+            background: #f59e0b;
+
+            color: white;
+
+        }
+
+
+        .btn-light {
+
+            background: #e5e7eb;
+
+            color: #374151;
+
+        }
+
+
+        /* =========================================
+           FORM BUTTONS
+        ========================================== */
+
+        .form-buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-bottom: 25px;
+
+        }
+
+
+        #cancelEdit {
+
+            display: none;
+
+        }
+
+
+        /* =========================================
+           TOOLBAR
+        ========================================== */
+
+        .toolbar {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 15px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .search-box {
+
+            flex: 1;
+
+            min-width: 250px;
+
+            position: relative;
+
+        }
+
+
+        .search-box input {
+
+            padding-left: 40px;
+
+        }
+
+
+        .search-icon {
+
+            position: absolute;
+
+            left: 13px;
+
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            color: #6b7280;
+
+        }
+
+
+        .toolbar-buttons {
+
+            display: flex;
+
+            gap: 8px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        /* =========================================
+           TABLE WRAPPER
+        ========================================== */
+
+        .table-wrapper {
+
+            overflow-x: auto;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+        }
+
+
+        /* =========================================
+           TABLE
+        ========================================== */
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 800px;
+
+        }
+
+
+        th {
+
+            background: #f1f5f9;
+
+            color: #374151;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            padding: 14px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+
+        }
+
+
+        td {
+
+            padding: 13px;
+
+            border-top:
+                1px solid #e5e7eb;
+
+            font-size: 14px;
+
+        }
+
+
+        tbody tr {
+
+            transition: 0.2s;
+
+        }
+
+
+        tbody tr:hover {
+
+            background: #f8fafc;
+
+        }
+
+
+        /* =========================================
+           ACTION BUTTONS
+        ========================================== */
+
+        .actions {
+
+            display: flex;
+
+            gap: 5px;
+
+        }
+
+
+        .actions button {
+
+            padding: 7px 10px;
+
+            font-size: 12px;
+
+        }
+
+
+        /* =========================================
+           EMPTY TABLE
+        ========================================== */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 40px;
+
+            color: #6b7280;
+
+        }
+
+
+        .empty-state-icon {
+
+            font-size: 40px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        /* =========================================
+           FILE INPUTS
+        ========================================== */
+
+        .file-input {
+
+            display: none;
+
+        }
+
+
+        /* =========================================
+           NOTIFICATION
+        ========================================== */
+
+        .notification {
+
+            position: fixed;
+
+            right: 25px;
+
+            bottom: 25px;
+
+            padding: 14px 20px;
+
+            border-radius: 10px;
+
+            background: #198754;
+
+            color: white;
+
+            box-shadow:
+                0 10px 25px
+                rgba(0,0,0,0.2);
+
+            opacity: 0;
+
+            transform:
+                translateY(20px);
+
+            pointer-events: none;
+
+            transition: 0.3s;
+
+            z-index: 1000;
+
+        }
+
+
+        .notification.show {
+
+            opacity: 1;
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        .notification.error {
+
+            background: #dc3545;
+
+        }
+
+
+        /* =========================================
+           FOOTER
+        ========================================== */
+
+        footer {
+
+            text-align: center;
+
+            padding: 18px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+            border-top:
+                1px solid #e5e7eb;
+
+        }
+
+
+        /* =========================================
+           RESPONSIVE DESIGN
+        ========================================== */
+
+        @media (max-width: 900px) {
+
+            body {
+
+                padding: 15px;
+
+            }
+
+
+            .form {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+
+            .stats {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .staff-header {
+
+                text-align: center;
+
+                flex-direction: column;
+
+            }
+
+
+            .header-left h1 {
+
+                font-size: 24px;
+
+            }
+
+
+            .header-icon {
+
+                font-size: 40px;
+
+            }
+
+
+            .content {
+
+                padding: 18px;
+
+            }
+
+
+            .form {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .stats {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .form-buttons {
+
+                flex-direction: column;
+
+            }
+
+
+            .toolbar {
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+            }
+
+
+            .toolbar-buttons {
+
+                display: grid;
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         MAIN CONTAINER
+    ========================================== -->
+
+    <div class="container">
+
+
+        <!-- =====================================
+             HEADER
+        ====================================== -->
+
+        <header class="staff-header">
+
+            <div class="header-left">
+
+                <h1>
+                    Staff Information
+                </h1>
+
+                <p>
+                    Staff Records Management System
+                </p>
+
+            </div>
+
+
+            <div class="header-icon">
+                👨‍💼
+            </div>
+
+        </header>
+
+
+
+        <main class="content">
+
+
+            <!-- =====================================
+                 STATISTICS
+            ====================================== -->
+
+            <div class="stats">
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="number"
+                        id="totalStaff"
+                    >
+                        0
+                    </div>
+
+                    <div class="label">
+                        Total Staff
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="number"
+                        id="averageAge"
+                    >
+                        0
+                    </div>
+
+                    <div class="label">
+                        Average Age
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div
+                        class="number"
+                        id="displayedStaff"
+                    >
+                        0
+                    </div>
+
+                    <div class="label">
+                        Displayed Records
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 ADD STAFF
+            ====================================== -->
+
+            <h2 class="section-title">
+                Add Staff Member
+            </h2>
+
+
+            <div class="form">
+
+
+                <div class="form-group">
+
+                    <label for="name">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter full name"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter email"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="Enter phone number"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="age">
+                        Age
+                    </label>
+
+                    <input
+                        type="number"
+                        id="age"
+                        placeholder="Enter age"
+                        min="18"
+                        max="100"
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FORM BUTTONS -->
+
+            <div class="form-buttons">
+
+
+                <button
+                    id="submitButton"
+                    class="btn-primary"
+                    onclick="addOrUpdateEntry()"
+                >
+                    ➕ Add Staff
+                </button>
+
+
+                <button
+                    id="cancelEdit"
+                    class="btn-light"
+                    onclick="cancelEdit()"
+                >
+                    Cancel Edit
+                </button>
+
+            </div>
+
+
+
+            <!-- =====================================
+                 SEARCH / EXPORT TOOLBAR
+            ====================================== -->
+
+            <div class="toolbar">
+
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        🔍
+                    </span>
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search staff by name, email or phone..."
+                        oninput="updateTable()"
+                    >
+
+                </div>
+
+
+                <div class="toolbar-buttons">
+
+
+                    <button
+                        class="btn-success"
+                        onclick="exportJSON()"
+                    >
+                        📥 JSON
+                    </button>
+
+
+                    <button
+                        class="btn-success"
+                        onclick="exportCSV()"
+                    >
+                        📊 CSV
+                    </button>
+
+
+                    <button
+                        class="btn-secondary"
+                        onclick="document.getElementById('fileJSON').click()"
+                    >
+                        📤 Import JSON
+                    </button>
+
+
+                    <button
+                        class="btn-secondary"
+                        onclick="document.getElementById('fileCSV').click()"
+                    >
+                        📤 Import CSV
+                    </button>
+
+
+                    <button
+                        class="btn-danger"
+                        onclick="clearAll()"
+                    >
+                        🗑 Clear All
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- HIDDEN FILE INPUTS -->
+
+            <input
+                type="file"
+                id="fileJSON"
+                class="file-input"
+                accept=".json"
+                onchange="importJSON()"
+            >
+
+
+            <input
+                type="file"
+                id="fileCSV"
+                class="file-input"
+                accept=".csv"
+                onchange="importCSV()"
+            >
+
+
+
+            <!-- =====================================
+                 STAFF TABLE
+            ====================================== -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th
+                                onclick="sortTable('name')"
+                            >
+                                Name ↕
+                            </th>
+
+
+                            <th
+                                onclick="sortTable('email')"
+                            >
+                                Email ↕
+                            </th>
+
+
+                            <th>
+                                Phone Number
+                            </th>
+
+
+                            <th
+                                onclick="sortTable('age')"
+                            >
+                                Age ↕
+                            </th>
+
+
+                            <th>
+                                Date Added
+                            </th>
+
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="entryTable"
+                    >
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </main>
+
+
+
+        <!-- =====================================
+             FOOTER
+        ====================================== -->
+
+        <footer>
+
+            Staff Information Management System
+            © 2026
+
+        </footer>
+
+
+    </div>
+
+
+
+    <!-- =========================================
+         NOTIFICATION
+    ========================================== -->
+
+    <div
+        id="notification"
+        class="notification"
+    ></div>
+
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        /* =========================================
+           DATA
+        ========================================== */
+
+        let entries =
+            JSON.parse(
+                localStorage.getItem(
+                    "staffEntries"
+                )
+            ) || [];
+
+
+        let editIndex = null;
+
+
+        let sortDirection = {
+
+            name: true,
+
+            email: true,
+
+            age: true
+
+        };
+
+
+
+        /* =========================================
+           SAVE DATA
+        ========================================== */
+
+        function saveToLocalStorage() {
+
+            localStorage.setItem(
+                "staffEntries",
+                JSON.stringify(entries)
+            );
+
+        }
+
+
+
+        /* =========================================
+           GET FORM VALUES
+        ========================================== */
+
+        function getFormValues() {
+
+            return {
+
+                name:
+                    document
+                    .getElementById("name")
+                    .value
+                    .trim(),
+
+                email:
+                    document
+                    .getElementById("email")
+                    .value
+                    .trim(),
+
+                phone:
+                    document
+                    .getElementById("phone")
+                    .value
+                    .trim(),
+
+                age:
+                    document
+                    .getElementById("age")
+                    .value
+                    .trim()
+
+            };
+
+        }
+
+
+
+        /* =========================================
+           ADD / UPDATE STAFF
+        ========================================== */
+
+        function addOrUpdateEntry() {
+
+
+            const data =
+                getFormValues();
+
+
+
+            /* Validate fields */
+
+            if (
+                !data.name ||
+                !data.email ||
+                !data.phone ||
+                !data.age
+            ) {
+
+                showNotification(
+                    "Please fill in all fields.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+
+            /* Validate email */
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !emailPattern.test(
+                    data.email
+                )
+            ) {
+
+                showNotification(
+                    "Please enter a valid email address.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+
+            /* Validate age */
+
+            const age =
+                Number(data.age);
+
+
+            if (
+                age < 18 ||
+                age > 100
+            ) {
+
+                showNotification(
+                    "Age must be between 18 and 100.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+
+            /* UPDATE */
+
+            if (editIndex !== null) {
+
+
+                entries[editIndex].name =
+                    data.name;
+
+
+                entries[editIndex].email =
+                    data.email;
+
+
+                entries[editIndex].phone =
+                    data.phone;
+
+
+                entries[editIndex].age =
+                    data.age;
+
+
+                editIndex = null;
+
+
+                showNotification(
+                    "Staff record updated successfully."
+                );
+
+            }
+
+
+            /* ADD */
+
+            else {
+
+
+                entries.push({
+
+                    name:
+                        data.name,
+
+                    email:
+                        data.email,
+
+                    phone:
+                        data.phone,
+
+                    age:
+                        data.age,
+
+                    dateAdded:
+                        new Date()
+                        .toLocaleDateString()
+
+                });
+
+
+                showNotification(
+                    "Staff member added successfully."
+                );
+
+            }
+
+
+
+            clearForm();
+
+
+            saveToLocalStorage();
+
+
+            updateTable();
+
+        }
+
+
+
+        /* =========================================
+           EDIT STAFF
+        ========================================== */
+
+        function editEntry(index) {
+
+
+            const entry =
+                entries[index];
+
+
+            document
+                .getElementById("name")
+                .value =
+                entry.name;
+
+
+            document
+                .getElementById("email")
+                .value =
+                entry.email;
+
+
+            document
+                .getElementById("phone")
+                .value =
+                entry.phone;
+
+
+            document
+                .getElementById("age")
+                .value =
+                entry.age;
+
+
+            editIndex =
+                index;
+
+
+            document
+                .getElementById("submitButton")
+                .textContent =
+                "💾 Update Staff";
+
+
+            document
+                .getElementById("cancelEdit")
+                .style.display =
+                "block";
+
+
+            window.scrollTo({
+
+                top: 0,
+
+                behavior: "smooth"
+
+            });
+
+        }
+
+
+
+        /* =========================================
+           CANCEL EDIT
+        ========================================== */
+
+        function cancelEdit() {
+
+            editIndex = null;
+
+            clearForm();
+
+
+            document
+                .getElementById("submitButton")
+                .textContent =
+                "➕ Add Staff";
+
+
+            document
+                .getElementById("cancelEdit")
+                .style.display =
+                "none";
+
+        }
+
+
+
+        /* =========================================
+           DELETE STAFF
+        ========================================== */
+
+        function deleteEntry(index) {
+
+
+            if (
+                !confirm(
+                    "Are you sure you want to delete this staff record?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            entries.splice(
+                index,
+                1
+            );
+
+
+            saveToLocalStorage();
+
+
+            updateTable();
+
+
+            showNotification(
+                "Staff record deleted."
+            );
+
+        }
+
+
+
+        /* =========================================
+           CLEAR FORM
+        ========================================== */
+
+        function clearForm() {
+
+            document
+                .getElementById("name")
+                .value = "";
+
+
+            document
+                .getElementById("email")
+                .value = "";
+
+
+            document
+                .getElementById("phone")
+                .value = "";
+
+
+            document
+                .getElementById("age")
+                .value = "";
+
+        }
+
+
+
+        /* =========================================
+           UPDATE TABLE
+        ========================================== */
+
+        function updateTable() {
+
+
+            const tbody =
+                document.getElementById(
+                    "entryTable"
+                );
+
+
+            tbody.innerHTML = "";
+
+
+            const searchQuery =
+                document
+                .getElementById(
+                    "searchInput"
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+
+
+            /* FILTER */
+
+            const filtered =
+                entries
+                .map(
+                    (entry, index) => ({
+                        entry,
+                        index
+                    })
+                )
+                .filter(
+                    item => {
+
+                        const e =
+                            item.entry;
+
+
+                        return (
+
+                            e.name
+                            .toLowerCase()
+                            .includes(
+                                searchQuery
+                            )
+
+                            ||
+
+                            e.email
+                            .toLowerCase()
+                            .includes(
+                                searchQuery
+                            )
+
+                            ||
+
+                            e.phone
+                            .toLowerCase()
+                            .includes(
+                                searchQuery
+                            )
+
+                        );
+
+                    }
+                );
+
+
+
+            /* EMPTY STATE */
+
+            if (
+                filtered.length === 0
+            ) {
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const cell =
+                    document.createElement(
+                        "td"
+                    );
+
+
+                cell.colSpan = 6;
+
+
+                cell.className =
+                    "empty-state";
+
+
+                cell.innerHTML = `
+                    <div class="empty-state-icon">
+                        👥
+                    </div>
+
+                    <strong>
+                        No staff records found
+                    </strong>
+
+                    <br>
+
+                    Add a staff member or
+                    change your search.
+                `;
+
+
+                row.appendChild(cell);
+
+                tbody.appendChild(row);
+
+            }
+
+
+
+            /* DISPLAY DATA */
+
+            filtered.forEach(
+                item => {
+
+
+                    const entry =
+                        item.entry;
+
+
+                    const originalIndex =
+                        item.index;
+
+
+                    const row =
+                        document.createElement(
+                            "tr"
+                        );
+
+
+                    /* NAME */
+
+                    const nameCell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    nameCell.textContent =
+                        entry.name;
+
+
+
+                    /* EMAIL */
+
+                    const emailCell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    emailCell.textContent =
+                        entry.email;
+
+
+
+                    /* PHONE */
+
+                    const phoneCell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    phoneCell.textContent =
+                        entry.phone;
+
+
+
+                    /* AGE */
+
+                    const ageCell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    ageCell.textContent =
+                        entry.age;
+
+
+
+                    /* DATE */
+
+                    const dateCell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    dateCell.textContent =
+                        entry.dateAdded ||
+                        "—";
+
+
+
+                    /* ACTIONS */
+
+                    const actionsCell =
+                        document.createElement(
+                            "td"
+                        );
+
+
+                    actionsCell.className =
+                        "actions";
+
+
+
+                    const editButton =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    editButton.className =
+                        "btn-warning";
+
+
+                    editButton.textContent =
+                        "✏ Edit";
+
+
+                    editButton.onclick =
+                        () =>
+                            editEntry(
+                                originalIndex
+                            );
+
+
+
+                    const deleteButton =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    deleteButton.className =
+                        "btn-danger";
+
+
+                    deleteButton.textContent =
+                        "🗑 Delete";
+
+
+                    deleteButton.onclick =
+                        () =>
+                            deleteEntry(
+                                originalIndex
+                            );
+
+
+
+                    actionsCell.appendChild(
+                        editButton
+                    );
+
+
+                    actionsCell.appendChild(
+                        deleteButton
+                    );
+
+
+
+                    /* ADD CELLS */
+
+                    row.appendChild(
+                        nameCell
+                    );
+
+
+                    row.appendChild(
+                        emailCell
+                    );
+
+
+                    row.appendChild(
+                        phoneCell
+                    );
+
+
+                    row.appendChild(
+                        ageCell
+                    );
+
+
+                    row.appendChild(
+                        dateCell
+                    );
+
+
+                    row.appendChild(
+                        actionsCell
+                    );
+
+
+                    tbody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+
+            updateStatistics(
+                filtered.length
+            );
+
+        }
+
+
+
+        /* =========================================
+           SORT TABLE
+        ========================================== */
+
+        function sortTable(key) {
+
+
+            const direction =
+                sortDirection[key]
+                    ? 1
+                    : -1;
+
+
+            entries.sort(
+                (a, b) => {
+
+
+                    if (
+                        key === "age"
+                    ) {
+
+                        return (
+                            direction *
+                            (
+                                Number(a.age) -
+                                Number(b.age)
+                            )
+                        );
+
+                    }
+
+
+                    return (
+                        direction *
+                        a[key]
+                        .localeCompare(
+                            b[key]
+                        )
+                    );
+
+                }
+            );
+
+
+            sortDirection[key] =
+                !sortDirection[key];
+
+
+            saveToLocalStorage();
+
+
+            updateTable();
+
+        }
+
+
+
+        /* =========================================
+           STATISTICS
+        ========================================== */
+
+        function updateStatistics(
+            displayedCount
+        ) {
+
+
+            document
+                .getElementById(
+                    "totalStaff"
+                )
+                .textContent =
+                entries.length;
+
+
+
+            document
+                .getElementById(
+                    "displayedStaff"
+                )
+                .textContent =
+                displayedCount;
+
+
+
+            if (
+                entries.length === 0
+            ) {
+
+                document
+                    .getElementById(
+                        "averageAge"
+                    )
+                    .textContent =
+                    "0";
+
+                return;
+
+            }
+
+
+            const totalAge =
+                entries.reduce(
+                    (
+                        total,
+                        entry
+                    ) => {
+
+                        return (
+                            total +
+                            Number(entry.age)
+                        );
+
+                    },
+                    0
+                );
+
+
+            const average =
+                totalAge /
+                entries.length;
+
+
+            document
+                .getElementById(
+                    "averageAge"
+                )
+                .textContent =
+                average.toFixed(1);
+
+        }
+
+
+
+        /* =========================================
+           EXPORT JSON
+        ========================================== */
+
+        function exportJSON() {
+
+
+            if (
+                entries.length === 0
+            ) {
+
+                showNotification(
+                    "There is no data to export.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            const data =
+                JSON.stringify(
+                    entries,
+                    null,
+                    2
+                );
+
+
+            downloadFile(
+                data,
+                "staff-data.json",
+                "application/json"
+            );
+
+
+            showNotification(
+                "JSON file exported successfully."
+            );
+
+        }
+
+
+
+        /* =========================================
+           IMPORT JSON
+        ========================================== */
+
+        function importJSON() {
+
+
+            const file =
+                document
+                .getElementById(
+                    "fileJSON"
+                )
+                .files[0];
+
+
+            if (!file) {
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function () {
+
+
+                    try {
+
+
+                        const imported =
+                            JSON.parse(
+                                reader.result
+                            );
+
+
+                        if (
+                            !Array.isArray(
+                                imported
+                            )
+                        ) {
+
+                            throw new Error();
+
+                        }
+
+
+                        const valid =
+                            imported.every(
+                                entry =>
+                                    entry.name &&
+                                    entry.email &&
+                                    entry.phone &&
+                                    entry.age
+                            );
+
+
+                        if (!valid) {
+
+                            throw new Error();
+
+                        }
+
+
+                        entries =
+                            imported;
+
+
+                        saveToLocalStorage();
+
+
+                        updateTable();
+
+
+                        showNotification(
+                            "JSON data imported successfully."
+                        );
+
+                    }
+
+
+                    catch {
+
+
+                        showNotification(
+                            "Invalid JSON file.",
+                            true
+                        );
+
+                    }
+
+                };
+
+
+            reader.readAsText(file);
+
+        }
+
+
+
+        /* =========================================
+           EXPORT CSV
+        ========================================== */
+
+        function exportCSV() {
+
+
+            if (
+                entries.length === 0
+            ) {
+
+                showNotification(
+                    "There is no data to export.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            const headers = [
+
+                "Name",
+
+                "Email",
+
+                "Phone",
+
+                "Age",
+
+                "Date Added"
+
+            ];
+
+
+
+            const rows =
+                entries.map(
+                    entry => [
+
+                        csvEscape(
+                            entry.name
+                        ),
+
+                        csvEscape(
+                            entry.email
+                        ),
+
+                        csvEscape(
+                            entry.phone
+                        ),
+
+                        csvEscape(
+                            entry.age
+                        ),
+
+                        csvEscape(
+                            entry.dateAdded || ""
+                        )
+
+                    ].join(",")
+                );
+
+
+
+            const csv =
+                [
+                    headers.join(","),
+                    ...rows
+                ].join("\n");
+
+
+
+            downloadFile(
+                csv,
+                "staff-data.csv",
+                "text/csv"
+            );
+
+
+            showNotification(
+                "CSV file exported successfully."
+            );
+
+        }
+
+
+
+        /* =========================================
+           CSV ESCAPE
+        ========================================== */
+
+        function csvEscape(value) {
+
+            const text =
+                String(value);
+
+
+            if (
+                text.includes(",") ||
+                text.includes('"') ||
+                text.includes("\n")
+            ) {
+
+                return (
+                    '"' +
+                    text.replace(
+                        /"/g,
+                        '""'
+                    ) +
+                    '"'
+                );
+
+            }
+
+
+            return text;
+
+        }
+
+
+
+        /* =========================================
+           IMPORT CSV
+        ========================================== */
+
+        function importCSV() {
+
+
+            const file =
+                document
+                .getElementById(
+                    "fileCSV"
+                )
+                .files[0];
+
+
+            if (!file) {
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function () {
+
+
+                    try {
+
+
+                        const lines =
+                            reader.result
+                            .trim()
+                            .split(/\r?\n/);
+
+
+                        if (
+                            lines.length < 2
+                        ) {
+
+                            throw new Error();
+
+                        }
+
+
+                        /*
+                           Skip header.
+                        */
+
+                        const imported =
+                            lines
+                            .slice(1)
+                            .map(
+                                line => {
+
+                                    const values =
+                                        parseCSVLine(
+                                            line
+                                        );
+
+
+                                    return {
+
+                                        name:
+                                            values[0]
+                                            ?.trim() || "",
+
+                                        email:
+                                            values[1]
+                                            ?.trim() || "",
+
+                                        phone:
+                                            values[2]
+                                            ?.trim() || "",
+
+                                        age:
+                                            values[3]
+                                            ?.trim() || "",
+
+                                        dateAdded:
+                                            values[4]
+                                            ?.trim() ||
+                                            new Date()
+                                            .toLocaleDateString()
+
+                                    };
+
+                                }
+                            )
+                            .filter(
+                                entry =>
+                                    entry.name &&
+                                    entry.email &&
+                                    entry.phone &&
+                                    entry.age
+                            );
+
+
+                        if (
+                            imported.length === 0
+                        ) {
+
+                            throw new Error();
+
+                        }
+
+
+                        entries =
+                            imported;
+
+
+                        saveToLocalStorage();
+
+
+                        updateTable();
+
+
+                        showNotification(
+                            "CSV data imported successfully."
+                        );
+
+                    }
+
+
+                    catch {
+
+
+                        showNotification(
+                            "Unable to import CSV file.",
+                            true
+                        );
+
+                    }
+
+                };
+
+
+            reader.readAsText(file);
+
+        }
+
+
+
+        /* =========================================
+           SIMPLE CSV PARSER
+        ========================================== */
+
+        function parseCSVLine(line) {
+
+
+            const result = [];
+
+            let current = "";
+
+            let insideQuotes = false;
+
+
+            for (
+                let i = 0;
+                i < line.length;
+                i++
+            ) {
+
+
+                const char =
+                    line[i];
+
+
+                if (
+                    char === '"'
+                ) {
+
+
+                    if (
+                        insideQuotes &&
+                        line[i + 1] === '"'
+                    ) {
+
+                        current += '"';
+
+                        i++;
+
+                    }
+
+                    else {
+
+                        insideQuotes =
+                            !insideQuotes;
+
+                    }
+
+                }
+
+
+                else if (
+                    char === "," &&
+                    !insideQuotes
+                ) {
+
+                    result.push(
+                        current
+                    );
+
+                    current = "";
+
+                }
+
+
+                else {
+
+                    current += char;
+
+                }
+
+            }
+
+
+            result.push(
+                current
+            );
+
+
+            return result;
+
+        }
+
+
+
+        /* =========================================
+           DOWNLOAD FILE
+        ========================================== */
+
+        function downloadFile(
+            data,
+            filename,
+            type
+        ) {
+
+
+            const blob =
+                new Blob(
+                    [data],
+                    {
+                        type: type
+                    }
+                );
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href =
+                url;
+
+
+            link.download =
+                filename;
+
+
+            document.body.appendChild(
+                link
+            );
+
+
+            link.click();
+
+
+            link.remove();
+
+
+            URL.revokeObjectURL(
+                url
+            );
+
+        }
+
+
+
+        /* =========================================
+           CLEAR ALL
+        ========================================== */
+
+        function clearAll() {
+
+
+            if (
+                entries.length === 0
+            ) {
+
+                showNotification(
+                    "There are no records to clear.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !confirm(
+                    "Are you sure you want to delete ALL staff records?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            entries = [];
+
+
+            saveToLocalStorage();
+
+
+            updateTable();
+
+
+            showNotification(
+                "All staff records have been cleared."
+            );
+
+        }
+
+
+
+        /* =========================================
+           NOTIFICATION
+        ========================================== */
+
+        function showNotification(
+            message,
+            isError = false
+        ) {
+
+
+            const notification =
+                document.getElementById(
+                    "notification"
+                );
+
+
+            notification.textContent =
+                message;
+
+
+            notification.classList.toggle(
+                "error",
+                isError
+            );
+
+
+            notification.classList.add(
+                "show"
+            );
+
+
+            setTimeout(
+                () => {
+
+                    notification.classList.remove(
+                        "show"
+                    );
+
+                },
+                3000
+            );
+
+        }
+
+
+
+        /* =========================================
+           INITIALIZE
+        ========================================== */
+
+        updateTable();
+
+    </script>
+
 </body>
+
 </html>
