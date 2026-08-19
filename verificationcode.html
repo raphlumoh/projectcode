@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Verify Account | Raph Design</title>
+
+
+    <style>
+
+        /* =========================================
+           RESET
+        ========================================= */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* =========================================
+           BODY
+        ========================================= */
+
+        body {
+
+            min-height: 100vh;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0f2027,
+                    #203a43,
+                    #2c5364
+                );
+
+        }
+
+
+        /* =========================================
+           MAIN CONTAINER
+        ========================================= */
+
+        .verify-container {
+
+            width: 100%;
+
+            max-width: 430px;
+
+            padding: 40px 35px;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            border-radius: 24px;
+
+            text-align: center;
+
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.25);
+
+            position: relative;
+
+            overflow: hidden;
+
+            animation: cardAppear 0.7s ease;
+
+        }
+
+
+        /* Decorative top line */
+
+        .verify-container::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+
+            left: 0;
+
+            width: 100%;
+
+            height: 5px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #007bff,
+                    #00c6ff,
+                    #007bff
+                );
+
+        }
+
+
+        /* =========================================
+           ICON
+        ========================================= */
+
+        .verify-icon {
+
+            width: 75px;
+
+            height: 75px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            font-size: 35px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #e3f2fd,
+                    #bbdefb
+                );
+
+            color: #007bff;
+
+            box-shadow:
+                0 8px 20px rgba(
+                    0,
+                    123,
+                    255,
+                    0.18
+                );
+
+            animation: iconFloat 3s ease-in-out infinite;
+
+        }
+
+
+        /* =========================================
+           HEADING
+        ========================================= */
+
+        h2 {
+
+            color: #1f2937;
+
+            font-size: 28px;
+
+            margin-bottom: 10px;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =========================================
+           DESCRIPTION
+        ========================================= */
+
+        .description {
+
+            color: #6b7280;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .email {
+
+            color: #007bff;
+
+            font-weight: 600;
+
+        }
+
+
+        /* =========================================
+           OTP SECTION
+        ========================================= */
+
+        .code-inputs {
+
+            display: flex;
+
+            justify-content: center;
+
+            gap: 12px;
+
+            margin: 28px 0 20px;
+
+        }
+
+
+        .code-inputs input {
+
+            width: 62px;
+
+            height: 65px;
+
+            border: 2px solid #d1d5db;
+
+            border-radius: 12px;
+
+            background: #f9fafb;
+
+            text-align: center;
+
+            font-size: 26px;
+
+            font-weight: 700;
+
+            color: #111827;
+
+            outline: none;
+
+            transition:
+                border-color 0.25s,
+                box-shadow 0.25s,
+                background 0.25s,
+                transform 0.2s;
+
+        }
+
+
+        .code-inputs input:hover {
+
+            border-color: #9ca3af;
+
+        }
+
+
+        .code-inputs input:focus {
+
+            border-color: #007bff;
+
+            background: #ffffff;
+
+            box-shadow:
+                0 0 0 4px rgba(
+                    0,
+                    123,
+                    255,
+                    0.12
+                );
+
+            transform: translateY(-2px);
+
+        }
+
+
+        .code-inputs input.filled {
+
+            border-color: #007bff;
+
+            background: #f0f7ff;
+
+        }
+
+
+        .code-inputs input.error {
+
+            border-color: #dc3545;
+
+            background: #fff5f5;
+
+            animation: shake 0.35s;
+
+        }
+
+
+        /* =========================================
+           ERROR MESSAGE
+        ========================================= */
+
+        .error-message {
+
+            min-height: 20px;
+
+            margin-bottom: 12px;
+
+            color: #dc3545;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+
+        /* =========================================
+           VERIFY BUTTON
+        ========================================= */
+
+        .verify-button {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 12px;
+
+            padding: 14px 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #007bff,
+                    #0056b3
+                );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 18px rgba(
+                    0,
+                    123,
+                    255,
+                    0.25
+                );
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s,
+                opacity 0.2s;
+
+        }
+
+
+        .verify-button:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 25px rgba(
+                    0,
+                    123,
+                    255,
+                    0.35
+                );
+
+        }
+
+
+        .verify-button:active {
+
+            transform: translateY(0);
+
+        }
+
+
+        .verify-button:disabled {
+
+            opacity: 0.7;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* =========================================
+           RESEND AREA
+        ========================================= */
+
+        .resend {
+
+            margin-top: 22px;
+
+            font-size: 14px;
+
+            color: #6b7280;
+
+        }
+
+
+        .resend a {
+
+            color: #007bff;
+
+            text-decoration: none;
+
+            font-weight: 700;
+
+            margin-left: 5px;
+
+        }
+
+
+        .resend a:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        .resend a.disabled {
+
+            color: #aaa;
+
+            pointer-events: none;
+
+            text-decoration: none;
+
+        }
+
+
+        /* =========================================
+           CHANGE EMAIL
+        ========================================= */
+
+        .change-email {
+
+            display: inline-block;
+
+            margin-top: 18px;
+
+            color: #6b7280;
+
+            font-size: 13px;
+
+            text-decoration: none;
+
+        }
+
+
+        .change-email:hover {
+
+            color: #007bff;
+
+        }
+
+
+        /* =========================================
+           SUCCESS SECTION
+        ========================================= */
+
+        .success-check {
+
+            animation:
+                successAppear 0.6s ease;
+
+        }
+
+
+        .success-icon {
+
+            width: 90px;
+
+            height: 90px;
+
+            margin: 10px auto 20px;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            background: #e8f8ee;
+
+            color: #198754;
+
+            font-size: 48px;
+
+            font-weight: bold;
+
+            box-shadow:
+                0 10px 25px rgba(
+                    25,
+                    135,
+                    84,
+                    0.18
+                );
+
+        }
+
+
+        .success-title {
+
+            color: #198754;
+
+            font-size: 25px;
+
+            font-weight: 700;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .success-message {
+
+            color: #6b7280;
+
+            font-size: 15px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =========================================
+           HIDDEN
+        ========================================= */
+
+        .hidden {
+
+            display: none;
+
+        }
+
+
+        /* =========================================
+           ANIMATIONS
+        ========================================= */
+
+        @keyframes cardAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(25px)
+                    scale(0.97);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+
+        @keyframes iconFloat {
+
+            0%,
+            100% {
+
+                transform: translateY(0);
+
+            }
+
+            50% {
+
+                transform: translateY(-5px);
+
+            }
+
+        }
+
+
+        @keyframes successAppear {
+
+            from {
+
+                opacity: 0;
+
+                transform: scale(0.5);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform: scale(1);
+
+            }
+
+        }
+
+
+        @keyframes shake {
+
+            0%,
+            100% {
+
+                transform: translateX(0);
+
+            }
+
+            25% {
+
+                transform: translateX(-6px);
+
+            }
+
+            50% {
+
+                transform: translateX(6px);
+
+            }
+
+            75% {
+
+                transform: translateX(-4px);
+
+            }
+
+        }
+
+
+        /* =========================================
+           MOBILE RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 480px) {
+
+            .verify-container {
+
+                padding:
+                    35px 20px;
+
+                border-radius: 20px;
+
+            }
+
+
+            h2 {
+
+                font-size: 24px;
+
+            }
+
+
+            .code-inputs {
+
+                gap: 8px;
+
+            }
+
+
+            .code-inputs input {
+
+                width: 55px;
+
+                height: 60px;
+
+                font-size: 23px;
+
+            }
+
+        }
+
+
+        @media (max-width: 350px) {
+
+            .code-inputs {
+
+                gap: 5px;
+
+            }
+
+
+            .code-inputs input {
+
+                width: 48px;
+
+                height: 55px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         VERIFICATION CONTAINER
+    ========================================== -->
+
+    <div class="verify-container">
+
+
+        <!-- =====================================
+             VERIFICATION ICON
+        ====================================== -->
+
+        <div class="verify-icon">
+
+            🔐
+
+        </div>
+
+
+
+        <!-- =====================================
+             VERIFICATION FORM
+        ====================================== -->
+
+        <div id="verification-section">
+
+            <h2>
+                Verify Your Account
+            </h2>
+
+
+            <p class="description">
+
+                We've sent a 4-digit verification
+                code to
+
+                <span class="email">
+                    your email
+                </span>
+
+            </p>
+
+
+            <p class="description">
+
+                Enter the code below to continue.
+
+            </p>
+
+
+
+            <!-- OTP INPUTS -->
+
+            <form id="verify-form">
+
+
+                <div class="code-inputs">
+
+                    <input
+                        type="text"
+                        maxlength="1"
+                        inputmode="numeric"
+                        autocomplete="one-time-code"
+                        aria-label="Digit 1"
+                    >
+
+
+                    <input
+                        type="text"
+                        maxlength="1"
+                        inputmode="numeric"
+                        aria-label="Digit 2"
+                    >
+
+
+                    <input
+                        type="text"
+                        maxlength="1"
+                        inputmode="numeric"
+                        aria-label="Digit 3"
+                    >
+
+
+                    <input
+                        type="text"
+                        maxlength="1"
+                        inputmode="numeric"
+                        aria-label="Digit 4"
+                    >
+
+                </div>
+
+
+
+                <!-- ERROR MESSAGE -->
+
+                <div
+                    id="error-message"
+                    class="error-message"
+                ></div>
+
+
+
+                <!-- VERIFY BUTTON -->
+
+                <button
+                    type="submit"
+                    id="verify-button"
+                    class="verify-button"
+                >
+
+                    Verify Account
+
+                </button>
+
+            </form>
+
+
+
+            <!-- =================================
+                 RESEND
+            ================================== -->
+
+            <p class="resend">
+
+                <span id="countdown">
+                    Resend in 30s
+                </span>
+
+
+                <a
+                    href="#"
+                    id="resend-link"
+                    class="disabled"
+                >
+                    Resend Code
+                </a>
+
+            </p>
+
+
+
+            <!-- CHANGE EMAIL -->
+
+            <a
+                href="#"
+                class="change-email"
+            >
+                ← Change email address
+            </a>
+
+        </div>
+
+
+
+        <!-- =========================================
+             SUCCESS SECTION
+        ========================================== -->
+
+        <div
+            id="success-section"
+            class="success-check hidden"
+        >
+
+
+            <div class="success-icon">
+
+                ✓
+
+            </div>
+
+
+            <div class="success-title">
+
+                Account Verified!
+
+            </div>
+
+
+            <p class="success-message">
+
+                Your account has been successfully
+                verified.
+
+                <br>
+
+                You can now continue using your account.
+
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =========================================
+         JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        /* =========================================
+           ELEMENTS
+        ========================================= */
+
+        const inputs =
+            document.querySelectorAll(
+                ".code-inputs input"
+            );
+
+
+        const form =
+            document.getElementById(
+                "verify-form"
+            );
+
+
+        const verificationSection =
+            document.getElementById(
+                "verification-section"
+            );
+
+
+        const successSection =
+            document.getElementById(
+                "success-section"
+            );
+
+
+        const resendLink =
+            document.getElementById(
+                "resend-link"
+            );
+
+
+        const countdownText =
+            document.getElementById(
+                "countdown"
+            );
+
+
+        const errorMessage =
+            document.getElementById(
+                "error-message"
+            );
+
+
+        const verifyButton =
+            document.getElementById(
+                "verify-button"
+            );
+
+
+
+        /* =========================================
+           SETTINGS
+        ========================================== */
+
+        let timer = 30;
+
+        let interval;
+
+        const codeStorageKey =
+            "verification_code_temp";
+
+
+
+        /* =========================================
+           INPUT HANDLING
+        ========================================== */
+
+        inputs.forEach((input, index) => {
+
+
+            /* ------------------------------
+               INPUT
+            ------------------------------- */
+
+            input.addEventListener(
+                "input",
+                function () {
+
+
+                    /*
+                       Allow numbers only.
+                    */
+
+                    this.value =
+                        this.value.replace(
+                            /[^0-9]/g,
+                            ""
+                        );
+
+
+                    /*
+                       Add filled class.
+                    */
+
+                    if (this.value) {
+
+                        this.classList.add(
+                            "filled"
+                        );
+
+                    }
+
+                    else {
+
+                        this.classList.remove(
+                            "filled"
+                        );
+
+                    }
+
+
+                    /*
+                       Move to next input.
+                    */
+
+                    if (
+                        this.value &&
+                        index <
+                        inputs.length - 1
+                    ) {
+
+                        inputs[
+                            index + 1
+                        ].focus();
+
+                    }
+
+
+                    clearError();
+
+                }
+            );
+
+
+
+            /* ------------------------------
+               KEYBOARD
+            ------------------------------- */
+
+            input.addEventListener(
+                "keydown",
+                function (event) {
+
+
+                    /*
+                       Backspace:
+                       move backwards if empty.
+                    */
+
+                    if (
+                        event.key ===
+                        "Backspace" &&
+                        !this.value &&
+                        index > 0
+                    ) {
+
+                        inputs[
+                            index - 1
+                        ].focus();
+
+                    }
+
+
+                    /*
+                       Arrow Left
+                    */
+
+                    if (
+                        event.key ===
+                        "ArrowLeft" &&
+                        index > 0
+                    ) {
+
+                        inputs[
+                            index - 1
+                        ].focus();
+
+                    }
+
+
+                    /*
+                       Arrow Right
+                    */
+
+                    if (
+                        event.key ===
+                        "ArrowRight" &&
+                        index <
+                        inputs.length - 1
+                    ) {
+
+                        inputs[
+                            index + 1
+                        ].focus();
+
+                    }
+
+                }
+            );
+
+
+
+            /* ------------------------------
+               PASTE SUPPORT
+            ------------------------------- */
+
+            input.addEventListener(
+                "paste",
+                function (event) {
+
+
+                    event.preventDefault();
+
+
+                    const pastedData =
+                        event.clipboardData
+                            .getData("text")
+                            .replace(
+                                /\D/g,
+                                ""
+                            )
+                            .slice(
+                                0,
+                                inputs.length
+                            );
+
+
+                    pastedData
+                        .split("")
+                        .forEach(
+                            (digit, i) => {
+
+                                if (
+                                    inputs[i]
+                                ) {
+
+                                    inputs[i].value =
+                                        digit;
+
+                                    inputs[i]
+                                        .classList
+                                        .add(
+                                            "filled"
+                                        );
+
+                                }
+
+                            }
+                        );
+
+
+                    /*
+                       Focus last input.
+                    */
+
+                    const lastIndex =
+                        Math.min(
+                            pastedData.length - 1,
+                            inputs.length - 1
+                        );
+
+
+                    if (
+                        lastIndex >= 0
+                    ) {
+
+                        inputs[
+                            lastIndex
+                        ].focus();
+
+                    }
+
+                }
+            );
+
+        });
+
+
+
+        /* =========================================
+           GET CODE
+        ========================================== */
+
+        function getCode() {
+
+            return Array
+                .from(inputs)
+                .map(input => input.value)
+                .join("");
+
+        }
+
+
+
+        /* =========================================
+           FORM SUBMISSION
+        ========================================== */
+
+        form.addEventListener(
+            "submit",
+            function (event) {
+
+
+                event.preventDefault();
+
+
+                const code =
+                    getCode();
+
+
+
+                /* ------------------------------
+                   CHECK CODE LENGTH
+                ------------------------------- */
+
+                if (
+                    code.length !==
+                    inputs.length
+                ) {
+
+                    showError(
+                        "Please enter the complete 4-digit code."
+                    );
+
+                    return;
+
+                }
+
+
+
+                /* ------------------------------
+                   LOADING STATE
+                ------------------------------- */
+
+                verifyButton.disabled =
+                    true;
+
+                verifyButton.textContent =
+                    "Verifying...";
+
+
+
+                /*
+                   Simulate verification.
+                */
+
+                setTimeout(
+                    function () {
+
+
+                        /*
+                           Save code locally.
+                        */
+
+                        localStorage.setItem(
+                            codeStorageKey,
+                            code
+                        );
+
+
+                        /*
+                           Hide form.
+                        */
+
+                        verificationSection
+                            .classList
+                            .add(
+                                "hidden"
+                            );
+
+
+                        /*
+                           Show success.
+                        */
+
+                        successSection
+                            .classList
+                            .remove(
+                                "hidden"
+                            );
+
+
+                    },
+                    800
+                );
+
+            }
+        );
+
+
+
+        /* =========================================
+           SHOW ERROR
+        ========================================== */
+
+        function showError(message) {
+
+
+            errorMessage.textContent =
+                message;
+
+
+            inputs.forEach(
+                input => {
+
+                    input.classList.add(
+                        "error"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================================
+           CLEAR ERROR
+        ========================================== */
+
+        function clearError() {
+
+
+            errorMessage.textContent =
+                "";
+
+
+            inputs.forEach(
+                input => {
+
+                    input.classList.remove(
+                        "error"
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        /* =========================================
+           RESEND TIMER
+        ========================================== */
+
+        function startTimer() {
+
+
+            clearInterval(interval);
+
+
+            resendLink.classList.add(
+                "disabled"
+            );
+
+
+            timer = 30;
+
+
+            countdownText.textContent =
+                `Resend in ${timer}s`;
+
+
+            interval =
+                setInterval(
+                    function () {
+
+
+                        timer--;
+
+
+                        countdownText.textContent =
+                            `Resend in ${timer}s`;
+
+
+
+                        if (
+                            timer <= 0
+                        ) {
+
+
+                            clearInterval(
+                                interval
+                            );
+
+
+                            countdownText.textContent =
+                                "";
+
+
+                            resendLink
+                                .classList
+                                .remove(
+                                    "disabled"
+                                );
+
+                        }
+
+                    },
+                    1000
+                );
+
+        }
+
+
+
+        /* =========================================
+           RESEND CODE
+        ========================================== */
+
+        resendLink.addEventListener(
+            "click",
+            function (event) {
+
+
+                event.preventDefault();
+
+
+                /*
+                   Generate a random
+                   4-digit verification code.
+                */
+
+                const newCode =
+                    Math.floor(
+                        1000 +
+                        Math.random() *
+                        9000
+                    ).toString();
+
+
+                /*
+                   Store the temporary code.
+                */
+
+                localStorage.setItem(
+                    codeStorageKey,
+                    newCode
+                );
+
+
+                /*
+                   Clear inputs.
+                */
+
+                inputs.forEach(
+                    input => {
+
+                        input.value = "";
+
+                        input.classList.remove(
+                            "filled"
+                        );
+
+                    }
+                );
+
+
+                /*
+                   Focus first input.
+                */
+
+                inputs[0].focus();
+
+
+                /*
+                   Clear errors.
+                */
+
+                clearError();
+
+
+                /*
+                   Restart timer.
+                */
+
+                startTimer();
+
+
+                /*
+                   In a real application,
+                   this code would be sent
+                   through your backend/email
+                   service.
+                */
+
+                console.log(
+                    "New verification code:",
+                    newCode
+                );
+
+            }
+        );
+
+
+
+        /* =========================================
+           START TIMER
+        ========================================== */
+
+        startTimer();
+
+
+        /* =========================================
+           FOCUS FIRST INPUT
+        ========================================== */
+
+        inputs[0].focus();
+
+    </script>
+
+</body>
+
+</html>
