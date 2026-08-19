@@ -1,0 +1,551 @@
+<!--
+    HTML FORM PRACTICE
+
+    Topics covered:
+    - form
+    - action
+    - method
+    - enctype
+    - fieldset
+    - legend
+    - label
+    - required
+    - select / option
+    - radio buttons
+    - checkboxes
+    - textarea
+    - file upload
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HTML Contact Form</title>
+
+    <link rel="stylesheet" href="1form.css">
+</head>
+
+<body>
+
+    <!--
+        FORM
+        action = where the form data will be sent
+        method = how the data will be sent
+        enctype = required when uploading files
+    -->
+
+    <form
+        action="https://accounts.google.com"
+        method="get"
+        enctype="multipart/form-data"
+    >
+
+        <fieldset>
+
+            <legend id="legend">
+                <b>RAPH DESIGN HTML FORM</b>
+            </legend>
+
+            <h1>
+                <u>PERSONAL INFORMATION</u>
+            </h1>
+
+            <p>
+                <i>Please note: This form will expire in March.</i>
+            </p>
+
+
+            <!-- =========================
+                 NAME INFORMATION
+            ========================== -->
+
+            <div>
+
+                <label for="firstName">
+                    <b>*First Name:</b>
+                </label>
+
+                <input
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    placeholder="First name"
+                    required
+                >
+
+
+                <label for="otherName">
+                    <b>Other Name:</b>
+                </label>
+
+                <input
+                    type="text"
+                    name="otherName"
+                    id="otherName"
+                    placeholder="Other name"
+                >
+
+
+                <label for="lastName">
+                    <b>*Last Name:</b>
+                </label>
+
+                <input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    placeholder="Last name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 EMAIL
+            ========================== -->
+
+            <div>
+
+                <label for="email">
+                    <b>*Email:</b>
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder="eg. raphlumoh@gmail.com"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 MARITAL STATUS
+            ========================== -->
+
+            <div>
+
+                <label for="status">
+                    <b>Marital Status:</b>
+                </label>
+
+                <select name="status" id="status">
+
+                    <option value="single">
+                        Single
+                    </option>
+
+                    <option value="married">
+                        Married
+                    </option>
+
+                    <option value="divorced">
+                        Divorced
+                    </option>
+
+                    <option value="widowed">
+                        Widowed
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================
+                 NATIONALITY
+            ========================== -->
+
+            <div>
+
+                <label for="nationality">
+                    <b>Nationality:</b>
+                </label>
+
+                <input
+                    type="text"
+                    name="nationality"
+                    id="nationality"
+                    placeholder="Nationality"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 STATE OF ORIGIN
+            ========================== -->
+
+            <div>
+
+                <label for="state">
+                    <b>State of Origin:</b>
+                </label>
+
+                <select name="state" id="state">
+
+                    <option value="">-- Select State --</option>
+
+                    <option value="Abia">Abia</option>
+                    <option value="Adamawa">Adamawa</option>
+                    <option value="Akwa Ibom">Akwa Ibom</option>
+                    <option value="Anambra">Anambra</option>
+                    <option value="Bauchi">Bauchi</option>
+                    <option value="Bayelsa">Bayelsa</option>
+                    <option value="Benue">Benue</option>
+                    <option value="Borno">Borno</option>
+                    <option value="Cross River">Cross River</option>
+                    <option value="Delta">Delta</option>
+                    <option value="Ebonyi">Ebonyi</option>
+                    <option value="Edo">Edo</option>
+                    <option value="Ekiti">Ekiti</option>
+                    <option value="Enugu">Enugu</option>
+                    <option value="FCT">FCT</option>
+                    <option value="Gombe">Gombe</option>
+                    <option value="Imo">Imo</option>
+                    <option value="Jigawa">Jigawa</option>
+                    <option value="Kaduna">Kaduna</option>
+                    <option value="Kano">Kano</option>
+                    <option value="Katsina">Katsina</option>
+                    <option value="Kebbi">Kebbi</option>
+                    <option value="Kogi">Kogi</option>
+                    <option value="Kwara">Kwara</option>
+                    <option value="Lagos">Lagos</option>
+                    <option value="Nasarawa">Nasarawa</option>
+                    <option value="Niger">Niger</option>
+                    <option value="Ogun">Ogun</option>
+                    <option value="Ondo">Ondo</option>
+                    <option value="Osun">Osun</option>
+                    <option value="Oyo">Oyo</option>
+                    <option value="Plateau">Plateau</option>
+                    <option value="Rivers">Rivers</option>
+                    <option value="Sokoto">Sokoto</option>
+                    <option value="Taraba">Taraba</option>
+                    <option value="Yobe">Yobe</option>
+                    <option value="Zamfara">Zamfara</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================
+                 LOCAL GOVERNMENT
+            ========================== -->
+
+            <div>
+
+                <label for="localGovernment">
+                    <b>Local Government Area:</b>
+                </label>
+
+                <input
+                    type="text"
+                    name="localGovernment"
+                    id="localGovernment"
+                    placeholder="Local Government Area"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 AGE AND BIRTHDATE
+            ========================== -->
+
+            <div>
+
+                <label for="age">
+                    <b>Age:</b>
+                </label>
+
+                <input
+                    type="number"
+                    name="age"
+                    id="age"
+                    min="1"
+                    max="150"
+                    step="1"
+                    placeholder="Age"
+                >
+
+
+                <label for="birthdate">
+                    <b>Birthdate:</b>
+                </label>
+
+                <input
+                    type="date"
+                    name="birthdate"
+                    id="birthdate"
+                    min="1960-01-01"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 FAVORITE FOOD
+                 CHECKBOX
+            ========================== -->
+
+            <div id="favorite">
+
+                <b>Favorite Food:</b>
+
+            </div>
+
+            <div>
+
+                <label for="banana">
+                    Banana
+                </label>
+
+                <input
+                    type="checkbox"
+                    name="favoriteFood"
+                    id="banana"
+                    value="banana"
+                >
+
+
+                <label for="apple">
+                    Apple
+                </label>
+
+                <input
+                    type="checkbox"
+                    name="favoriteFood"
+                    id="apple"
+                    value="apple"
+                >
+
+
+                <label for="rice">
+                    Rice
+                </label>
+
+                <input
+                    type="checkbox"
+                    name="favoriteFood"
+                    id="rice"
+                    value="rice"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 GENDER
+                 RADIO BUTTON
+            ========================== -->
+
+            <div>
+
+                <b>Gender:</b>
+
+                <div>
+
+                    <label for="male">
+                        Male
+                    </label>
+
+                    <input
+                        type="radio"
+                        name="gender"
+                        id="male"
+                        value="male"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label for="female">
+                        Female
+                    </label>
+
+                    <input
+                        type="radio"
+                        name="gender"
+                        id="female"
+                        value="female"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 EYE COLOR
+            ========================== -->
+
+            <div>
+
+                <label for="eyeColor">
+                    <b>Eye Color:</b>
+                </label>
+
+                <select
+                    name="eyeColor"
+                    id="eyeColor"
+                >
+
+                    <option value="">-- Select Eye Color --</option>
+
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="purple">Purple</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="orange">Orange</option>
+                    <option value="brown">Brown</option>
+                    <option value="pink">Pink</option>
+                    <option value="red">Red</option>
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================
+                 COMMENT
+            ========================== -->
+
+            <div>
+
+                <label for="comment">
+                    <b>Comment:</b>
+                </label>
+
+                <br>
+
+                <textarea
+                    name="comment"
+                    id="comment"
+                    rows="5"
+                    cols="40"
+                    placeholder="Type your comment here..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- =========================
+                 FILE UPLOAD
+            ========================== -->
+
+            <div>
+
+                <label for="file">
+                    <b>Upload File:</b>
+                </label>
+
+                <input
+                    type="file"
+                    name="file"
+                    id="file"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 PHONE
+            ========================== -->
+
+            <div>
+
+                <label for="phone">
+                    <b>*Phone:</b>
+                </label>
+
+                <input
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    placeholder="Phone number"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 WEBSITE URL
+            ========================== -->
+
+            <div>
+
+                <label for="url">
+                    <b>URL:</b>
+                </label>
+
+                <input
+                    type="url"
+                    name="url"
+                    id="url"
+                    placeholder="https://www.example.com"
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 PASSWORD
+            ========================== -->
+
+            <div>
+
+                <label for="password">
+                    <b>*Password:</b>
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="Password"
+                    required
+                >
+
+            </div>
+
+        </fieldset>
+
+
+        <!-- =========================
+             FORM BUTTONS
+        ========================== -->
+
+        <button type="reset">
+            Reset
+        </button>
+
+        <button type="submit">
+            Submit
+        </button>
+
+
+        <div>
+
+            <b>
+                Note: All items marked with (*) are compulsory.
+            </b>
+
+        </div>
+
+    </form>
+
+</body>
+
+</html>
