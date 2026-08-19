@@ -255,7 +255,6 @@
             padding: 12px;
 
             border:
-
                 1px solid #d1d5db;
 
             border-radius: 8px;
@@ -305,7 +304,8 @@
 
         button:hover {
 
-            transform: translateY(-1px);
+            transform:
+                translateY(-1px);
 
         }
 
@@ -335,11 +335,25 @@
         }
 
 
+        .btn-secondary:hover {
+
+            background: #475569;
+
+        }
+
+
         .btn-success {
 
             background: #198754;
 
             color: white;
+
+        }
+
+
+        .btn-success:hover {
+
+            background: #157347;
 
         }
 
@@ -353,6 +367,13 @@
         }
 
 
+        .btn-danger:hover {
+
+            background: #bb2d3b;
+
+        }
+
+
         .btn-warning {
 
             background: #f59e0b;
@@ -362,11 +383,25 @@
         }
 
 
+        .btn-warning:hover {
+
+            background: #d97706;
+
+        }
+
+
         .btn-light {
 
             background: #e5e7eb;
 
             color: #374151;
+
+        }
+
+
+        .btn-light:hover {
+
+            background: #d1d5db;
 
         }
 
@@ -955,7 +990,9 @@
 
 
 
-            <!-- FORM BUTTONS -->
+            <!-- =====================================
+                 FORM BUTTONS
+            ====================================== -->
 
             <div class="form-buttons">
 
@@ -1007,29 +1044,27 @@
                 <div class="toolbar-buttons">
 
 
+                    <!-- PDF -->
+
                     <button
                         class="btn-success"
-                        onclick="exportJSON()"
+                        onclick="exportPDF()"
                     >
-                        📥 JSON
+                        📄 Download PDF
                     </button>
 
+
+                    <!-- CSV EXPORT -->
 
                     <button
                         class="btn-success"
                         onclick="exportCSV()"
                     >
-                        📊 CSV
+                        📊 Export CSV
                     </button>
 
 
-                    <button
-                        class="btn-secondary"
-                        onclick="document.getElementById('fileJSON').click()"
-                    >
-                        📤 Import JSON
-                    </button>
-
+                    <!-- CSV IMPORT -->
 
                     <button
                         class="btn-secondary"
@@ -1038,6 +1073,8 @@
                         📤 Import CSV
                     </button>
 
+
+                    <!-- CLEAR ALL -->
 
                     <button
                         class="btn-danger"
@@ -1052,16 +1089,9 @@
 
 
 
-            <!-- HIDDEN FILE INPUTS -->
-
-            <input
-                type="file"
-                id="fileJSON"
-                class="file-input"
-                accept=".json"
-                onchange="importJSON()"
-            >
-
+            <!-- =====================================
+                 HIDDEN CSV FILE INPUT
+            ====================================== -->
 
             <input
                 type="file"
@@ -1168,6 +1198,18 @@
 
 
     <!-- =========================================
+         LOCAL JSPDF LIBRARY
+         
+         Make sure this file exists:
+         
+         js/jspdf.umd.min.js
+    ========================================== -->
+
+    <script src="js/jspdf.umd.min.js"></script>
+
+
+
+    <!-- =========================================
          JAVASCRIPT
     ========================================== -->
 
@@ -1266,7 +1308,7 @@
 
 
 
-            /* Validate fields */
+            /* VALIDATE FIELDS */
 
             if (
                 !data.name ||
@@ -1286,7 +1328,7 @@
 
 
 
-            /* Validate email */
+            /* VALIDATE EMAIL */
 
             const emailPattern =
                 /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1309,7 +1351,7 @@
 
 
 
-            /* Validate age */
+            /* VALIDATE AGE */
 
             const age =
                 Number(data.age);
@@ -1397,6 +1439,18 @@
 
 
             clearForm();
+
+
+            document
+                .getElementById("submitButton")
+                .textContent =
+                "➕ Add Staff";
+
+
+            document
+                .getElementById("cancelEdit")
+                .style.display =
+                "none";
 
 
             saveToLocalStorage();
@@ -1666,6 +1720,7 @@
 
 
                 cell.innerHTML = `
+
                     <div class="empty-state-icon">
                         👥
                     </div>
@@ -1678,6 +1733,7 @@
 
                     Add a staff member or
                     change your search.
+
                 `;
 
 
@@ -1707,6 +1763,7 @@
                         document.createElement(
                             "tr"
                         );
+
 
 
                     /* NAME */
@@ -1788,6 +1845,8 @@
 
 
 
+                    /* EDIT BUTTON */
+
                     const editButton =
                         document.createElement(
                             "button"
@@ -1809,6 +1868,8 @@
                             );
 
 
+
+                    /* DELETE BUTTON */
 
                     const deleteButton =
                         document.createElement(
@@ -2026,18 +2087,20 @@
 
 
         /* =========================================
-           EXPORT JSON
+           EXPORT PDF
         ========================================== */
 
-        function exportJSON() {
+        function exportPDF() {
 
+
+            /* Check for data */
 
             if (
                 entries.length === 0
             ) {
 
                 showNotification(
-                    "There is no data to export.",
+                    "There is no staff data to export.",
                     true
                 );
 
@@ -2046,127 +2109,474 @@
             }
 
 
-            const data =
-                JSON.stringify(
-                    entries,
-                    null,
-                    2
+
+            /* Check jsPDF */
+
+            if (
+                !window.jspdf ||
+                !window.jspdf.jsPDF
+            ) {
+
+                showNotification(
+                    "PDF library was not found. Check the jsPDF file path.",
+                    true
                 );
-
-
-            downloadFile(
-                data,
-                "staff-data.json",
-                "application/json"
-            );
-
-
-            showNotification(
-                "JSON file exported successfully."
-            );
-
-        }
-
-
-
-        /* =========================================
-           IMPORT JSON
-        ========================================== */
-
-        function importJSON() {
-
-
-            const file =
-                document
-                .getElementById(
-                    "fileJSON"
-                )
-                .files[0];
-
-
-            if (!file) {
 
                 return;
 
             }
 
 
-            const reader =
-                new FileReader();
+
+            const { jsPDF } =
+                window.jspdf;
 
 
-            reader.onload =
-                function () {
+
+            /* Create PDF */
+
+            const doc =
+                new jsPDF({
+
+                    orientation:
+                        "landscape",
+
+                    unit:
+                        "mm",
+
+                    format:
+                        "a4"
+
+                });
 
 
-                    try {
+
+            /* =====================================
+               PAGE INFORMATION
+            ====================================== */
+
+            const pageWidth =
+                doc.internal.pageSize
+                    .getWidth();
 
 
-                        const imported =
-                            JSON.parse(
-                                reader.result
-                            );
+            const pageHeight =
+                doc.internal.pageSize
+                    .getHeight();
 
 
-                        if (
-                            !Array.isArray(
-                                imported
-                            )
-                        ) {
 
-                            throw new Error();
+            /* =====================================
+               REPORT TITLE
+            ====================================== */
 
-                        }
-
-
-                        const valid =
-                            imported.every(
-                                entry =>
-                                    entry.name &&
-                                    entry.email &&
-                                    entry.phone &&
-                                    entry.age
-                            );
+            doc.setFont(
+                "helvetica",
+                "bold"
+            );
 
 
-                        if (!valid) {
-
-                            throw new Error();
-
-                        }
+            doc.setFontSize(
+                20
+            );
 
 
-                        entries =
-                            imported;
+            doc.text(
+                "STAFF INFORMATION REPORT",
+                pageWidth / 2,
+                18,
+                {
+                    align: "center"
+                }
+            );
 
 
-                        saveToLocalStorage();
+
+            /* =====================================
+               SUBTITLE
+            ====================================== */
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
 
 
-                        updateTable();
+            doc.setFontSize(
+                10
+            );
 
 
-                        showNotification(
-                            "JSON data imported successfully."
+            doc.text(
+                "Staff Records Management System",
+                pageWidth / 2,
+                25,
+                {
+                    align: "center"
+                }
+            );
+
+
+
+            /* =====================================
+               REPORT SUMMARY
+            ====================================== */
+
+            doc.setFontSize(
+                10
+            );
+
+
+            doc.text(
+                "Total Staff: " +
+                entries.length,
+                14,
+                35
+            );
+
+
+
+            const totalAge =
+                entries.reduce(
+                    (
+                        total,
+                        entry
+                    ) =>
+                        total +
+                        Number(entry.age),
+                    0
+                );
+
+
+            const averageAge =
+                totalAge /
+                entries.length;
+
+
+            doc.text(
+                "Average Age: " +
+                averageAge.toFixed(1),
+                14,
+                41
+            );
+
+
+            doc.text(
+                "Date Generated: " +
+                new Date()
+                    .toLocaleDateString(),
+                14,
+                47
+            );
+
+
+
+            /* =====================================
+               TABLE
+            ====================================== */
+
+            const columns = [
+
+                "S/N",
+
+                "Name",
+
+                "Email",
+
+                "Phone",
+
+                "Age",
+
+                "Date Added"
+
+            ];
+
+
+
+            const columnWidths = [
+
+                12,
+
+                45,
+
+                65,
+
+                45,
+
+                20,
+
+                35
+
+            ];
+
+
+
+            const tableWidth =
+                columnWidths.reduce(
+                    (total, width) =>
+                        total + width,
+                    0
+                );
+
+
+
+            let startY = 55;
+
+            let y = startY;
+
+
+
+            /* =====================================
+               DRAW TABLE HEADER
+            ====================================== */
+
+            function drawTableHeader() {
+
+
+                let x = 14;
+
+
+                doc.setFont(
+                    "helvetica",
+                    "bold"
+                );
+
+
+                doc.setFontSize(
+                    9
+                );
+
+
+                columns.forEach(
+                    (
+                        column,
+                        index
+                    ) => {
+
+
+                        doc.rect(
+                            x,
+                            y,
+                            columnWidths[index],
+                            10
                         );
+
+
+                        doc.text(
+                            column,
+                            x + 2,
+                            y + 6
+                        );
+
+
+                        x +=
+                            columnWidths[index];
+
+                    }
+                );
+
+
+                y += 10;
+
+            }
+
+
+
+            drawTableHeader();
+
+
+
+            /* =====================================
+               TABLE DATA
+            ====================================== */
+
+            doc.setFont(
+                "helvetica",
+                "normal"
+            );
+
+
+            entries.forEach(
+                (
+                    entry,
+                    index
+                ) => {
+
+
+                    /* New page */
+
+                    if (
+                        y > pageHeight - 25
+                    ) {
+
+
+                        doc.addPage();
+
+
+                        y = 20;
+
+
+                        drawTableHeader();
+
 
                     }
 
 
-                    catch {
+
+                    let x = 14;
 
 
-                        showNotification(
-                            "Invalid JSON file.",
-                            true
-                        );
+                    const rowHeight = 9;
 
+
+
+                    const values = [
+
+                        String(
+                            index + 1
+                        ),
+
+                        entry.name,
+
+                        entry.email,
+
+                        entry.phone,
+
+                        String(
+                            entry.age
+                        ),
+
+                        entry.dateAdded ||
+                        "—"
+
+                    ];
+
+
+
+                    values.forEach(
+                        (
+                            value,
+                            columnIndex
+                        ) => {
+
+
+                            doc.rect(
+                                x,
+                                y,
+                                columnWidths[
+                                    columnIndex
+                                ],
+                                rowHeight
+                            );
+
+
+                            const text =
+                                String(
+                                    value
+                                );
+
+
+                            const lines =
+                                doc.splitTextToSize(
+                                    text,
+                                    columnWidths[
+                                        columnIndex
+                                    ] - 4
+                                );
+
+
+                            doc.text(
+                                lines[0],
+                                x + 2,
+                                y + 6
+                            );
+
+
+                            x +=
+                                columnWidths[
+                                    columnIndex
+                                ];
+
+                        }
+                    );
+
+
+                    y += rowHeight;
+
+                }
+            );
+
+
+
+            /* =====================================
+               FOOTER / PAGE NUMBERS
+            ====================================== */
+
+            const pageCount =
+                doc.internal
+                    .getNumberOfPages();
+
+
+
+            for (
+                let page = 1;
+                page <= pageCount;
+                page++
+            ) {
+
+
+                doc.setPage(
+                    page
+                );
+
+
+                doc.setFont(
+                    "helvetica",
+                    "normal"
+                );
+
+
+                doc.setFontSize(
+                    8
+                );
+
+
+                doc.text(
+                    "Staff Information Management System",
+                    14,
+                    pageHeight - 10
+                );
+
+
+                doc.text(
+                    "Page " +
+                    page +
+                    " of " +
+                    pageCount,
+                    pageWidth - 14,
+                    pageHeight - 10,
+                    {
+                        align: "right"
                     }
+                );
 
-                };
+            }
 
 
-            reader.readAsText(file);
+
+            /* =====================================
+               SAVE PDF
+            ====================================== */
+
+            doc.save(
+                "staff-information-report.pdf"
+            );
+
+
+
+            showNotification(
+                "PDF report downloaded successfully."
+            );
 
         }
 
@@ -2191,6 +2601,7 @@
                 return;
 
             }
+
 
 
             const headers = [
@@ -2230,7 +2641,8 @@
                         ),
 
                         csvEscape(
-                            entry.dateAdded || ""
+                            entry.dateAdded ||
+                            ""
                         )
 
                     ].join(",")
@@ -2265,7 +2677,10 @@
            CSV ESCAPE
         ========================================== */
 
-        function csvEscape(value) {
+        function csvEscape(
+            value
+        ) {
+
 
             const text =
                 String(value);
@@ -2317,8 +2732,10 @@
             }
 
 
+
             const reader =
                 new FileReader();
+
 
 
             reader.onload =
@@ -2331,7 +2748,10 @@
                         const lines =
                             reader.result
                             .trim()
-                            .split(/\r?\n/);
+                            .split(
+                                /\r?\n/
+                            );
+
 
 
                         if (
@@ -2341,6 +2761,7 @@
                             throw new Error();
 
                         }
+
 
 
                         /*
@@ -2353,6 +2774,7 @@
                             .map(
                                 line => {
 
+
                                     const values =
                                         parseCSVLine(
                                             line
@@ -2363,19 +2785,23 @@
 
                                         name:
                                             values[0]
-                                            ?.trim() || "",
+                                            ?.trim() ||
+                                            "",
 
                                         email:
                                             values[1]
-                                            ?.trim() || "",
+                                            ?.trim() ||
+                                            "",
 
                                         phone:
                                             values[2]
-                                            ?.trim() || "",
+                                            ?.trim() ||
+                                            "",
 
                                         age:
                                             values[3]
-                                            ?.trim() || "",
+                                            ?.trim() ||
+                                            "",
 
                                         dateAdded:
                                             values[4]
@@ -2396,6 +2822,7 @@
                             );
 
 
+
                         if (
                             imported.length === 0
                         ) {
@@ -2403,6 +2830,7 @@
                             throw new Error();
 
                         }
+
 
 
                         entries =
@@ -2435,7 +2863,10 @@
                 };
 
 
-            reader.readAsText(file);
+
+            reader.readAsText(
+                file
+            );
 
         }
 
@@ -2445,14 +2876,20 @@
            SIMPLE CSV PARSER
         ========================================== */
 
-        function parseCSVLine(line) {
+        function parseCSVLine(
+            line
+        ) {
 
 
             const result = [];
 
+
             let current = "";
 
-            let insideQuotes = false;
+
+            let insideQuotes =
+                false;
+
 
 
             for (
@@ -2497,9 +2934,11 @@
                     !insideQuotes
                 ) {
 
+
                     result.push(
                         current
                     );
+
 
                     current = "";
 
@@ -2508,11 +2947,14 @@
 
                 else {
 
-                    current += char;
+
+                    current +=
+                        char;
 
                 }
 
             }
+
 
 
             result.push(
@@ -2541,15 +2983,18 @@
                 new Blob(
                     [data],
                     {
-                        type: type
+                        type:
+                            type
                     }
                 );
+
 
 
             const url =
                 URL.createObjectURL(
                     blob
                 );
+
 
 
             const link =
@@ -2606,6 +3051,7 @@
             }
 
 
+
             if (
                 !confirm(
                     "Are you sure you want to delete ALL staff records?"
@@ -2615,6 +3061,7 @@
                 return;
 
             }
+
 
 
             entries = [];
@@ -2681,7 +3128,7 @@
 
 
         /* =========================================
-           INITIALIZE
+           INITIALIZE APPLICATION
         ========================================== */
 
         updateTable();
