@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Professional Dice Roll Simulator</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+    --bg: #e8edf3;
+    --card: #e8edf3;
+    --text: #222;
+    --secondary: #666;
+    --primary: #4f46e5;
+    --primary-dark: #3730a3;
+    --shadow-dark: #c5cad1;
+    --shadow-light: #ffffff;
+    --danger: #dc2626;
+}
+
+body.dark {
+    --bg: #151922;
+    --card: #1d2330;
+    --text: #f5f5f5;
+    --secondary: #aeb4c0;
+    --primary: #818cf8;
+    --primary-dark: #6366f1;
+    --shadow-dark: #0c1017;
+    --shadow-light: #293142;
+}
+
+body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    transition: 0.3s;
+}
+
+/* HEADER */
+
+header {
+    width: 100%;
+    padding: 20px 6%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.theme-btn {
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 20px;
+
+    box-shadow:
+        5px 5px 10px var(--shadow-dark),
+        -5px -5px 10px var(--shadow-light);
+}
+
+.theme-btn:active {
+    box-shadow:
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+}
+
+/* MAIN */
+
+.container {
+    width: 95%;
+    max-width: 1100px;
+    margin: auto;
+}
+
+.title {
+    text-align: center;
+    margin: 20px 0 30px;
+}
+
+.title h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+
+.title p {
+    color: var(--secondary);
+}
+
+/* GAME */
+
+.game-card {
+    background: var(--card);
+    padding: 35px;
+    border-radius: 30px;
+
+    box-shadow:
+        12px 12px 25px var(--shadow-dark),
+        -12px -12px 25px var(--shadow-light);
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+}
+
+.controls label {
+    font-weight: bold;
+}
+
+select {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    background: var(--card);
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
+
+    box-shadow:
+        inset 3px 3px 7px var(--shadow-dark),
+        inset -3px -3px 7px var(--shadow-light);
+}
+
+/* DICE */
+
+.dice-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    min-height: 180px;
+}
+
+.dice {
+    width: 130px;
+    height: 130px;
+    background: white;
+    border-radius: 22px;
+    padding: 15px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+
+    box-shadow:
+        8px 8px 18px var(--shadow-dark),
+        -8px -8px 18px var(--shadow-light);
+
+    transition: 0.2s;
+}
+
+.dot {
+    width: 22px;
+    height: 22px;
+    background: #222;
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+}
+
+.roll-animation {
+    animation: diceRoll 0.6s ease;
+}
+
+@keyframes diceRoll {
+
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    30% {
+        transform: rotate(90deg) scale(1.1);
+    }
+
+    60% {
+        transform: rotate(180deg) scale(1.15);
+    }
+
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+/* TOTAL */
+
+.total {
+    text-align: center;
+    margin: 25px 0;
+}
+
+.total span {
+    font-size: 42px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+/* BUTTONS */
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+}
+
+.roll-btn,
+.clear-btn {
+    padding: 15px 30px;
+    border-radius: 15px;
+    font-size: 17px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.roll-btn {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+}
+
+.roll-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.roll-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.clear-btn {
+    background: var(--card);
+    color: var(--danger);
+
+    box-shadow:
+        5px 5px 10px var(--shadow-dark),
+        -5px -5px 10px var(--shadow-light);
+}
+
+/* STATS */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.stat {
+    background: var(--card);
+    padding: 22px;
+    border-radius: 18px;
+    text-align: center;
+
+    box-shadow:
+        7px 7px 15px var(--shadow-dark),
+        -7px -7px 15px var(--shadow-light);
+}
+
+.stat h3 {
+    font-size: 14px;
+    color: var(--secondary);
+    margin-bottom: 8px;
+}
+
+.stat strong {
+    font-size: 28px;
+    color: var(--primary);
+}
+
+/* DISTRIBUTION */
+
+.distribution {
+    margin-top: 30px;
+    background: var(--card);
+    padding: 25px;
+    border-radius: 22px;
+
+    box-shadow:
+        7px 7px 15px var(--shadow-dark),
+        -7px -7px 15px var(--shadow-light);
+}
+
+.distribution h2 {
+    margin-bottom: 20px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 0;
+}
+
+.bar-label {
+    width: 30px;
+    font-weight: bold;
+}
+
+.bar-container {
+    flex: 1;
+    height: 18px;
+    border-radius: 20px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.bar {
+    height: 100%;
+    width: 0;
+    background: var(--primary);
+    border-radius: 20px;
+    transition: width 0.5s;
+}
+
+.bar-count {
+    width: 30px;
+    text-align: right;
+}
+
+/* HISTORY */
+
+.history {
+    margin-top: 30px;
+    background: var(--card);
+    padding: 25px;
+    border-radius: 22px;
+
+    box-shadow:
+        7px 7px 15px var(--shadow-dark),
+        -7px -7px 15px var(--shadow-light);
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px;
+    margin-bottom: 10px;
+
+    border-radius: 12px;
+
+    background: var(--bg);
+
+    box-shadow:
+        inset 3px 3px 6px var(--shadow-dark),
+        inset -3px -3px 6px var(--shadow-light);
+}
+
+.history-number {
+    font-weight: bold;
+}
+
+.history-time {
+    color: var(--secondary);
+    font-size: 13px;
+}
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--secondary);
+}
+
+/* CELEBRATION */
+
+.celebrate {
+    animation: celebrate 0.7s ease;
+}
+
+@keyframes celebrate {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2) rotate(10deg);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .title h1 {
+        font-size: 28px;
+    }
+
+    .game-card {
+        padding: 20px;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dice {
+        width: 105px;
+        height: 105px;
+    }
+
+    .dot {
+        width: 17px;
+        height: 17px;
+    }
+}
+
+@media (max-width: 400px) {
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat strong {
+        font-size: 23px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🎲 <span>Dice</span> Simulator
+    </div>
+
+    <button class="theme-btn" id="themeBtn">
+        🌙
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <div class="title">
+
+        <h1>🎲 Dice Roll Simulator</h1>
+
+        <p>
+            Roll the dice and track your results
+        </p>
+
+    </div>
+
+
+    <section class="game-card">
+
+        <div class="controls">
+
+            <label for="diceCount">
+                Number of Dice:
+            </label>
+
+            <select id="diceCount">
+
+                <option value="1">1 Dice</option>
+                <option value="2">2 Dice</option>
+                <option value="3">3 Dice</option>
+                <option value="4">4 Dice</option>
+                <option value="5">5 Dice</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="dice-area" id="diceArea">
+
+            <!-- Dice generated by JavaScript -->
+
+        </div>
+
+
+        <div class="total">
+
+            <p>Total</p>
+
+            <span id="totalValue">
+                0
+            </span>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="roll-btn"
+                id="rollBtn">
+
+                🎲 Roll Dice
+
+            </button>
+
+            <button
+                class="clear-btn"
+                id="clearBtn">
+
+                🗑 Clear History
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- STATISTICS -->
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <h3>Total Rolls</h3>
+
+            <strong id="totalRolls">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>Highest Roll</h3>
+
+            <strong id="highestRoll">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>Lowest Roll</h3>
+
+            <strong id="lowestRoll">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat">
+
+            <h3>Average</h3>
+
+            <strong id="averageRoll">
+                0
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- DISTRIBUTION -->
+
+    <section class="distribution">
+
+        <h2>📊 Roll Distribution</h2>
+
+        <div id="distributionList">
+
+            <!-- Generated by JavaScript -->
+
+        </div>
+
+    </section>
+
+
+    <!-- HISTORY -->
+
+    <section class="history">
+
+        <div class="history-header">
+
+            <h2>📜 Roll History</h2>
+
+        </div>
+
+        <div
+            class="history-list"
+            id="historyList">
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    Dice Roll Simulator © 2026
+
+</footer>
+
+
+<script>
+
+/* =========================
+   ELEMENTS
+========================= */
+
+const diceArea =
+    document.getElementById("diceArea");
+
+const rollBtn =
+    document.getElementById("rollBtn");
+
+const clearBtn =
+    document.getElementById("clearBtn");
+
+const diceCount =
+    document.getElementById("diceCount");
+
+const totalValue =
+    document.getElementById("totalValue");
+
+const totalRolls =
+    document.getElementById("totalRolls");
+
+const highestRoll =
+    document.getElementById("highestRoll");
+
+const lowestRoll =
+    document.getElementById("lowestRoll");
+
+const averageRoll =
+    document.getElementById("averageRoll");
+
+const historyList =
+    document.getElementById("historyList");
+
+const distributionList =
+    document.getElementById("distributionList");
+
+const themeBtn =
+    document.getElementById("themeBtn");
+
+
+/* =========================
+   DATA
+========================= */
+
+let rollHistory =
+    JSON.parse(
+        localStorage.getItem("diceHistory")
+    ) || [];
+
+
+/* =========================
+   DICE DOT POSITIONS
+========================= */
+
+const positions = {
+
+    1: [[2,2]],
+
+    2: [[1,1],[3,3]],
+
+    3: [[1,1],[2,2],[3,3]],
+
+    4: [[1,1],[1,3],[3,1],[3,3]],
+
+    5: [[1,1],[1,3],[2,2],[3,1],[3,3]],
+
+    6: [[1,1],[1,3],[2,1],[2,3],[3,1],[3,3]]
+
+};
+
+
+/* =========================
+   CREATE DICE
+========================= */
+
+function createDice(number) {
+
+    const dice =
+        document.createElement("div");
+
+    dice.className = "dice";
+
+    const dots =
+        positions[number];
+
+    dots.forEach(position => {
+
+        const dot =
+            document.createElement("div");
+
+        dot.className = "dot";
+
+        dot.style.gridRow =
+            position[0];
+
+        dot.style.gridColumn =
+            position[1];
+
+        dice.appendChild(dot);
+
+    });
+
+    return dice;
+}
+
+
+/* =========================
+   SHOW DICE
+========================= */
+
+function showDice(numbers) {
+
+    diceArea.innerHTML = "";
+
+    numbers.forEach(number => {
+
+        const dice =
+            createDice(number);
+
+        diceArea.appendChild(dice);
+
+    });
+
+}
+
+
+/* =========================
+   ROLL DICE
+========================= */
+
+rollBtn.addEventListener("click", () => {
+
+    rollBtn.disabled = true;
+
+    const count =
+        Number(diceCount.value);
+
+    const diceElements =
+        document.querySelectorAll(".dice");
+
+    diceElements.forEach(dice => {
+
+        dice.classList.add("roll-animation");
+
+    });
+
+
+    setTimeout(() => {
+
+        const results = [];
+
+        for (let i = 0; i < count; i++) {
+
+            const number =
+                Math.floor(Math.random() * 6) + 1;
+
+            results.push(number);
+
+        }
+
+        showDice(results);
+
+        const total =
+            results.reduce(
+                (sum, number) =>
+                    sum + number,
+                0
+            );
+
+        totalValue.textContent = total;
+
+
+        /* SAVE */
+
+        rollHistory.unshift({
+
+            results: results,
+
+            total: total,
+
+            time:
+                new Date().toLocaleString()
+
+        });
+
+
+        localStorage.setItem(
+            "diceHistory",
+            JSON.stringify(rollHistory)
+        );
+
+
+        /* UPDATE */
+
+        updateStatistics();
+
+        updateHistory();
+
+        updateDistribution();
+
+
+        /* SPECIAL 6 */
+
+        if (results.includes(6)) {
+
+            totalValue.classList.add(
+                "celebrate"
+            );
+
+            setTimeout(() => {
+
+                totalValue.classList.remove(
+                    "celebrate"
+                );
+
+            }, 700);
+
+        }
+
+
+        rollBtn.disabled = false;
+
+    }, 600);
+
+});
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+function updateStatistics() {
+
+    if (rollHistory.length === 0) {
+
+        totalRolls.textContent = 0;
+
+        highestRoll.textContent = 0;
+
+        lowestRoll.textContent = 0;
+
+        averageRoll.textContent = 0;
+
+        return;
+
+    }
+
+
+    const totals =
+        rollHistory.map(
+            roll => roll.total
+        );
+
+
+    const total =
+        totals.reduce(
+            (sum, value) =>
+                sum + value,
+            0
+        );
+
+
+    const highest =
+        Math.max(...totals);
+
+    const lowest =
+        Math.min(...totals);
+
+    const average =
+        total / totals.length;
+
+
+    totalRolls.textContent =
+        rollHistory.length;
+
+    highestRoll.textContent =
+        highest;
+
+    lowestRoll.textContent =
+        lowest;
+
+    averageRoll.textContent =
+        average.toFixed(1);
+
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function updateHistory() {
+
+    historyList.innerHTML = "";
+
+
+    if (rollHistory.length === 0) {
+
+        historyList.innerHTML =
+            "<p>No rolls yet.</p>";
+
+        return;
+
+    }
+
+
+    rollHistory.forEach((roll, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "history-item";
+
+
+        const number =
+            document.createElement("div");
+
+        number.className =
+            "history-number";
+
+        number.textContent =
+            `Roll ${rollHistory.length - index}: 🎲 ${roll.results.join(", ")} — Total: ${roll.total}`;
+
+
+        const time =
+            document.createElement("div");
+
+        time.className =
+            "history-time";
+
+        time.textContent =
+            roll.time;
+
+
+        item.appendChild(number);
+
+        item.appendChild(time);
+
+        historyList.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================
+   DISTRIBUTION
+========================= */
+
+function updateDistribution() {
+
+    distributionList.innerHTML = "";
+
+
+    const counts = {
+
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+        6: 0
+
+    };
+
+
+    rollHistory.forEach(roll => {
+
+        roll.results.forEach(number => {
+
+            counts[number]++;
+
+        });
+
+    });
+
+
+    const max =
+        Math.max(
+            ...Object.values(counts),
+            1
+        );
+
+
+    for (let number = 1; number <= 6; number++) {
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "bar-row";
+
+
+        const label =
+            document.createElement("div");
+
+        label.className =
+            "bar-label";
+
+        label.textContent =
+            number;
+
+
+        const container =
+            document.createElement("div");
+
+        container.className =
+            "bar-container";
+
+
+        const bar =
+            document.createElement("div");
+
+        bar.className =
+            "bar";
+
+
+        const count =
+            document.createElement("div");
+
+        count.className =
+            "bar-count";
+
+        count.textContent =
+            counts[number];
+
+
+        const percentage =
+            (counts[number] / max) * 100;
+
+
+        bar.style.width =
+            percentage + "%";
+
+
+        container.appendChild(bar);
+
+        row.appendChild(label);
+
+        row.appendChild(container);
+
+        row.appendChild(count);
+
+        distributionList.appendChild(row);
+
+    }
+
+}
+
+
+/* =========================
+   CLEAR HISTORY
+========================= */
+
+clearBtn.addEventListener("click", () => {
+
+    if (rollHistory.length === 0) {
+
+        return;
+
+    }
+
+
+    const confirmClear =
+        confirm(
+            "Are you sure you want to clear all roll history?"
+        );
+
+
+    if (!confirmClear) {
+
+        return;
+
+    }
+
+
+    rollHistory = [];
+
+    localStorage.removeItem(
+        "diceHistory"
+    );
+
+
+    totalValue.textContent = 0;
+
+    updateStatistics();
+
+    updateHistory();
+
+    updateDistribution();
+
+    showDice([1]);
+
+});
+
+
+/* =========================
+   DARK MODE
+========================= */
+
+themeBtn.addEventListener("click", () => {
+
+    document.body.classList.toggle("dark");
+
+
+    if (
+        document.body.classList.contains("dark")
+    ) {
+
+        themeBtn.textContent = "☀️";
+
+        localStorage.setItem(
+            "theme",
+            "dark"
+        );
+
+    } else {
+
+        themeBtn.textContent = "🌙";
+
+        localStorage.setItem(
+            "theme",
+            "light"
+        );
+
+    }
+
+});
+
+
+/* =========================
+   LOAD THEME
+========================= */
+
+if (
+    localStorage.getItem("theme") === "dark"
+) {
+
+    document.body.classList.add("dark");
+
+    themeBtn.textContent = "☀️";
+
+}
+
+
+/* =========================
+   INITIAL LOAD
+========================= */
+
+showDice([1]);
+
+updateStatistics();
+
+updateHistory();
+
+updateDistribution();
+
+</script>
+
+</body>
+</html>
