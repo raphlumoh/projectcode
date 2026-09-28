@@ -116,7 +116,7 @@
         color: #126b35;
     }
 
-    .delete {
+    .del {
         background: #ffe5e5;
         color: #b00020;
     }
@@ -346,7 +346,6 @@
 
 
         </div>
-
 
         <br>
 
@@ -921,10 +920,10 @@ function displayMembers() {
 
                 <button
                     type="button"
-                    class="delete"
-                    onclick="deleteMember(${member.id})"
+                    class="del"
+                    onclick="delMember(${member.id})"
                 >
-                    Delete
+                    Del
                 </button>
 
             </td>
@@ -1084,15 +1083,15 @@ async function deleteMember(id) {
     =============================================
     */
 
-    const confirmDelete =
+    const confirmDel =
         confirm(
-            "Delete " +
+            "Del " +
             member.full_name +
             " from the database?"
         );
 
 
-    if (!confirmDelete) return;
+    if (!confirmDel) return;
 
 
 
@@ -1108,7 +1107,7 @@ async function deleteMember(id) {
 
         .from("idogwu_members")
 
-        .delete()
+        .del()
 
         .eq("id", id);
 
@@ -1119,7 +1118,7 @@ async function deleteMember(id) {
         console.error(error);
 
         showMessage(
-            "Delete failed: " +
+            "Del failed: " +
             error.message
         );
 
