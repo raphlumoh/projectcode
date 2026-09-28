@@ -1,0 +1,1094 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IDOGWU Family Registration</title>
+
+    <!-- Supabase JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f6f3;
+            color: #222;
+        }
+
+        header {
+            background: #126b35;
+            color: white;
+            text-align: center;
+            padding: 30px 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 25px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        h2 {
+            color: #126b35;
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #126b35;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .register {
+            background: #126b35;
+            color: white;
+        }
+
+        .clear {
+            background: #ddd;
+            color: #222;
+        }
+
+        .edit {
+            background: #e8f1eb;
+            color: #126b35;
+        }
+
+        .delete {
+            background: #ffe5e5;
+            color: #b00020;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        #message {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .search {
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #126b35;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .note {
+            color: #666;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full {
+                grid-column: auto;
+            }
+
+            header h1 {
+                font-size: 24px;
+            }
+
+            .card {
+                padding: 18px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <h1>IDOGWU FAMILY DATABASE</h1>
+
+    <p>
+        Unity • Progress • Collective Responsibility
+    </p>
+
+    <p>
+        Family Members Registration Portal
+    </p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- REGISTRATION FORM -->
+
+    <div class="card">
+
+        <h2 id="formTitle">
+            Add Family Member
+        </h2>
+
+        <div id="message"></div>
+
+
+        <form id="memberForm">
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Full Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Enter full name"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Phone Number *
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="08012345678"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="example@email.com"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Location *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="State, Town or Country"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Contribution Amount (₦)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        min="0"
+                        placeholder="Enter amount"
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <br>
+
+
+            <button
+                type="submit"
+                class="register"
+                id="submitButton"
+            >
+                Add Member
+            </button>
+
+
+            <button
+                type="button"
+                class="clear"
+                onclick="clearForm()"
+            >
+                Clear
+            </button>
+
+        </form>
+
+
+        <p class="note">
+
+            * Required fields.
+
+            Contribution amount is optional.
+
+        </p>
+
+    </div>
+
+
+
+    <!-- MEMBER DATABASE -->
+
+    <div class="card">
+
+        <h2>
+            Family Members
+        </h2>
+
+
+        <input
+            type="text"
+            id="search"
+            class="search"
+            placeholder="Search name, phone or location..."
+            oninput="displayMembers()"
+        >
+
+
+        <p id="memberCount">
+            Members: 0
+        </p>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            S/N
+                        </th>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Location
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="memberTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<footer>
+
+    IDOGWU FAMILY UNION
+
+    <br>
+
+    Building a stronger family together.
+
+</footer>
+
+
+
+<script>
+
+
+/*
+=================================================
+SUPABASE CONNECTION
+=================================================
+
+REPLACE THE TWO VALUES BELOW
+WITH YOUR OWN SUPABASE DETAILS.
+*/
+
+
+const SUPABASE_URL =
+    "YOUR_SUPABASE_PROJECT_URL";
+
+
+const SUPABASE_KEY =
+    "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+
+/*
+=================================================
+VARIABLES
+=================================================
+*/
+
+
+let members = [];
+
+let editingId = null;
+
+
+
+/*
+=================================================
+LOAD MEMBERS
+=================================================
+*/
+
+
+async function loadMembers() {
+
+    const { data, error } = await supabaseClient
+
+        .from("idogwu_members")
+
+        .select("*")
+
+        .order("created_at", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Unable to load members: "
+            + error.message
+        );
+
+        return;
+
+    }
+
+
+    members = data || [];
+
+    displayMembers();
+
+}
+
+
+
+/*
+=================================================
+REGISTER MEMBER
+=================================================
+*/
+
+
+async function registerMember() {
+
+
+    const fullName =
+        document
+        .getElementById("fullName")
+        .value
+        .trim();
+
+
+    const phone =
+        document
+        .getElementById("phone")
+        .value
+        .trim();
+
+
+    const email =
+        document
+        .getElementById("email")
+        .value
+        .trim();
+
+
+    const location =
+        document
+        .getElementById("location")
+        .value
+        .trim();
+
+
+    const amount =
+        document
+        .getElementById("amount")
+        .value;
+
+
+
+    if (
+        !fullName ||
+        !phone ||
+        !location
+    ) {
+
+        showMessage(
+            "Please complete all required fields."
+        );
+
+        return;
+
+    }
+
+
+
+    /*
+    =============================================
+    EDIT EXISTING MEMBER
+    =============================================
+    */
+
+
+    if (editingId) {
+
+
+        const { error } =
+
+            await supabaseClient
+
+            .from("idogwu_members")
+
+            .update({
+
+                full_name: fullName,
+
+                phone: phone,
+
+                email: email || null,
+
+                location: location,
+
+                amount:
+                    amount
+                    ? Number(amount)
+                    : 0
+
+            })
+
+            .eq("id", editingId);
+
+
+
+        if (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Update failed: "
+                + error.message
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Member updated successfully."
+        );
+
+
+    }
+
+
+    /*
+    =============================================
+    ADD NEW MEMBER
+    =============================================
+    */
+
+
+    else {
+
+
+        const { error } =
+
+            await supabaseClient
+
+            .from("idogwu_members")
+
+            .insert({
+
+                full_name: fullName,
+
+                phone: phone,
+
+                email: email || null,
+
+                location: location,
+
+                amount:
+                    amount
+                    ? Number(amount)
+                    : 0
+
+            });
+
+
+
+        if (error) {
+
+            console.error(error);
+
+            showMessage(
+                "Registration failed: "
+                + error.message
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Member registered successfully!"
+        );
+
+    }
+
+
+
+    clearForm();
+
+    await loadMembers();
+
+}
+
+
+
+/*
+=================================================
+DISPLAY MEMBERS
+=================================================
+*/
+
+
+function displayMembers() {
+
+
+    const table =
+        document.getElementById(
+            "memberTable"
+        );
+
+
+    const searchText =
+        document
+        .getElementById("search")
+        .value
+        .toLowerCase();
+
+
+    table.innerHTML = "";
+
+
+    const filtered =
+        members.filter(function(member) {
+
+
+            return (
+
+                member.full_name
+                .toLowerCase()
+                .includes(searchText)
+
+                ||
+
+                member.phone
+                .toLowerCase()
+                .includes(searchText)
+
+                ||
+
+                member.location
+                .toLowerCase()
+                .includes(searchText)
+
+            );
+
+        });
+
+
+
+    filtered.forEach(function(member, index) {
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${index + 1}
+            </td>
+
+            <td>
+                ${escapeHTML(member.full_name)}
+            </td>
+
+            <td>
+                ${escapeHTML(member.phone)}
+            </td>
+
+            <td>
+                ${escapeHTML(member.email || "-")}
+            </td>
+
+            <td>
+                ${escapeHTML(member.location)}
+            </td>
+
+            <td>
+                ₦${Number(member.amount || 0)
+                    .toLocaleString()}
+            </td>
+
+            <td>
+
+                <button
+                    class="edit"
+                    onclick="editMember(${member.id})"
+                >
+                    Edit
+                </button>
+
+                <button
+                    class="delete"
+                    onclick="deleteMember(${member.id})"
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+
+
+    document.getElementById(
+        "memberCount"
+    ).textContent =
+        "Members: " + members.length;
+
+}
+
+
+
+/*
+=================================================
+EDIT MEMBER
+=================================================
+*/
+
+
+function editMember(id) {
+
+
+    const member =
+        members.find(function(item) {
+
+            return item.id === id;
+
+        });
+
+
+    if (!member) return;
+
+
+    editingId = id;
+
+
+    document.getElementById(
+        "fullName"
+    ).value =
+        member.full_name;
+
+
+    document.getElementById(
+        "phone"
+    ).value =
+        member.phone;
+
+
+    document.getElementById(
+        "email"
+    ).value =
+        member.email || "";
+
+
+    document.getElementById(
+        "location"
+    ).value =
+        member.location;
+
+
+    document.getElementById(
+        "amount"
+    ).value =
+        member.amount || "";
+
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Edit Family Member";
+
+
+    document.getElementById(
+        "submitButton"
+    ).textContent =
+        "Update Member";
+
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+}
+
+
+
+/*
+=================================================
+DELETE MEMBER
+=================================================
+*/
+
+
+async function deleteMember(id) {
+
+
+    const member =
+        members.find(function(item) {
+
+            return item.id === id;
+
+        });
+
+
+    if (!member) return;
+
+
+    const confirmDelete =
+        confirm(
+            "Delete " +
+            member.full_name +
+            " from the database?"
+        );
+
+
+    if (!confirmDelete) return;
+
+
+
+    const { error } =
+
+        await supabaseClient
+
+        .from("idogwu_members")
+
+        .delete()
+
+        .eq("id", id);
+
+
+
+    if (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Delete failed: "
+            + error.message
+        );
+
+        return;
+
+    }
+
+
+    showMessage(
+        "Member deleted successfully."
+    );
+
+
+    await loadMembers();
+
+}
+
+
+
+/*
+=================================================
+CLEAR FORM
+=================================================
+*/
+
+
+function clearForm() {
+
+
+    document
+    .getElementById("memberForm")
+    .reset();
+
+
+    editingId = null;
+
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Register Family Member";
+
+
+    document.getElementById(
+        "submitButton"
+    ).textContent =
+        "Register Member";
+
+}
+
+
+
+/*
+=================================================
+FORM SUBMISSION
+=================================================
+*/
+
+
+document
+.getElementById("memberForm")
+.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+        registerMember();
+
+    }
+);
+
+
+
+/*
+=================================================
+MESSAGE
+=================================================
+*/
+
+
+function showMessage(text) {
+
+    document.getElementById(
+        "message"
+    ).textContent = text;
+
+}
+
+
+
+/*
+=================================================
+SECURITY
+=================================================
+*/
+
+
+function escapeHTML(value) {
+
+    return String(value)
+
+        .replaceAll("&", "&amp;")
+
+        .replaceAll("<", "&lt;")
+
+        .replaceAll(">", "&gt;")
+
+        .replaceAll('"', "&quot;")
+
+        .replaceAll("'", "&#039;");
+
+}
+
+
+
+/*
+=================================================
+START APPLICATION
+=================================================
+*/
+
+
+loadMembers();
+
+
+</script>
+
+</body>
+
+</html>
+```
