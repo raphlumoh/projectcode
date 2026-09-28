@@ -1,460 +1,490 @@
-```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>IDOGWU FAMILY DATABASE</title>
+```
+<title>IDOGWU FAMILY DATABASE</title>
 
-    <!-- Supabase JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
+<style>
 
-        * {
-            box-sizing: border-box;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f2f6f3;
-            color: #222;
-        }
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f6f3;
+        color: #222;
+    }
 
-        header {
-            background: #126b35;
-            color: white;
-            text-align: center;
-            padding: 30px 15px;
-        }
+    header {
+        background: #126b35;
+        color: white;
+        text-align: center;
+        padding: 30px 15px;
+    }
 
-        header h1 {
-            margin: 0;
-            font-size: 30px;
-        }
+    header h1 {
+        margin: 0;
+        font-size: 30px;
+    }
 
-        header p {
-            margin: 8px 0 0;
-        }
+    header p {
+        margin: 8px 0 0;
+    }
 
-        .container {
-            max-width: 1100px;
-            margin: 25px auto;
-            padding: 0 15px;
-        }
+    .container {
+        max-width: 1100px;
+        margin: 25px auto;
+        padding: 0 15px;
+    }
 
-        .card {
-            background: white;
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
+    .card {
+        background: white;
+        padding: 25px;
+        margin-bottom: 25px;
+        border-radius: 10px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    }
 
-        h2 {
-            color: #126b35;
-            margin-top: 0;
-        }
+    h2 {
+        color: #126b35;
+        margin-top: 0;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .full {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    input {
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #126b35;
+    }
+
+    button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-right: 8px;
+    }
+
+    .register {
+        background: #126b35;
+        color: white;
+    }
+
+    .clear {
+        background: #ddd;
+        color: #222;
+    }
+
+    .edit {
+        background: #e8f1eb;
+        color: #126b35;
+    }
+
+    .delete {
+        background: #ffe5e5;
+        color: #b00020;
+    }
+
+    button:hover {
+        opacity: 0.85;
+    }
+
+    #message {
+        margin-bottom: 15px;
+        font-weight: bold;
+    }
+
+    .search {
+        width: 100%;
+        max-width: 450px;
+        margin-bottom: 20px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 850px;
+    }
+
+    th,
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+
+    th {
+        background: #126b35;
+        color: white;
+    }
+
+    tr:hover {
+        background: #f5f5f5;
+    }
+
+    .note {
+        color: #666;
+        font-size: 13px;
+        margin-top: 15px;
+    }
+
+    footer {
+        text-align: center;
+        padding: 25px;
+        color: #666;
+    }
+
+    @media (max-width: 700px) {
 
         .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr;
         }
 
         .full {
-            grid-column: 1 / -1;
+            grid-column: auto;
         }
 
-        label {
-            font-weight: bold;
-            margin-bottom: 6px;
+        header h1 {
+            font-size: 24px;
         }
 
-        input {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
+        .card {
+            padding: 18px;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #126b35;
-        }
+    }
 
-        button {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-right: 8px;
-        }
+</style>
+```
 
-        .register {
-            background: #126b35;
-            color: white;
-        }
-
-        .clear {
-            background: #ddd;
-            color: #222;
-        }
-
-        .edit {
-            background: #e8f1eb;
-            color: #126b35;
-        }
-
-        .delete {
-            background: #ffe5e5;
-            color: #b00020;
-        }
-
-        button:hover {
-            opacity: 0.85;
-        }
-
-        #message {
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .search {
-            width: 100%;
-            max-width: 450px;
-            margin-bottom: 20px;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-
-        th {
-            background: #126b35;
-            color: white;
-        }
-
-        tr:hover {
-            background: #f5f5f5;
-        }
-
-        .note {
-            color: #666;
-            font-size: 13px;
-            margin-top: 15px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 25px;
-            color: #666;
-        }
-
-        @media (max-width: 700px) {
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full {
-                grid-column: auto;
-            }
-
-            header h1 {
-                font-size: 24px;
-            }
-
-            .card {
-                padding: 18px;
-            }
-        }
-
-    </style>
 </head>
 
 <body>
 
 <header>
 
-    <h1>IDOGWU FAMILY DATABASE</h1>
+```
+<h1>IDOGWU FAMILY DATABASE</h1>
 
-    <p>
-        Unity • Progress • Collective Responsibility
-    </p>
+<p>
+    Unity • Progress • Collective Responsibility
+</p>
 
-    <p>
-        Family Members Registration Portal
-    </p>
+<p>
+    Family Members Registration Portal
+</p>
+```
 
 </header>
 
-
 <div class="container">
 
+```
+<!-- =========================================
+     REGISTRATION FORM
+========================================== -->
 
-    <!-- REGISTRATION FORM -->
+<div class="card">
 
-    <div class="card">
+    <h2 id="formTitle">
+        Add Family Member
+    </h2>
 
-        <h2 id="formTitle">
-            Add Family Member
-        </h2>
-
-        <div id="message"></div>
-
-
-        <form id="memberForm">
-
-            <div class="form-grid">
+    <div id="message"></div>
 
 
-                <div class="form-group">
+    <form id="memberForm">
 
-                    <label>
-                        Full Name *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="fullName"
-                        placeholder="Enter full name"
-                        required
-                    >
-
-                </div>
+        <div class="form-grid">
 
 
-                <div class="form-group">
+            <!-- FULL NAME -->
 
-                    <label>
-                        Phone Number *
-                    </label>
+            <div class="form-group">
 
-                    <input
-                        type="tel"
-                        id="phone"
-                        placeholder="08012345678"
-                        required
-                    >
+                <label for="fullName">
+                    Full Name *
+                </label>
 
-                </div>
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Enter full name"
+                    required
+                >
 
-
-                <div class="form-group">
-
-                    <label>
-                        Email Address
-                    </label>
-
-                    <input
-                        type="email"
-                        id="email"
-                        placeholder="example@email.com"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>
-                        Location *
-                    </label>
-
-                    <input
-                        type="text"
-                        id="location"
-                        placeholder="State, Town or Country"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group full">
-
-                    <label>
-                        Donation/Reg etc Amount (₦)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="amount"
-                        min="0"
-                        placeholder="Enter amount"
-                    >
-
-                </div>
-
-
-                     <div class="form-group full">
-
-                    <label>
-                        Purpose
-                    </label>
-
-                    <input
-                        type="text"
-                        id="location"
-                        placeholder="Donation, Reg or others"
-                        required
-                    >
-
-                </div>
             </div>
 
 
-            <br>
+            <!-- PHONE -->
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone Number *
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="08012345678"
+                    required
+                >
+
+            </div>
 
 
-            <button
-                type="submit"
-                class="register"
-                id="submitButton"
-            >
-                Add Member
-            </button>
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="example@email.com"
+                >
+
+            </div>
 
 
-            <button
-                type="button"
-                class="clear"
-                onclick="clearForm()"
-            >
-                Clear
-            </button>
+            <!-- LOCATION -->
 
-        </form>
+            <div class="form-group">
 
+                <label for="location">
+                    Location *
+                </label>
 
-        <p class="note">
+                <input
+                    type="text"
+                    id="location"
+                    placeholder="State, Town or Country"
+                    required
+                >
 
-            * Required fields.
-
-            Contribution amount is optional.
-
-        </p>
-
-    </div>
+            </div>
 
 
+            <!-- AMOUNT -->
 
-    <!-- MEMBER DATABASE -->
+            <div class="form-group full">
 
-    <div class="card">
+                <label for="amount">
+                    Donation/Reg etc Amount (₦)
+                </label>
 
-        <h2>
-            Family Members
-        </h2>
+                <input
+                    type="number"
+                    id="amount"
+                    min="0"
+                    step="0.01"
+                    placeholder="Enter amount"
+                >
 
-
-        <input
-            type="text"
-            id="search"
-            class="search"
-            placeholder="Search name, phone or location..."
-            oninput="displayMembers()"
-        >
-
-
-        <p id="memberCount">
-            Members: 0
-        </p>
+            </div>
 
 
-        <div class="table-container">
+            <!-- PURPOSE -->
 
-            <table>
+            <div class="form-group full">
 
-                <thead>
+                <label for="purpose">
+                    Purpose
+                </label>
 
-                    <tr>
+                <input
+                    type="text"
+                    id="purpose"
+                    placeholder="Donation, Registration or others"
+                >
 
-                        <th>
-                            S/N
-                        </th>
+            </div>
 
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            Phone
-                        </th>
-
-                        <th>
-                            Email
-                        </th>
-
-                        <th>
-                            Location
-                        </th>
-
-                        <th>
-                            Amount
-                        </th>
-
-                        <th>
-                            Purpose
-                        </th>
-                        
-                        <th>
-                            Action
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="memberTable">
-
-                </tbody>
-
-            </table>
 
         </div>
 
-    </div>
 
+        <br>
+
+
+        <!-- SUBMIT -->
+
+        <button
+            type="submit"
+            class="register"
+            id="submitButton"
+        >
+            Add Member
+        </button>
+
+
+        <!-- CLEAR -->
+
+        <button
+            type="button"
+            class="clear"
+            onclick="clearForm()"
+        >
+            Clear
+        </button>
+
+
+    </form>
+
+
+    <p class="note">
+
+        * Required fields.
+        Contribution amount and purpose are optional.
+
+    </p>
 
 </div>
 
 
+
+<!-- =========================================
+     MEMBER DATABASE
+========================================== -->
+
+<div class="card">
+
+    <h2>
+        Family Members
+    </h2>
+
+
+    <!-- SEARCH -->
+
+    <input
+        type="text"
+        id="search"
+        class="search"
+        placeholder="Search name, phone, email, location or purpose..."
+        oninput="displayMembers()"
+    >
+
+
+    <!-- MEMBER COUNT -->
+
+    <p id="memberCount">
+        Members: 0
+    </p>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        S/N
+                    </th>
+
+                    <th>
+                        Name
+                    </th>
+
+                    <th>
+                        Phone
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Location
+                    </th>
+
+                    <th>
+                        Amount
+                    </th>
+
+                    <th>
+                        Purpose
+                    </th>
+
+                    <th>
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="memberTable">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+```
+
+</div>
+
 <footer>
 
-    IDOGWU FAMILY UNION
+```
+IDOGWU FAMILY UNION
 
-    <br>
+<br>
 
-    Building a stronger family together.
+Building a stronger family together.
+```
 
 </footer>
-
-
 
 <script>
 
@@ -463,11 +493,7 @@
 =================================================
 SUPABASE CONNECTION
 =================================================
-
-REPLACE THE TWO VALUES BELOW
-WITH YOUR OWN SUPABASE DETAILS.
 */
-
 
 const SUPABASE_URL =
     "https://hzqawunnchuryzgmgiwi.supabase.co";
@@ -491,7 +517,6 @@ VARIABLES
 =================================================
 */
 
-
 let members = [];
 
 let editingId = null;
@@ -503,7 +528,6 @@ let editingId = null;
 LOAD MEMBERS
 =================================================
 */
-
 
 async function loadMembers() {
 
@@ -523,8 +547,8 @@ async function loadMembers() {
         console.error(error);
 
         showMessage(
-            "Unable to load members: "
-            + error.message
+            "Unable to load members: " +
+            error.message
         );
 
         return;
@@ -542,13 +566,18 @@ async function loadMembers() {
 
 /*
 =================================================
-REGISTER MEMBER
+REGISTER / UPDATE MEMBER
 =================================================
 */
 
-
 async function registerMember() {
 
+
+    /*
+    =============================================
+    GET FORM VALUES
+    =============================================
+    */
 
     const fullName =
         document
@@ -584,6 +613,19 @@ async function registerMember() {
         .value;
 
 
+    const purpose =
+        document
+        .getElementById("purpose")
+        .value
+        .trim();
+
+
+
+    /*
+    =============================================
+    VALIDATE REQUIRED FIELDS
+    =============================================
+    */
 
     if (
         !fullName ||
@@ -607,7 +649,6 @@ async function registerMember() {
     =============================================
     */
 
-
     if (editingId) {
 
 
@@ -630,7 +671,10 @@ async function registerMember() {
                 amount:
                     amount
                     ? Number(amount)
-                    : 0
+                    : 0,
+
+                purpose:
+                    purpose || null
 
             })
 
@@ -643,8 +687,8 @@ async function registerMember() {
             console.error(error);
 
             showMessage(
-                "Update failed: "
-                + error.message
+                "Update failed: " +
+                error.message
             );
 
             return;
@@ -656,8 +700,8 @@ async function registerMember() {
             "Member updated successfully."
         );
 
-
     }
+
 
 
     /*
@@ -665,7 +709,6 @@ async function registerMember() {
     ADD NEW MEMBER
     =============================================
     */
-
 
     else {
 
@@ -689,7 +732,10 @@ async function registerMember() {
                 amount:
                     amount
                     ? Number(amount)
-                    : 0
+                    : 0,
+
+                purpose:
+                    purpose || null
 
             });
 
@@ -700,8 +746,8 @@ async function registerMember() {
             console.error(error);
 
             showMessage(
-                "Registration failed: "
-                + error.message
+                "Registration failed: " +
+                error.message
             );
 
             return;
@@ -717,6 +763,12 @@ async function registerMember() {
 
 
 
+    /*
+    =============================================
+    RESET AND RELOAD
+    =============================================
+    */
+
     clearForm();
 
     await loadMembers();
@@ -731,7 +783,6 @@ DISPLAY MEMBERS
 =================================================
 */
 
-
 function displayMembers() {
 
 
@@ -745,39 +796,80 @@ function displayMembers() {
         document
         .getElementById("search")
         .value
-        .toLowerCase();
+        .toLowerCase()
+        .trim();
 
 
     table.innerHTML = "";
 
 
+
+    /*
+    =============================================
+    FILTER MEMBERS
+    =============================================
+    */
+
     const filtered =
         members.filter(function(member) {
 
 
+            const fullName =
+                String(member.full_name || "")
+                .toLowerCase();
+
+
+            const phone =
+                String(member.phone || "")
+                .toLowerCase();
+
+
+            const email =
+                String(member.email || "")
+                .toLowerCase();
+
+
+            const location =
+                String(member.location || "")
+                .toLowerCase();
+
+
+            const purpose =
+                String(member.purpose || "")
+                .toLowerCase();
+
+
             return (
 
-                member.full_name
-                .toLowerCase()
-                .includes(searchText)
+                fullName.includes(searchText)
 
                 ||
 
-                member.phone
-                .toLowerCase()
-                .includes(searchText)
+                phone.includes(searchText)
 
                 ||
 
-                member.location
-                .toLowerCase()
-                .includes(searchText)
+                email.includes(searchText)
+
+                ||
+
+                location.includes(searchText)
+
+                ||
+
+                purpose.includes(searchText)
 
             );
 
         });
 
 
+
+    /*
+    =============================================
+    DISPLAY ROWS
+    =============================================
+    */
 
     filtered.forEach(function(member, index) {
 
@@ -793,11 +885,11 @@ function displayMembers() {
             </td>
 
             <td>
-                ${escapeHTML(member.full_name)}
+                ${escapeHTML(member.full_name || "-")}
             </td>
 
             <td>
-                ${escapeHTML(member.phone)}
+                ${escapeHTML(member.phone || "-")}
             </td>
 
             <td>
@@ -805,7 +897,7 @@ function displayMembers() {
             </td>
 
             <td>
-                ${escapeHTML(member.location)}
+                ${escapeHTML(member.location || "-")}
             </td>
 
             <td>
@@ -814,8 +906,13 @@ function displayMembers() {
             </td>
 
             <td>
+                ${escapeHTML(member.purpose || "-")}
+            </td>
+
+            <td>
 
                 <button
+                    type="button"
                     class="edit"
                     onclick="editMember(${member.id})"
                 >
@@ -823,6 +920,7 @@ function displayMembers() {
                 </button>
 
                 <button
+                    type="button"
                     class="delete"
                     onclick="deleteMember(${member.id})"
                 >
@@ -840,6 +938,12 @@ function displayMembers() {
 
 
 
+    /*
+    =============================================
+    MEMBER COUNT
+    =============================================
+    */
+
     document.getElementById(
         "memberCount"
     ).textContent =
@@ -854,7 +958,6 @@ function displayMembers() {
 EDIT MEMBER
 =================================================
 */
-
 
 function editMember(id) {
 
@@ -873,16 +976,23 @@ function editMember(id) {
     editingId = id;
 
 
+
+    /*
+    =============================================
+    FILL FORM
+    =============================================
+    */
+
     document.getElementById(
         "fullName"
     ).value =
-        member.full_name;
+        member.full_name || "";
 
 
     document.getElementById(
         "phone"
     ).value =
-        member.phone;
+        member.phone || "";
 
 
     document.getElementById(
@@ -894,7 +1004,7 @@ function editMember(id) {
     document.getElementById(
         "location"
     ).value =
-        member.location;
+        member.location || "";
 
 
     document.getElementById(
@@ -902,6 +1012,19 @@ function editMember(id) {
     ).value =
         member.amount || "";
 
+
+    document.getElementById(
+        "purpose"
+    ).value =
+        member.purpose || "";
+
+
+
+    /*
+    =============================================
+    CHANGE FORM TITLE AND BUTTON
+    =============================================
+    */
 
     document.getElementById(
         "formTitle"
@@ -914,6 +1037,13 @@ function editMember(id) {
     ).textContent =
         "Update Member";
 
+
+
+    /*
+    =============================================
+    SCROLL TO FORM
+    =============================================
+    */
 
     window.scrollTo({
 
@@ -933,7 +1063,6 @@ DELETE MEMBER
 =================================================
 */
 
-
 async function deleteMember(id) {
 
 
@@ -948,6 +1077,13 @@ async function deleteMember(id) {
     if (!member) return;
 
 
+
+    /*
+    =============================================
+    CONFIRM DELETE
+    =============================================
+    */
+
     const confirmDelete =
         confirm(
             "Delete " +
@@ -959,6 +1095,12 @@ async function deleteMember(id) {
     if (!confirmDelete) return;
 
 
+
+    /*
+    =============================================
+    DELETE FROM SUPABASE
+    =============================================
+    */
 
     const { error } =
 
@@ -977,8 +1119,8 @@ async function deleteMember(id) {
         console.error(error);
 
         showMessage(
-            "Delete failed: "
-            + error.message
+            "Delete failed: " +
+            error.message
         );
 
         return;
@@ -1003,7 +1145,6 @@ CLEAR FORM
 =================================================
 */
 
-
 function clearForm() {
 
 
@@ -1015,16 +1156,30 @@ function clearForm() {
     editingId = null;
 
 
+
+    /*
+    =============================================
+    RESET TITLE
+    =============================================
+    */
+
     document.getElementById(
         "formTitle"
     ).textContent =
-        "Register Family Member";
+        "Add Family Member";
 
+
+
+    /*
+    =============================================
+    RESET BUTTON
+    =============================================
+    */
 
     document.getElementById(
         "submitButton"
     ).textContent =
-        "Register Member";
+        "Add Member";
 
 }
 
@@ -1035,7 +1190,6 @@ function clearForm() {
 FORM SUBMISSION
 =================================================
 */
-
 
 document
 .getElementById("memberForm")
@@ -1058,7 +1212,6 @@ MESSAGE
 =================================================
 */
 
-
 function showMessage(text) {
 
     document.getElementById(
@@ -1071,10 +1224,9 @@ function showMessage(text) {
 
 /*
 =================================================
-SECURITY
+SECURITY / HTML ESCAPING
 =================================================
 */
-
 
 function escapeHTML(value) {
 
@@ -1100,7 +1252,6 @@ START APPLICATION
 =================================================
 */
 
-
 loadMembers();
 
 
@@ -1109,4 +1260,3 @@ loadMembers();
 </body>
 
 </html>
-```
