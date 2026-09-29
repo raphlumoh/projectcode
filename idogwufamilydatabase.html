@@ -921,7 +921,7 @@ function displayMembers() {
                 <button
                     type="button"
                     class="del"
-                    onclick="delMember(${member.id})"
+                    onclick="deleteMember(${member.id})"
                 >
                     Del
                 </button>
@@ -1107,7 +1107,7 @@ async function deleteMember(id) {
 
         .from("idogwu_members")
 
-        .del()
+        .delete()
 
         .eq("id", id);
 
