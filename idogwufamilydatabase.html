@@ -114,6 +114,17 @@
             border-left: 5px solid #126b35;
         }
 
+    .paid-card {
+        border-left-color: #126b35;
+    }
+
+        .unpaid-card {
+        border-left-color: #b00020;
+        }
+
+        .unpaid-card .stat-value {
+        color: #b00020;
+    }
 
         .stat-title {
             font-size: 14px;
@@ -614,77 +625,120 @@
          DASHBOARD
     ================================================== -->
 
-    <div class="dashboard">
+    <!-- =================================================
+     DASHBOARD
+================================================== -->
 
+<div class="dashboard">
 
-        <div class="stat-card">
+    <!-- TOTAL MEMBERS -->
 
-            <div class="stat-title">
-                Total Members
-            </div>
+    <div class="stat-card">
 
-            <div
-                class="stat-value"
-                id="totalMembers"
-            >
-                0
-            </div>
-
+        <div class="stat-title">
+            Total Members
         </div>
 
-
-
-        <div class="stat-card">
-
-            <div class="stat-title">
-                Total Contributions
-            </div>
-
-            <div
-                class="stat-value"
-                id="totalAmount"
-            >
-                ₦0
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-title">
-                Locations
-            </div>
-
-            <div
-                class="stat-value"
-                id="totalLocations"
-            >
-                0
-            </div>
-
-        </div>
-
-
-
-        <div class="stat-card">
-
-            <div class="stat-title">
-                Average Contribution
-            </div>
-
-            <div
-                class="stat-value"
-                id="averageAmount"
-            >
-                ₦0
-            </div>
-
+        <div
+            class="stat-value"
+            id="totalMembers"
+        >
+            0
         </div>
 
     </div>
 
+
+    <!-- MEMBERS WHO PAID -->
+
+    <div class="stat-card paid-card">
+
+        <div class="stat-title">
+            Members Paid
+        </div>
+
+        <div
+            class="stat-value"
+            id="paidMembers"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <!-- MEMBERS NOT PAID -->
+
+    <div class="stat-card unpaid-card">
+
+        <div class="stat-title">
+            Members Not Paid
+        </div>
+
+        <div
+            class="stat-value"
+            id="unpaidMembers"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <!-- TOTAL CONTRIBUTIONS -->
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Total Contributions
+        </div>
+
+        <div
+            class="stat-value"
+            id="totalAmount"
+        >
+            ₦0
+        </div>
+
+    </div>
+
+
+    <!-- LOCATIONS -->
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Locations
+        </div>
+
+        <div
+            class="stat-value"
+            id="totalLocations"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <!-- AVERAGE -->
+
+    <div class="stat-card">
+
+        <div class="stat-title">
+            Average Payment
+        </div>
+
+        <div
+            class="stat-value"
+            id="averageAmount"
+        >
+            ₦0
+        </div>
+
+    </div>
+
+</div>
 
 
     <!-- =================================================
@@ -1919,13 +1973,69 @@ function updateDashboard() {
     =============================================
     */
 
+   const totalMembers =
+        members.length;
+
     document.getElementById(
         "totalMembers"
     ).textContent =
-        members.length;
+        totalMembers;
+
+
+/*
+    =============================================
+    MEMBERS WHO PAID
+    =============================================
+    
+    A member is considered to have paid
+    when amount is greater than zero.
+    */
+
+    const paidMembers =
+        members.filter(
+            function(member) {
+
+                return Number(
+                    member.amount || 0
+                ) > 0;
+
+            }
+        ).length;
+
+
+    document.getElementById(
+        "paidMembers"
+    ).textContent =
+        paidMembers;
 
 
 
+    /*
+
+
+
+
+     /*
+    =============================================
+    MEMBERS WHO HAVE NOT PAID
+    =============================================
+    */
+
+    const unpaidMembers =
+        totalMembers -
+        paidMembers;
+
+
+    document.getElementById(
+        "unpaidMembers"
+    ).textContent =
+        unpaidMembers;
+
+
+
+    /*
+
+    /*
     /*
     =============================================
     TOTAL AMOUNT
@@ -1957,14 +2067,13 @@ function updateDashboard() {
 
     /*
     =============================================
-    AVERAGE
+    AVERAGE PAYMENT
     =============================================
     */
 
     const average =
-        members.length > 0
-            ? totalAmount /
-              members.length
+        paidMembers > 0
+            ? totalAmount / paidMembers
             : 0;
 
 
@@ -1978,32 +2087,42 @@ function updateDashboard() {
 
 
     /*
+
     =============================================
     LOCATIONS
     =============================================
     */
 
+    /*
+    =============================================
+    NUMBER OF LOCATIONS
+    =============================================
+    */
+
     const locations =
         new Set(
+
             members
-            .map(
-                function(member) {
+                .map(
+                    function(member) {
 
-                    return String(
-                        member.location || ""
-                    )
-                    .trim()
-                    .toLowerCase();
+                        return String(
+                            member.location || ""
+                        )
+                        .trim()
+                        .toLowerCase();
 
-                }
-            )
-            .filter(
-                function(location) {
+                    }
+                )
 
-                    return location !== "";
+                .filter(
+                    function(location) {
 
-                }
-            )
+                        return location !== "";
+
+                    }
+                )
+
         );
 
 
@@ -2013,8 +2132,6 @@ function updateDashboard() {
         locations.size;
 
 }
-
-
 
 /*
 =========================================================
