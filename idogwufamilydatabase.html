@@ -1,497 +1,1029 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
-<title>IDOGWU FAMILY DATABASE</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<!-- Supabase JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>IDOGWU FAMILY DATABASE</title>
 
-<style>
 
-    * {
-        box-sizing: border-box;
-    }
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
 
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: #f2f6f3;
-        color: #222;
-    }
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    header {
-        background: #126b35;
-        color: white;
-        text-align: center;
-        padding: 30px 15px;
-    }
 
-    header h1 {
-        margin: 0;
-        font-size: 30px;
-    }
+    <!-- =====================================================
+         STYLES
+    ====================================================== -->
 
-    header p {
-        margin: 8px 0 0;
-    }
+    <style>
 
-    .container {
-        max-width: 1100px;
-        margin: 25px auto;
-        padding: 0 15px;
-    }
-
-    .card {
-        background: white;
-        padding: 25px;
-        margin-bottom: 25px;
-        border-radius: 10px;
-        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
-
-    h2 {
-        color: #126b35;
-        margin-top: 0;
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 18px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .full {
-        grid-column: 1 / -1;
-    }
-
-    label {
-        font-weight: bold;
-        margin-bottom: 6px;
-    }
-
-    input {
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 15px;
-    }
-
-    input:focus {
-        outline: none;
-        border-color: #126b35;
-    }
-
-    button {
-        padding: 12px 18px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-right: 8px;
-    }
-
-    .register {
-        background: #126b35;
-        color: white;
-    }
-
-    .clear {
-        background: #ddd;
-        color: #222;
-    }
-
-    .edit {
-        background: #e8f1eb;
-        color: #126b35;
-    }
-
-    .del {
-        background: #ffe5e5;
-        color: #b00020;
-    }
-
-    button:hover {
-        opacity: 0.85;
-    }
-
-    #message {
-        margin-bottom: 15px;
-        font-weight: bold;
-    }
-
-    .search {
-        width: 100%;
-        max-width: 450px;
-        margin-bottom: 20px;
-    }
-
-    .table-container {
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        min-width: 850px;
-    }
-
-    th,
-    td {
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-        text-align: left;
-    }
-
-    th {
-        background: #126b35;
-        color: white;
-    }
-
-    tr:hover {
-        background: #f5f5f5;
-    }
-
-    .note {
-        color: #666;
-        font-size: 13px;
-        margin-top: 15px;
-    }
-
-    footer {
-        text-align: center;
-        padding: 25px;
-        color: #666;
-    }
-
-    @media (max-width: 700px) {
-
-        .form-grid {
-            grid-template-columns: 1fr;
+        * {
+            box-sizing: border-box;
         }
 
-        .full {
-            grid-column: auto;
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f6f3;
+            color: #222;
         }
+
+
+        /* =================================================
+           HEADER
+        ================================================= */
+
+        header {
+            background: linear-gradient(
+                135deg,
+                #126b35,
+                #0b4d27
+            );
+
+            color: white;
+            text-align: center;
+            padding: 35px 15px;
+        }
+
 
         header h1 {
-            font-size: 24px;
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
         }
+
+
+        header p {
+            margin: 8px 0 0;
+        }
+
+
+        .subtitle {
+            opacity: 0.9;
+        }
+
+
+        /* =================================================
+           MAIN CONTAINER
+        ================================================= */
+
+        .container {
+            width: 94%;
+            max-width: 1200px;
+            margin: 25px auto;
+        }
+
+
+        /* =================================================
+           DASHBOARD
+        ================================================= */
+
+        .dashboard {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .stat-card {
+            background: white;
+
+            padding: 22px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+            border-left: 5px solid #126b35;
+        }
+
+
+        .stat-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+
+        .stat-value {
+            font-size: 27px;
+            font-weight: bold;
+            color: #126b35;
+        }
+
+
+        /* =================================================
+           CARD
+        ================================================= */
 
         .card {
-            padding: 18px;
+            background: white;
+
+            padding: 25px;
+
+            margin-bottom: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
         }
 
-    }
 
-</style>
-```
+        h2 {
+            color: #126b35;
+            margin-top: 0;
+        }
+
+
+        /* =================================================
+           FORM
+        ================================================= */
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 18px;
+        }
+
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+
+        label {
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 13px;
+
+            border: 1px solid #ccc;
+
+            border-radius: 7px;
+
+            font-size: 15px;
+
+            background: white;
+        }
+
+
+        input:focus,
+        select:focus {
+            outline: none;
+
+            border-color: #126b35;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(18, 107, 53, 0.1);
+        }
+
+
+        /* =================================================
+           BUTTONS
+        ================================================= */
+
+        button {
+            padding: 12px 18px;
+
+            border: none;
+
+            border-radius: 7px;
+
+            cursor: pointer;
+
+            font-weight: bold;
+
+            margin-right: 7px;
+
+            transition: 0.2s;
+        }
+
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        .register {
+            background: #126b35;
+            color: white;
+        }
+
+
+        .clear {
+            background: #ddd;
+            color: #222;
+        }
+
+
+        .edit {
+            background: #e8f1eb;
+            color: #126b35;
+        }
+
+
+        .del {
+            background: #ffe5e5;
+            color: #b00020;
+        }
+
+
+        .export {
+            background: #126b35;
+            color: white;
+        }
+
+
+        /* =================================================
+           MESSAGE
+        ================================================= */
+
+        #message {
+            display: none;
+
+            padding: 12px 15px;
+
+            border-radius: 7px;
+
+            margin-bottom: 18px;
+
+            font-weight: bold;
+        }
+
+
+        #message.success {
+            display: block;
+
+            background: #e7f6ec;
+
+            color: #126b35;
+
+            border: 1px solid #b7dfc4;
+        }
+
+
+        #message.error {
+            display: block;
+
+            background: #ffeaea;
+
+            color: #b00020;
+
+            border: 1px solid #f0b8b8;
+        }
+
+
+        /* =================================================
+           DATABASE TOOLBAR
+        ================================================= */
+
+        .database-toolbar {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .search {
+            flex: 1;
+
+            min-width: 250px;
+
+            margin: 0;
+        }
+
+
+        /* =================================================
+           TABLE
+        ================================================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 1050px;
+        }
+
+
+        th,
+        td {
+            padding: 12px;
+
+            border-bottom:
+                1px solid #ddd;
+
+            text-align: left;
+        }
+
+
+        th {
+            background: #126b35;
+
+            color: white;
+
+            white-space: nowrap;
+        }
+
+
+        tr:hover {
+            background: #f5f9f6;
+        }
+
+
+        .amount-cell {
+            font-weight: bold;
+
+            color: #126b35;
+
+            white-space: nowrap;
+        }
+
+
+        .member-id {
+            font-size: 12px;
+
+            color: #777;
+        }
+
+
+        /* =================================================
+           LOCATION STATISTICS
+        ================================================= */
+
+        .location-list {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+
+            gap: 12px;
+        }
+
+
+        .location-item {
+            background: #f2f6f3;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            border-left:
+                4px solid #126b35;
+        }
+
+
+        .location-name {
+            font-weight: bold;
+        }
+
+
+        .location-count {
+            color: #666;
+
+            font-size: 13px;
+
+            margin-top: 4px;
+        }
+
+
+        /* =================================================
+           EMPTY STATE
+        ================================================= */
+
+        .empty {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #777;
+        }
+
+
+        /* =================================================
+           NOTE
+        ================================================= */
+
+        .note {
+            color: #666;
+
+            font-size: 13px;
+
+            margin-top: 15px;
+        }
+
+
+        /* =================================================
+           LOADING
+        ================================================= */
+
+        .loading {
+            text-align: center;
+
+            padding: 30px;
+
+            color: #126b35;
+
+            font-weight: bold;
+        }
+
+
+        /* =================================================
+           FOOTER
+        ================================================= */
+
+        footer {
+            text-align: center;
+
+            padding: 30px 15px;
+
+            color: #666;
+
+            background: white;
+
+            margin-top: 30px;
+        }
+
+
+        /* =================================================
+           MOBILE
+        ================================================= */
+
+        @media (max-width: 900px) {
+
+            .dashboard {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            header h1 {
+                font-size: 24px;
+            }
+
+
+            .container {
+                width: 96%;
+            }
+
+
+            .card {
+                padding: 18px;
+            }
+
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .full {
+                grid-column: auto;
+            }
+
+
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+
+
+            .stat-value {
+                font-size: 21px;
+            }
+
+
+            .database-toolbar {
+                align-items: stretch;
+            }
+
+
+            .search {
+                min-width: 100%;
+            }
+
+
+            .export {
+                width: 100%;
+            }
+
+        }
+
+
+        @media (max-width: 450px) {
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
 
 </head>
 
+
 <body>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
 
 <header>
 
-```
-<h1>IDOGWU FAMILY DATABASE</h1>
+    <h1>
+        IDOGWU FAMILY DATABASE
+    </h1>
 
-<p>
-    Unity • Progress • Collective Responsibility
-</p>
+    <p>
+        Unity • Progress • Collective Responsibility
+    </p>
 
-<p>
-    Family Members Registration Portal
-</p>
-```
+    <p class="subtitle">
+        Family Members Registration Portal
+    </p>
 
 </header>
 
+
+
 <div class="container">
 
-```
-<!-- =========================================
-     REGISTRATION FORM
-========================================== -->
 
-<div class="card">
+    <!-- =================================================
+         DASHBOARD
+    ================================================== -->
 
-    <h2 id="formTitle">
-        Add Family Member
-    </h2>
-
-    <div id="message"></div>
+    <div class="dashboard">
 
 
-    <form id="memberForm">
+        <div class="stat-card">
 
-        <div class="form-grid">
+            <div class="stat-title">
+                Total Members
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalMembers"
+            >
+                0
+            </div>
+
+        </div>
 
 
-            <!-- FULL NAME -->
 
-            <div class="form-group">
+        <div class="stat-card">
 
-                <label for="fullName">
-                    Full Name *
-                </label>
+            <div class="stat-title">
+                Total Contributions
+            </div>
 
-                <input
-                    type="text"
-                    id="fullName"
-                    placeholder="Enter full name"
-                    required
-                >
+            <div
+                class="stat-value"
+                id="totalAmount"
+            >
+                ₦0
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Locations
+            </div>
+
+            <div
+                class="stat-value"
+                id="totalLocations"
+            >
+                0
+            </div>
+
+        </div>
+
+
+
+        <div class="stat-card">
+
+            <div class="stat-title">
+                Average Contribution
+            </div>
+
+            <div
+                class="stat-value"
+                id="averageAmount"
+            >
+                ₦0
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =================================================
+         REGISTRATION FORM
+    ================================================== -->
+
+    <div class="card">
+
+        <h2 id="formTitle">
+            Add Family Member
+        </h2>
+
+
+        <div id="message"></div>
+
+
+        <form id="memberForm">
+
+
+            <div class="form-grid">
+
+
+                <!-- FULL NAME -->
+
+                <div class="form-group">
+
+                    <label for="fullName">
+                        Full Name *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Enter full name"
+                        autocomplete="name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- PHONE -->
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number *
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="08012345678"
+                        autocomplete="tel"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="example@email.com"
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+
+                <!-- LOCATION -->
+
+                <div class="form-group">
+
+                    <label for="location">
+                        Location *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="State, Town or Country"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- AMOUNT -->
+
+                <div class="form-group">
+
+                    <label for="amount">
+                        Donation / Registration Amount (₦)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="amount"
+                        min="0"
+                        step="0.01"
+                        placeholder="Enter amount"
+                    >
+
+                </div>
+
+
+
+                <!-- PURPOSE -->
+
+                <div class="form-group">
+
+                    <label for="purpose">
+                        Purpose
+                    </label>
+
+                    <input
+                        type="text"
+                        id="purpose"
+                        placeholder="Donation, Registration, Welfare, etc."
+                    >
+
+                </div>
+
 
             </div>
 
 
-            <!-- PHONE -->
-
-            <div class="form-group">
-
-                <label for="phone">
-                    Phone Number *
-                </label>
-
-                <input
-                    type="tel"
-                    id="phone"
-                    placeholder="08012345678"
-                    required
-                >
-
-            </div>
+            <br>
 
 
-            <!-- EMAIL -->
-
-            <div class="form-group">
-
-                <label for="email">
-                    Email Address
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="example@email.com"
-                >
-
-            </div>
+            <button
+                type="submit"
+                class="register"
+                id="submitButton"
+            >
+                Add Member
+            </button>
 
 
-            <!-- LOCATION -->
-
-            <div class="form-group">
-
-                <label for="location">
-                    Location *
-                </label>
-
-                <input
-                    type="text"
-                    id="location"
-                    placeholder="State, Town or Country"
-                    required
-                >
-
-            </div>
+            <button
+                type="button"
+                class="clear"
+                id="clearButton"
+            >
+                Clear
+            </button>
 
 
-            <!-- AMOUNT -->
-
-            <div class="form-group full">
-
-                <label for="amount">
-                    Donation/Reg etc Amount (₦)
-                </label>
-
-                <input
-                    type="number"
-                    id="amount"
-                    min="0"
-                    step="0.01"
-                    placeholder="Enter amount"
-                >
-
-            </div>
+        </form>
 
 
-            <!-- PURPOSE -->
+        <p class="note">
 
-            <div class="form-group full">
+            * Required fields.
+            Contribution amount and purpose are optional.
 
-                <label for="purpose">
-                    Purpose
-                </label>
+        </p>
 
-                <input
-                    type="text"
-                    id="purpose"
-                    placeholder="Donation, Registration or others"
-                >
+    </div>
 
-            </div>
+
+
+    <!-- =================================================
+         FAMILY MEMBERS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            Family Members
+        </h2>
+
+
+        <div class="database-toolbar">
+
+
+            <input
+                type="text"
+                id="search"
+                class="search"
+                placeholder="Search name, phone, email, location or purpose..."
+            >
+
+
+            <button
+                type="button"
+                class="export"
+                id="exportButton"
+            >
+                Export CSV
+            </button>
 
 
         </div>
 
-        <br>
+
+        <p id="memberCount">
+            Showing 0 of 0 members
+        </p>
 
 
-        <!-- SUBMIT -->
+        <div class="table-container">
 
-        <button
-            type="submit"
-            class="register"
-            id="submitButton"
-        >
-            Add Member
-        </button>
+            <table>
 
+                <thead>
 
-        <!-- CLEAR -->
+                    <tr>
 
-        <button
-            type="button"
-            class="clear"
-            onclick="clearForm()"
-        >
-            Clear
-        </button>
+                        <th>
+                            S/N
+                        </th>
 
+                        <th>
+                            Member ID
+                        </th>
 
-    </form>
+                        <th>
+                            Name
+                        </th>
 
+                        <th>
+                            Phone
+                        </th>
 
-    <p class="note">
+                        <th>
+                            Email
+                        </th>
 
-        * Required fields.
-        Contribution amount and purpose are optional.
+                        <th>
+                            Location
+                        </th>
 
-    </p>
+                        <th>
+                            Amount
+                        </th>
 
-</div>
+                        <th>
+                            Purpose
+                        </th>
 
+                        <th>
+                            Date
+                        </th>
 
+                        <th>
+                            Action
+                        </th>
 
-<!-- =========================================
-     MEMBER DATABASE
-========================================== -->
+                    </tr>
 
-<div class="card">
-
-    <h2>
-        Family Members
-    </h2>
-
-
-    <!-- SEARCH -->
-
-    <input
-        type="text"
-        id="search"
-        class="search"
-        placeholder="Search name, phone, email, location or purpose..."
-        oninput="displayMembers()"
-    >
+                </thead>
 
 
-    <!-- MEMBER COUNT -->
+                <tbody id="memberTable">
 
-    <p id="memberCount">
-        Members: 0
-    </p>
+                </tbody>
 
+            </table>
 
-    <div class="table-container">
-
-        <table>
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        S/N
-                    </th>
-
-                    <th>
-                        Name
-                    </th>
-
-                    <th>
-                        Phone
-                    </th>
-
-                    <th>
-                        Email
-                    </th>
-
-                    <th>
-                        Location
-                    </th>
-
-                    <th>
-                        Amount
-                    </th>
-
-                    <th>
-                        Purpose
-                    </th>
-
-                    <th>
-                        Action
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="memberTable">
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 
-</div>
-```
+
+
+    <!-- =================================================
+         LOCATION STATISTICS
+    ================================================== -->
+
+    <div class="card">
+
+        <h2>
+            Family Location Statistics
+        </h2>
+
+
+        <div
+            id="locationList"
+            class="location-list"
+        >
+
+        </div>
+
+    </div>
+
 
 </div>
+
+
+
+<!-- =====================================================
+     FOOTER
+====================================================== -->
 
 <footer>
 
-```
-IDOGWU FAMILY UNION
+    <strong>
+        IDOGWU FAMILY UNION
+    </strong>
 
-<br>
+    <br>
 
-Building a stronger family together.
-```
+    Building a stronger family together.
+
+    <br><br>
+
+    <small>
+        IDOGWU FAMILY DATABASE
+    </small>
 
 </footer>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 
 <script>
 
 
 /*
-=================================================
+=========================================================
 SUPABASE CONNECTION
-=================================================
+=========================================================
 */
 
 const SUPABASE_URL =
@@ -511,9 +1043,9 @@ const supabaseClient =
 
 
 /*
-=================================================
-VARIABLES
-=================================================
+=========================================================
+GLOBAL VARIABLES
+=========================================================
 */
 
 let members = [];
@@ -523,32 +1055,239 @@ let editingId = null;
 
 
 /*
-=================================================
+=========================================================
+DOM ELEMENTS
+=========================================================
+*/
+
+const memberForm =
+    document.getElementById(
+        "memberForm"
+    );
+
+
+const messageBox =
+    document.getElementById(
+        "message"
+    );
+
+
+const submitButton =
+    document.getElementById(
+        "submitButton"
+    );
+
+
+const memberTable =
+    document.getElementById(
+        "memberTable"
+    );
+
+
+const searchInput =
+    document.getElementById(
+        "search"
+    );
+
+
+
+/*
+=========================================================
+FORMAT NAIRA
+=========================================================
+*/
+
+function formatNaira(amount) {
+
+    return "₦" +
+        Number(amount || 0)
+        .toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+
+/*
+=========================================================
+FORMAT DATE
+=========================================================
+*/
+
+function formatDate(dateValue) {
+
+    if (!dateValue) {
+        return "-";
+    }
+
+
+    const date =
+        new Date(dateValue);
+
+
+    if (isNaN(date.getTime())) {
+        return "-";
+    }
+
+
+    return date.toLocaleDateString(
+        "en-NG",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+
+/*
+=========================================================
+SHOW MESSAGE
+=========================================================
+*/
+
+function showMessage(
+    text,
+    type = "success"
+) {
+
+    messageBox.textContent = text;
+
+    messageBox.className = type;
+
+    setTimeout(
+        function() {
+
+            messageBox.textContent = "";
+
+            messageBox.className = "";
+
+        },
+        5000
+    );
+
+}
+
+
+
+/*
+=========================================================
+ESCAPE HTML
+=========================================================
+*/
+
+function escapeHTML(value) {
+
+    return String(value)
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+
+
+/*
+=========================================================
 LOAD MEMBERS
-=================================================
+=========================================================
 */
 
 async function loadMembers() {
 
-    const { data, error } = await supabaseClient
+    memberTable.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="10"
+                class="loading"
+            >
+                Loading family members...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
 
         .from("idogwu_members")
 
         .select("*")
 
-        .order("created_at", {
-            ascending: false
-        });
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Load error:",
+            error
+        );
+
+
+        memberTable.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="10"
+                    class="empty"
+                >
+                    Unable to load members.
+                </td>
+
+            </tr>
+
+        `;
+
 
         showMessage(
             "Unable to load members: " +
-            error.message
+            error.message,
+            "error"
         );
+
 
         return;
 
@@ -557,64 +1296,75 @@ async function loadMembers() {
 
     members = data || [];
 
+
     displayMembers();
+
+    updateDashboard();
+
+    updateLocationStatistics();
 
 }
 
 
 
 /*
-=================================================
+=========================================================
 REGISTER / UPDATE MEMBER
-=================================================
+=========================================================
 */
 
 async function registerMember() {
 
 
-    /*
-    =============================================
-    GET FORM VALUES
-    =============================================
-    */
-
     const fullName =
         document
-        .getElementById("fullName")
+        .getElementById(
+            "fullName"
+        )
         .value
         .trim();
 
 
     const phone =
         document
-        .getElementById("phone")
+        .getElementById(
+            "phone"
+        )
         .value
         .trim();
 
 
     const email =
         document
-        .getElementById("email")
+        .getElementById(
+            "email"
+        )
         .value
         .trim();
 
 
     const location =
         document
-        .getElementById("location")
+        .getElementById(
+            "location"
+        )
         .value
         .trim();
 
 
     const amount =
         document
-        .getElementById("amount")
+        .getElementById(
+            "amount"
+        )
         .value;
 
 
     const purpose =
         document
-        .getElementById("purpose")
+        .getElementById(
+            "purpose"
+        )
         .value
         .trim();
 
@@ -622,7 +1372,7 @@ async function registerMember() {
 
     /*
     =============================================
-    VALIDATE REQUIRED FIELDS
+    VALIDATION
     =============================================
     */
 
@@ -633,12 +1383,72 @@ async function registerMember() {
     ) {
 
         showMessage(
-            "Please complete all required fields."
+            "Please complete all required fields.",
+            "error"
         );
 
         return;
 
     }
+
+
+    /*
+    =============================================
+    PHONE VALIDATION
+    =============================================
+    */
+
+    if (
+        phone.length < 7
+    ) {
+
+        showMessage(
+            "Please enter a valid phone number.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+    =============================================
+    EMAIL VALIDATION
+    =============================================
+    */
+
+    if (
+        email &&
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            email
+        )
+    ) {
+
+        showMessage(
+            "Please enter a valid email address.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    /*
+    =============================================
+    PREVENT DOUBLE SUBMISSION
+    =============================================
+    */
+
+    submitButton.disabled = true;
+
+
+    submitButton.textContent =
+        editingId
+            ? "Updating..."
+            : "Registering...";
 
 
 
@@ -651,44 +1461,64 @@ async function registerMember() {
     if (editingId) {
 
 
-        const { error } =
-
-            await supabaseClient
+        const {
+            error
+        } = await supabaseClient
 
             .from("idogwu_members")
 
             .update({
 
-                full_name: fullName,
+                full_name:
+                    fullName,
 
-                phone: phone,
+                phone:
+                    phone,
 
-                email: email || null,
+                email:
+                    email || null,
 
-                location: location,
+                location:
+                    location,
 
                 amount:
                     amount
-                    ? Number(amount)
-                    : 0,
+                        ? Number(amount)
+                        : 0,
 
                 purpose:
                     purpose || null
 
             })
 
-            .eq("id", editingId);
-
+            .eq(
+                "id",
+                editingId
+            );
 
 
         if (error) {
 
-            console.error(error);
+            console.error(
+                "Update error:",
+                error
+            );
+
 
             showMessage(
                 "Update failed: " +
-                error.message
+                error.message,
+                "error"
             );
+
+
+            submitButton.disabled =
+                false;
+
+
+            submitButton.textContent =
+                "Update Member";
+
 
             return;
 
@@ -712,26 +1542,30 @@ async function registerMember() {
     else {
 
 
-        const { error } =
-
-            await supabaseClient
+        const {
+            error
+        } = await supabaseClient
 
             .from("idogwu_members")
 
             .insert({
 
-                full_name: fullName,
+                full_name:
+                    fullName,
 
-                phone: phone,
+                phone:
+                    phone,
 
-                email: email || null,
+                email:
+                    email || null,
 
-                location: location,
+                location:
+                    location,
 
                 amount:
                     amount
-                    ? Number(amount)
-                    : 0,
+                        ? Number(amount)
+                        : 0,
 
                 purpose:
                     purpose || null
@@ -739,15 +1573,28 @@ async function registerMember() {
             });
 
 
-
         if (error) {
 
-            console.error(error);
+            console.error(
+                "Registration error:",
+                error
+            );
+
 
             showMessage(
                 "Registration failed: " +
-                error.message
+                error.message,
+                "error"
             );
+
+
+            submitButton.disabled =
+                false;
+
+
+            submitButton.textContent =
+                "Add Member";
+
 
             return;
 
@@ -755,7 +1602,7 @@ async function registerMember() {
 
 
         showMessage(
-            "Member registered successfully!"
+            "Family member registered successfully!"
         );
 
     }
@@ -764,212 +1611,582 @@ async function registerMember() {
 
     /*
     =============================================
-    RESET AND RELOAD
+    RESET
     =============================================
     */
 
     clearForm();
 
+
     await loadMembers();
+
+
+    submitButton.disabled =
+        false;
 
 }
 
 
 
 /*
-=================================================
+=========================================================
 DISPLAY MEMBERS
-=================================================
+=========================================================
 */
 
 function displayMembers() {
 
 
-    const table =
-        document.getElementById(
-            "memberTable"
-        );
-
-
     const searchText =
-        document
-        .getElementById("search")
+        searchInput
         .value
         .toLowerCase()
         .trim();
 
 
-    table.innerHTML = "";
+    memberTable.innerHTML = "";
 
-
-
-    /*
-    =============================================
-    FILTER MEMBERS
-    =============================================
-    */
 
     const filtered =
-        members.filter(function(member) {
+        members.filter(
+            function(member) {
 
 
-            const fullName =
-                String(member.full_name || "")
-                .toLowerCase();
+                const fullName =
+                    String(
+                        member.full_name || ""
+                    )
+                    .toLowerCase();
 
 
-            const phone =
-                String(member.phone || "")
-                .toLowerCase();
+                const phone =
+                    String(
+                        member.phone || ""
+                    )
+                    .toLowerCase();
 
 
-            const email =
-                String(member.email || "")
-                .toLowerCase();
+                const email =
+                    String(
+                        member.email || ""
+                    )
+                    .toLowerCase();
 
 
-            const location =
-                String(member.location || "")
-                .toLowerCase();
+                const location =
+                    String(
+                        member.location || ""
+                    )
+                    .toLowerCase();
 
 
-            const purpose =
-                String(member.purpose || "")
-                .toLowerCase();
+                const purpose =
+                    String(
+                        member.purpose || ""
+                    )
+                    .toLowerCase();
 
 
-            return (
+                return (
 
-                fullName.includes(searchText)
+                    fullName.includes(
+                        searchText
+                    )
 
-                ||
+                    ||
 
-                phone.includes(searchText)
+                    phone.includes(
+                        searchText
+                    )
 
-                ||
+                    ||
 
-                email.includes(searchText)
+                    email.includes(
+                        searchText
+                    )
 
-                ||
+                    ||
 
-                location.includes(searchText)
+                    location.includes(
+                        searchText
+                    )
 
-                ||
+                    ||
 
-                purpose.includes(searchText)
+                    purpose.includes(
+                        searchText
+                    )
 
-            );
+                );
 
-        });
+            }
+        );
 
 
 
     /*
     =============================================
-    DISPLAY ROWS
+    EMPTY RESULT
     =============================================
     */
 
-    filtered.forEach(function(member, index) {
+    if (
+        filtered.length === 0
+    ) {
 
+        memberTable.innerHTML = `
 
-        const row =
-            document.createElement("tr");
+            <tr>
 
-
-        row.innerHTML = `
-
-            <td>
-                ${index + 1}
-            </td>
-
-            <td>
-                ${escapeHTML(member.full_name || "-")}
-            </td>
-
-            <td>
-                ${escapeHTML(member.phone || "-")}
-            </td>
-
-            <td>
-                ${escapeHTML(member.email || "-")}
-            </td>
-
-            <td>
-                ${escapeHTML(member.location || "-")}
-            </td>
-
-            <td>
-                ₦${Number(member.amount || 0)
-                    .toLocaleString()}
-            </td>
-
-            <td>
-                ${escapeHTML(member.purpose || "-")}
-            </td>
-
-            <td>
-
-                <button
-                    type="button"
-                    class="edit"
-                    onclick="editMember(${member.id})"
+                <td
+                    colspan="10"
+                    class="empty"
                 >
-                    Edit
-                </button>
+                    No family members found.
+                </td>
 
-                <button
-                    type="button"
-                    class="del"
-                    onclick="deleteMember(${member.id})"
-                >
-                    Del
-                </button>
-
-            </td>
+            </tr>
 
         `;
 
 
-        table.appendChild(row);
+        document.getElementById(
+            "memberCount"
+        ).textContent =
+            "Showing 0 of " +
+            members.length +
+            " members";
 
-    });
+
+        return;
+
+    }
 
 
 
     /*
     =============================================
-    MEMBER COUNT
+    CREATE ROWS
+    =============================================
+    */
+
+    filtered.forEach(
+        function(member, index) {
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+
+                <td>
+
+                    <span class="member-id">
+                        #${escapeHTML(
+                            String(member.id)
+                        )}
+                    </span>
+
+                </td>
+
+
+                <td>
+                    <strong>
+                        ${escapeHTML(
+                            member.full_name || "-"
+                        )}
+                    </strong>
+                </td>
+
+
+                <td>
+                    ${escapeHTML(
+                        member.phone || "-"
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHTML(
+                        member.email || "-"
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHTML(
+                        member.location || "-"
+                    )}
+                </td>
+
+
+                <td class="amount-cell">
+
+                    ${formatNaira(
+                        member.amount
+                    )}
+
+                </td>
+
+
+                <td>
+                    ${escapeHTML(
+                        member.purpose || "-"
+                    )}
+                </td>
+
+
+                <td>
+                    ${formatDate(
+                        member.created_at
+                    )}
+                </td>
+
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="edit"
+                        onclick="editMember(${member.id})"
+                    >
+                        Edit
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="del"
+                        onclick="deleteMember(${member.id})"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            memberTable.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+
+    /*
+    =============================================
+    COUNT
     =============================================
     */
 
     document.getElementById(
         "memberCount"
     ).textContent =
-        "Members: " + members.length;
+
+        "Showing " +
+        filtered.length +
+        " of " +
+        members.length +
+        " members";
 
 }
 
 
 
 /*
-=================================================
+=========================================================
+UPDATE DASHBOARD
+=========================================================
+*/
+
+function updateDashboard() {
+
+
+    /*
+    =============================================
+    TOTAL MEMBERS
+    =============================================
+    */
+
+    document.getElementById(
+        "totalMembers"
+    ).textContent =
+        members.length;
+
+
+
+    /*
+    =============================================
+    TOTAL AMOUNT
+    =============================================
+    */
+
+    const totalAmount =
+        members.reduce(
+            function(total, member) {
+
+                return total +
+                    Number(
+                        member.amount || 0
+                    );
+
+            },
+            0
+        );
+
+
+    document.getElementById(
+        "totalAmount"
+    ).textContent =
+        formatNaira(
+            totalAmount
+        );
+
+
+
+    /*
+    =============================================
+    AVERAGE
+    =============================================
+    */
+
+    const average =
+        members.length > 0
+            ? totalAmount /
+              members.length
+            : 0;
+
+
+    document.getElementById(
+        "averageAmount"
+    ).textContent =
+        formatNaira(
+            average
+        );
+
+
+
+    /*
+    =============================================
+    LOCATIONS
+    =============================================
+    */
+
+    const locations =
+        new Set(
+            members
+            .map(
+                function(member) {
+
+                    return String(
+                        member.location || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+                }
+            )
+            .filter(
+                function(location) {
+
+                    return location !== "";
+
+                }
+            )
+        );
+
+
+    document.getElementById(
+        "totalLocations"
+    ).textContent =
+        locations.size;
+
+}
+
+
+
+/*
+=========================================================
+LOCATION STATISTICS
+=========================================================
+*/
+
+function updateLocationStatistics() {
+
+
+    const locationMap = {};
+
+
+    members.forEach(
+        function(member) {
+
+
+            const location =
+                String(
+                    member.location || ""
+                ).trim();
+
+
+            if (!location) {
+                return;
+            }
+
+
+            const key =
+                location.toLowerCase();
+
+
+            if (!locationMap[key]) {
+
+                locationMap[key] = {
+
+                    name: location,
+
+                    count: 0
+
+                };
+
+            }
+
+
+            locationMap[key].count++;
+
+        }
+    );
+
+
+    const locations =
+        Object.values(
+            locationMap
+        )
+        .sort(
+            function(a, b) {
+
+                return b.count -
+                    a.count;
+
+            }
+        );
+
+
+    const locationList =
+        document.getElementById(
+            "locationList"
+        );
+
+
+    locationList.innerHTML = "";
+
+
+    if (
+        locations.length === 0
+    ) {
+
+        locationList.innerHTML = `
+
+            <div class="empty">
+
+                No location data available.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    locations.forEach(
+        function(location) {
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "location-item";
+
+
+            item.innerHTML = `
+
+                <div class="location-name">
+
+                    ${escapeHTML(
+                        location.name
+                    )}
+
+                </div>
+
+
+                <div class="location-count">
+
+                    ${location.count}
+                    member${
+                        location.count === 1
+                            ? ""
+                            : "s"
+                    }
+
+                </div>
+
+            `;
+
+
+            locationList.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+
+/*
+=========================================================
 EDIT MEMBER
-=================================================
+=========================================================
 */
 
 function editMember(id) {
 
 
     const member =
-        members.find(function(item) {
+        members.find(
+            function(item) {
 
-            return item.id === id;
+                return item.id === id;
 
-        });
+            }
+        );
 
 
-    if (!member) return;
+    if (!member) {
+
+        showMessage(
+            "Member record not found.",
+            "error"
+        );
+
+        return;
+
+    }
 
 
     editingId = id;
@@ -1021,7 +2238,7 @@ function editMember(id) {
 
     /*
     =============================================
-    CHANGE FORM TITLE AND BUTTON
+    CHANGE FORM
     =============================================
     */
 
@@ -1031,10 +2248,11 @@ function editMember(id) {
         "Edit Family Member";
 
 
-    document.getElementById(
-        "submitButton"
-    ).textContent =
+    submitButton.textContent =
         "Update Member";
+
+
+    clearMessage();
 
 
 
@@ -1057,70 +2275,77 @@ function editMember(id) {
 
 
 /*
-=================================================
+=========================================================
 DELETE MEMBER
-=================================================
+=========================================================
 */
 
 async function deleteMember(id) {
 
 
     const member =
-        members.find(function(item) {
+        members.find(
+            function(item) {
 
-            return item.id === id;
+                return item.id === id;
 
-        });
-
-
-    if (!member) return;
-
+            }
+        );
 
 
-    /*
-    =============================================
-    CONFIRM DELETE
-    =============================================
-    */
+    if (!member) {
+        return;
+    }
 
-    const confirmDel =
+
+    const confirmDelete =
         confirm(
-            "Del " +
+            "Are you sure you want to delete " +
             member.full_name +
             " from the database?"
         );
 
 
-    if (!confirmDel) return;
+    if (!confirmDelete) {
+        return;
+    }
 
 
 
     /*
     =============================================
-    DELETE FROM SUPABASE
+    DELETE
     =============================================
     */
 
-    const { error } =
-
-        await supabaseClient
+    const {
+        error
+    } = await supabaseClient
 
         .from("idogwu_members")
 
         .delete()
 
-        .eq("id", id);
-
+        .eq(
+            "id",
+            id
+        );
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Delete error:",
+            error
+        );
+
 
         showMessage(
-            "Del failed: " +
-            error.message
+            "Delete failed: " +
+            error.message,
+            "error"
         );
+
 
         return;
 
@@ -1139,28 +2364,19 @@ async function deleteMember(id) {
 
 
 /*
-=================================================
+=========================================================
 CLEAR FORM
-=================================================
+=========================================================
 */
 
 function clearForm() {
 
 
-    document
-    .getElementById("memberForm")
-    .reset();
+    memberForm.reset();
 
 
     editingId = null;
 
-
-
-    /*
-    =============================================
-    RESET TITLE
-    =============================================
-    */
 
     document.getElementById(
         "formTitle"
@@ -1168,31 +2384,204 @@ function clearForm() {
         "Add Family Member";
 
 
-
-    /*
-    =============================================
-    RESET BUTTON
-    =============================================
-    */
-
-    document.getElementById(
-        "submitButton"
-    ).textContent =
+    submitButton.textContent =
         "Add Member";
+
+
+    submitButton.disabled =
+        false;
 
 }
 
 
 
 /*
-=================================================
-FORM SUBMISSION
-=================================================
+=========================================================
+CLEAR MESSAGE
+=========================================================
 */
 
-document
-.getElementById("memberForm")
-.addEventListener(
+function clearMessage() {
+
+    messageBox.textContent = "";
+
+    messageBox.className = "";
+
+}
+
+
+
+/*
+=========================================================
+EXPORT CSV
+=========================================================
+*/
+
+function exportCSV() {
+
+
+    if (
+        members.length === 0
+    ) {
+
+        showMessage(
+            "There are no members to export.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const headers = [
+
+        "Member ID",
+
+        "Full Name",
+
+        "Phone",
+
+        "Email",
+
+        "Location",
+
+        "Amount",
+
+        "Purpose",
+
+        "Registration Date"
+
+    ];
+
+
+    const rows =
+        members.map(
+            function(member) {
+
+                return [
+
+                    member.id,
+
+                    member.full_name || "",
+
+                    member.phone || "",
+
+                    member.email || "",
+
+                    member.location || "",
+
+                    Number(
+                        member.amount || 0
+                    ).toFixed(2),
+
+                    member.purpose || "",
+
+                    formatDate(
+                        member.created_at
+                    )
+
+                ];
+
+            }
+        );
+
+
+    const csvData = [
+
+        headers,
+
+        ...rows
+
+    ]
+    .map(
+        function(row) {
+
+            return row.map(
+                function(value) {
+
+                    return '"' +
+                        String(value)
+                        .replaceAll(
+                            '"',
+                            '""'
+                        ) +
+                        '"';
+
+                }
+            ).join(",");
+
+        }
+    )
+    .join("\n");
+
+
+    const blob =
+        new Blob(
+            [csvData],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href = url;
+
+
+    link.download =
+        "idogwu_family_members_" +
+        new Date()
+        .toISOString()
+        .slice(0, 10) +
+        ".csv";
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    document.body.removeChild(
+        link
+    );
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+
+    showMessage(
+        "Family member database exported successfully."
+    );
+
+}
+
+
+
+/*
+=========================================================
+FORM SUBMISSION
+=========================================================
+*/
+
+memberForm.addEventListener(
     "submit",
     function(event) {
 
@@ -1206,49 +2595,70 @@ document
 
 
 /*
-=================================================
-MESSAGE
-=================================================
+=========================================================
+CLEAR BUTTON
+=========================================================
 */
 
-function showMessage(text) {
+document
+    .getElementById(
+        "clearButton"
+    )
+    .addEventListener(
+        "click",
+        function() {
 
-    document.getElementById(
-        "message"
-    ).textContent = text;
+            clearForm();
 
-}
+            clearMessage();
+
+        }
+    );
 
 
 
 /*
-=================================================
-SECURITY / HTML ESCAPING
-=================================================
+=========================================================
+SEARCH
+=========================================================
 */
 
-function escapeHTML(value) {
+searchInput.addEventListener(
+    "input",
+    function() {
 
-    return String(value)
+        displayMembers();
 
-        .replaceAll("&", "&amp;")
-
-        .replaceAll("<", "&lt;")
-
-        .replaceAll(">", "&gt;")
-
-        .replaceAll('"', "&quot;")
-
-        .replaceAll("'", "&#039;");
-
-}
+    }
+);
 
 
 
 /*
-=================================================
+=========================================================
+EXPORT BUTTON
+=========================================================
+*/
+
+document
+    .getElementById(
+        "exportButton"
+    )
+    .addEventListener(
+        "click",
+        function() {
+
+            exportCSV();
+
+        }
+    );
+
+
+
+/*
+=========================================================
 START APPLICATION
-=================================================
+=========================================================
 */
 
 loadMembers();
