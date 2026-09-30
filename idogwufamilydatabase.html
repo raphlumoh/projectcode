@@ -6,20 +6,20 @@
     <meta charset="UTF-8">
 
     <meta
-        name="viewport"  content="width=device-width, initial-scale=1.0"
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
 
     <title>IDOGWU FAMILY DATABASE</title>
 
-    <link
-        rel="stylesheet" href="style.css"
-    >
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="style.css">
 
     <!-- Supabase JavaScript -->
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
-<link rel="stylesheet" href="idogwufanilydatabase.css">
+
 </head>
 
 
@@ -106,6 +106,7 @@
             <button
                 id="forgotPasswordButton"
                 class="btn btn-light full-width"
+                type="button"
             >
                 Forgot Password?
             </button>
@@ -153,6 +154,7 @@
             <button
                 id="logoutButton"
                 class="btn btn-danger"
+                type="button"
             >
                 Logout
             </button>
@@ -370,6 +372,7 @@
                 <button
                     id="saveMemberButton"
                     class="btn btn-primary"
+                    type="button"
                 >
                     Save Member
                 </button>
@@ -378,6 +381,7 @@
                 <button
                     id="clearFormButton"
                     class="btn btn-light"
+                    type="button"
                 >
                     Clear Form
                 </button>
@@ -416,6 +420,7 @@
                 <button
                     id="refreshButton"
                     class="btn btn-primary"
+                    type="button"
                 >
                     Refresh
                 </button>
@@ -424,6 +429,7 @@
                 <button
                     id="exportButton"
                     class="btn btn-secondary"
+                    type="button"
                 >
                     Export CSV
                 </button>
@@ -440,21 +446,13 @@
                         <tr>
 
                             <th>S/N</th>
-
                             <th>Full Name</th>
-
                             <th>Phone</th>
-
                             <th>Email</th>
-
                             <th>Location</th>
-
                             <th>Amount</th>
-
                             <th>Purpose</th>
-
                             <th>Date</th>
-
                             <th>Actions</th>
 
                         </tr>
@@ -471,7 +469,6 @@
                                 class="table-message"
                             >
                                 Please login to view members.
-
                             </td>
 
                         </tr>
@@ -527,6 +524,7 @@
             <button
                 id="sendRecoveryButton"
                 class="btn btn-primary full-width"
+                type="button"
             >
                 Send Recovery Email
             </button>
@@ -543,6 +541,7 @@
                 <button
                     id="closeForgotPassword"
                     class="btn btn-light"
+                    type="button"
                 >
                     Close
                 </button>
@@ -610,6 +609,7 @@
             <button
                 id="saveNewPassword"
                 class="btn btn-primary full-width"
+                type="button"
             >
                 Save New Password
             </button>
@@ -640,13 +640,11 @@
     </footer>
 
 
-    <!-- =====================================================
-         APPLICATION JAVASCRIPT
-    ====================================================== -->
+<!-- =====================================================
+     APPLICATION JAVASCRIPT
+====================================================== -->
 
-    <script src="script.js" idogwufamilydatabase></script>
-    
+<script src="script.js"></script>
 
 </body>
-
 </html>
