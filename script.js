@@ -14,7 +14,7 @@ const SUPABASE_URL =
 */
 
 const SUPABASE_KEY =
-    "YOUR_EXISTING_SUPABASE_PUBLISHABLE_KEY";
+    "1Chairman@";
 
 
 const supabaseClient =
