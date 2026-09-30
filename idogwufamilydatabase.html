@@ -6,762 +6,269 @@
     <meta charset="UTF-8">
 
     <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        name="viewport"  content="width=device-width, initial-scale=1.0"
     >
 
     <title>IDOGWU FAMILY DATABASE</title>
-
-
-    <!-- =====================================================
-         SUPABASE
-    ====================================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-    <!-- =====================================================
-         STYLES
-    ====================================================== -->
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f2f6f3;
-            color: #222;
-        }
-
-
-        /* =================================================
-           HEADER
-        ================================================= */
-
-        header {
-            background: linear-gradient(
-                135deg,
-                #126b35,
-                #0b4d27
-            );
-
-            color: white;
-            text-align: center;
-            padding: 35px 15px;
-        }
-
-
-        header h1 {
-            margin: 0;
-            font-size: 32px;
-            letter-spacing: 1px;
-        }
-
-
-        header p {
-            margin: 8px 0 0;
-        }
-
-
-        .subtitle {
-            opacity: 0.9;
-        }
-
-
-        /* =================================================
-           MAIN CONTAINER
-        ================================================= */
-
-        .container {
-            width: 94%;
-            max-width: 1200px;
-            margin: 25px auto;
-        }
-
-
-        /* =================================================
-           DASHBOARD
-        ================================================= */
-
-        .dashboard {
-            display: grid;
-
-            grid-template-columns:
-                repeat(4, 1fr);
-
-            gap: 18px;
-
-            margin-bottom: 25px;
-        }
-
-
-        .stat-card {
-            background: white;
-
-            padding: 22px;
-
-            border-radius: 12px;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, 0.08);
-
-            border-left: 5px solid #126b35;
-        }
-
-    .paid-card {
-        border-left-color: #126b35;
-    }
-
-        .unpaid-card {
-        border-left-color: #b00020;
-        }
-
-        .unpaid-card .stat-value {
-        color: #b00020;
-    }
-
-        .stat-title {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-
-        .stat-value {
-            font-size: 27px;
-            font-weight: bold;
-            color: #126b35;
-        }
-
-
-        /* =================================================
-           CARD
-        ================================================= */
-
-        .card {
-            background: white;
-
-            padding: 25px;
-
-            margin-bottom: 25px;
-
-            border-radius: 12px;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, 0.08);
-        }
-
-
-        h2 {
-            color: #126b35;
-            margin-top: 0;
-        }
-
-
-        /* =================================================
-           FORM
-        ================================================= */
-
-        .form-grid {
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 18px;
-        }
-
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-
-        .full {
-            grid-column: 1 / -1;
-        }
-
-
-        label {
-            font-weight: bold;
-            margin-bottom: 7px;
-        }
-
-
-        input,
-        select {
-            width: 100%;
-
-            padding: 13px;
-
-            border: 1px solid #ccc;
-
-            border-radius: 7px;
-
-            font-size: 15px;
-
-            background: white;
-        }
-
-
-        input:focus,
-        select:focus {
-            outline: none;
-
-            border-color: #126b35;
-
-            box-shadow:
-                0 0 0 2px
-                rgba(18, 107, 53, 0.1);
-        }
-
-
-        /* =================================================
-           BUTTONS
-        ================================================= */
-
-        button {
-            padding: 12px 18px;
-
-            border: none;
-
-            border-radius: 7px;
-
-            cursor: pointer;
-
-            font-weight: bold;
-
-            margin-right: 7px;
-
-            transition: 0.2s;
-        }
-
-
-        button:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
-        }
-
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-
-        .register {
-            background: #126b35;
-            color: white;
-        }
-
-
-        .clear {
-            background: #ddd;
-            color: #222;
-        }
-
-
-        .edit {
-            background: #e8f1eb;
-            color: #126b35;
-        }
-
-
-        .del {
-            background: #ffe5e5;
-            color: #b00020;
-        }
-
-
-        .export {
-            background: #126b35;
-            color: white;
-        }
-
-
-        /* =================================================
-           MESSAGE
-        ================================================= */
-
-        #message {
-            display: none;
-
-            padding: 12px 15px;
-
-            border-radius: 7px;
-
-            margin-bottom: 18px;
-
-            font-weight: bold;
-        }
-
-
-        #message.success {
-            display: block;
-
-            background: #e7f6ec;
-
-            color: #126b35;
-
-            border: 1px solid #b7dfc4;
-        }
-
-
-        #message.error {
-            display: block;
-
-            background: #ffeaea;
-
-            color: #b00020;
-
-            border: 1px solid #f0b8b8;
-        }
-
-
-        /* =================================================
-           DATABASE TOOLBAR
-        ================================================= */
-
-        .database-toolbar {
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 15px;
-
-            margin-bottom: 20px;
-
-            flex-wrap: wrap;
-        }
-
-
-        .search {
-            flex: 1;
-
-            min-width: 250px;
-
-            margin: 0;
-        }
-
-
-        /* =================================================
-           TABLE
-        ================================================= */
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-
-        table {
-            width: 100%;
-
-            border-collapse: collapse;
-
-            min-width: 1050px;
-        }
-
-
-        th,
-        td {
-            padding: 12px;
-
-            border-bottom:
-                1px solid #ddd;
-
-            text-align: left;
-        }
-
-
-        th {
-            background: #126b35;
-
-            color: white;
-
-            white-space: nowrap;
-        }
-
-
-        tr:hover {
-            background: #f5f9f6;
-        }
-
-
-        .amount-cell {
-            font-weight: bold;
-
-            color: #126b35;
-
-            white-space: nowrap;
-        }
-
-
-        .member-id {
-            font-size: 12px;
-
-            color: #777;
-        }
-
-
-        /* =================================================
-           LOCATION STATISTICS
-        ================================================= */
-
-        .location-list {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(180px, 1fr));
-
-            gap: 12px;
-        }
-
-
-        .location-item {
-            background: #f2f6f3;
-
-            padding: 15px;
-
-            border-radius: 8px;
-
-            border-left:
-                4px solid #126b35;
-        }
-
-
-        .location-name {
-            font-weight: bold;
-        }
-
-
-        .location-count {
-            color: #666;
-
-            font-size: 13px;
-
-            margin-top: 4px;
-        }
-
-
-        /* =================================================
-           EMPTY STATE
-        ================================================= */
-
-        .empty {
-            text-align: center;
-
-            padding: 30px;
-
-            color: #777;
-        }
-
-
-        /* =================================================
-           NOTE
-        ================================================= */
-
-        .note {
-            color: #666;
-
-            font-size: 13px;
-
-            margin-top: 15px;
-        }
-
-
-        /* =================================================
-           LOADING
-        ================================================= */
-
-        .loading {
-            text-align: center;
-
-            padding: 30px;
-
-            color: #126b35;
-
-            font-weight: bold;
-        }
-
-
-        /* =================================================
-           FOOTER
-        ================================================= */
-
-        footer {
-            text-align: center;
-
-            padding: 30px 15px;
-
-            color: #666;
-
-            background: white;
-
-            margin-top: 30px;
-        }
-
-
-        /* =================================================
-           MOBILE
-        ================================================= */
-
-        @media (max-width: 900px) {
-
-            .dashboard {
-                grid-template-columns:
-                    repeat(2, 1fr);
-            }
-
-        }
-
-
-        @media (max-width: 700px) {
-
-            header h1 {
-                font-size: 24px;
-            }
-
-
-            .container {
-                width: 96%;
-            }
-
-
-            .card {
-                padding: 18px;
-            }
-
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-
-            .full {
-                grid-column: auto;
-            }
-
-
-            .dashboard {
-                grid-template-columns: 1fr 1fr;
-            }
-
-
-            .stat-value {
-                font-size: 21px;
-            }
-
-
-            .database-toolbar {
-                align-items: stretch;
-            }
-
-
-            .search {
-                min-width: 100%;
-            }
-
-
-            .export {
-                width: 100%;
-            }
-
-        }
-
-
-        @media (max-width: 450px) {
-
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-
-        }
-
-    </style>
-
+    <link
+        rel="stylesheet" href="style.css"
+    >
+
+    <!-- Supabase JavaScript -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+<link rel="stylesheet" href="idogwufanilydatabase.css">
 </head>
 
 
 <body>
 
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-<!-- =====================================================
-     HEADER
-====================================================== -->
+    <header>
 
-<header>
+        <h1>IDOGWU FAMILY DATABASE</h1>
 
-    <h1>
-        IDOGWU FAMILY DATABASE
-    </h1>
+        <p>
+            Unity • Progress • Collective Responsibility
+        </p>
 
-    <p>
-        Unity • Progress • Collective Responsibility
-    </p>
+        <p>
+            Family Members Registration Portal
+        </p>
 
-    <p class="subtitle">
-        Family Members Registration Portal
-    </p>
-
-</header>
+    </header>
 
 
+    <!-- =====================================================
+         LOGIN
+    ====================================================== -->
 
-<div class="container">
+    <section
+        id="adminLoginBox"
+        class="login-wrapper"
+    >
+
+        <div class="login-card">
+
+            <h2>Administrator Login</h2>
+
+            <p class="login-description">
+                Please sign in to access the
+                Idogwu Family Database.
+            </p>
 
 
-    <!-- =================================================
-         DASHBOARD
-    ================================================== -->
+            <div class="form-group">
 
-    <!-- =================================================
-     DASHBOARD
-================================================== -->
+                <label for="adminEmail">
+                    Administrator Email
+                </label>
 
-<div class="dashboard">
+                <input
+                    type="email"
+                    id="adminEmail"
+                    placeholder="Enter administrator email"
+                    autocomplete="email"
+                >
 
-    <!-- TOTAL MEMBERS -->
+            </div>
 
-    <div class="stat-card">
 
-        <div class="stat-title">
-            Total Members
+            <div class="form-group">
+
+                <label for="adminPassword">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="adminPassword"
+                    placeholder="Enter password"
+                    autocomplete="current-password"
+                >
+
+            </div>
+
+
+            <button
+                id="adminLoginButton"
+                class="btn btn-primary full-width"
+            >
+                Login
+            </button>
+
+
+            <button
+                id="forgotPasswordButton"
+                class="btn btn-light full-width"
+            >
+                Forgot Password?
+            </button>
+
+
+            <div
+                id="loginMessage"
+                class="message"
+            ></div>
+
         </div>
 
-        <div
-            class="stat-value"
-            id="totalMembers"
-        >
-            0
-        </div>
-
-    </div>
+    </section>
 
 
-    <!-- MEMBERS WHO PAID -->
+    <!-- =====================================================
+         ADMIN APPLICATION
+    ====================================================== -->
 
-    <div class="stat-card paid-card">
+    <main
+        id="adminApplication"
+        class="container"
+    >
 
-        <div class="stat-title">
-            Members Paid
-        </div>
+        <!-- =================================================
+             TOP BAR
+        ================================================== -->
 
-        <div
-            class="stat-value"
-            id="paidMembers"
-        >
-            0
-        </div>
+        <section class="top-bar">
 
-    </div>
+            <div>
 
+                <strong>
+                    IDOGWU FAMILY DATABASE
+                </strong>
 
-    <!-- MEMBERS NOT PAID -->
+                <div
+                    id="loggedInUser"
+                    class="logged-user"
+                ></div>
 
-    <div class="stat-card unpaid-card">
-
-        <div class="stat-title">
-            Members Not Paid
-        </div>
-
-        <div
-            class="stat-value"
-            id="unpaidMembers"
-        >
-            0
-        </div>
-
-    </div>
+            </div>
 
 
-    <!-- TOTAL CONTRIBUTIONS -->
+            <button
+                id="logoutButton"
+                class="btn btn-danger"
+            >
+                Logout
+            </button>
 
-    <div class="stat-card">
-
-        <div class="stat-title">
-            Total Contributions
-        </div>
-
-        <div
-            class="stat-value"
-            id="totalAmount"
-        >
-            ₦0
-        </div>
-
-    </div>
+        </section>
 
 
-    <!-- LOCATIONS -->
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
 
-    <div class="stat-card">
+        <section class="dashboard">
 
-        <div class="stat-title">
-            Locations
-        </div>
+            <div class="stat-card">
 
-        <div
-            class="stat-value"
-            id="totalLocations"
-        >
-            0
-        </div>
+                <h3>Total Members</h3>
 
-    </div>
+                <div
+                    id="totalMembers"
+                    class="stat-value"
+                >
+                    0
+                </div>
 
-
-    <!-- AVERAGE -->
-
-    <div class="stat-card">
-
-        <div class="stat-title">
-            Average Payment
-        </div>
-
-        <div
-            class="stat-value"
-            id="averageAmount"
-        >
-            ₦0
-        </div>
-
-    </div>
-
-</div>
+            </div>
 
 
-    <!-- =================================================
-         REGISTRATION FORM
-    ================================================== -->
+            <div class="stat-card">
 
-    <div class="card">
+                <h3>Members Who Paid</h3>
 
-        <h2 id="formTitle">
-            Add Family Member
-        </h2>
+                <div
+                    id="paidMembers"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
 
 
-        <div id="message"></div>
+            <div class="stat-card">
+
+                <h3>Members Not Paid</h3>
+
+                <div
+                    id="unpaidMembers"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
 
 
-        <form id="memberForm">
+            <div class="stat-card">
+
+                <h3>Total Contributions</h3>
+
+                <div
+                    id="totalAmount"
+                    class="stat-value"
+                >
+                    ₦0.00
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>Average Payment</h3>
+
+                <div
+                    id="averageAmount"
+                    class="stat-value"
+                >
+                    ₦0.00
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>Locations</h3>
+
+                <div
+                    id="totalLocations"
+                    class="stat-value"
+                >
+                    0
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MEMBER REGISTRATION
+        ================================================== -->
+
+        <section class="section">
+
+            <h2 id="formTitle">
+                Register Family Member
+            </h2>
+
+
+            <input
+                type="hidden"
+                id="memberId"
+            >
 
 
             <div class="form-grid">
-
-
-                <!-- FULL NAME -->
 
                 <div class="form-group">
 
@@ -773,15 +280,10 @@
                         type="text"
                         id="fullName"
                         placeholder="Enter full name"
-                        autocomplete="name"
-                        required
                     >
 
                 </div>
 
-
-
-                <!-- PHONE -->
 
                 <div class="form-group">
 
@@ -792,16 +294,11 @@
                     <input
                         type="tel"
                         id="phone"
-                        placeholder="08012345678"
-                        autocomplete="tel"
-                        required
+                        placeholder="Enter phone number"
                     >
 
                 </div>
 
-
-
-                <!-- EMAIL -->
 
                 <div class="form-group">
 
@@ -812,15 +309,11 @@
                     <input
                         type="email"
                         id="email"
-                        placeholder="example@email.com"
-                        autocomplete="email"
+                        placeholder="Enter email address"
                     >
 
                 </div>
 
-
-
-                <!-- LOCATION -->
 
                 <div class="form-group">
 
@@ -831,20 +324,16 @@
                     <input
                         type="text"
                         id="location"
-                        placeholder="State, Town or Country"
-                        required
+                        placeholder="State / City / Country"
                     >
 
                 </div>
 
 
-
-                <!-- AMOUNT -->
-
                 <div class="form-group">
 
                     <label for="amount">
-                        Donation / Registration Amount (₦)
+                        Contribution Amount
                     </label>
 
                     <input
@@ -852,14 +341,11 @@
                         id="amount"
                         min="0"
                         step="0.01"
-                        placeholder="Enter amount"
+                        placeholder="0"
                     >
 
                 </div>
 
-
-
-                <!-- PURPOSE -->
 
                 <div class="form-group">
 
@@ -870,1918 +356,295 @@
                     <input
                         type="text"
                         id="purpose"
-                        placeholder="Donation, Registration, Welfare, etc."
+                        placeholder="Purpose of contribution"
                     >
 
                 </div>
 
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    id="saveMemberButton"
+                    class="btn btn-primary"
+                >
+                    Save Member
+                </button>
+
+
+                <button
+                    id="clearFormButton"
+                    class="btn btn-light"
+                >
+                    Clear Form
+                </button>
 
             </div>
 
 
-            <br>
+            <div
+                id="memberMessage"
+                class="message"
+            ></div>
+
+        </section>
+
+
+        <!-- =================================================
+             MEMBER DATABASE
+        ================================================== -->
+
+        <section class="section">
+
+            <h2>
+                Registered Family Members
+            </h2>
+
+
+            <div class="toolbar">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search by name, phone, email, location or purpose..."
+                >
+
+
+                <button
+                    id="refreshButton"
+                    class="btn btn-primary"
+                >
+                    Refresh
+                </button>
+
+
+                <button
+                    id="exportButton"
+                    class="btn btn-secondary"
+                >
+                    Export CSV
+                </button>
+
+            </div>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>S/N</th>
+
+                            <th>Full Name</th>
+
+                            <th>Phone</th>
+
+                            <th>Email</th>
+
+                            <th>Location</th>
+
+                            <th>Amount</th>
+
+                            <th>Purpose</th>
+
+                            <th>Date</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="membersTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="9"
+                                class="table-message"
+                            >
+                                Please login to view members.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FORGOT PASSWORD MODAL
+    ====================================================== -->
+
+    <div
+        id="forgotPasswordBox"
+        class="modal"
+    >
+
+        <div class="modal-card">
+
+            <h2>
+                Forgot Password
+            </h2>
+
+
+            <p>
+                Enter your administrator email address.
+                A password recovery link will be sent to you.
+            </p>
+
+
+            <div class="form-group">
+
+                <label for="recoveryEmail">
+                    Administrator Email
+                </label>
+
+                <input
+                    type="email"
+                    id="recoveryEmail"
+                    placeholder="Enter email address"
+                >
+
+            </div>
 
 
             <button
-                type="submit"
-                class="register"
-                id="submitButton"
+                id="sendRecoveryButton"
+                class="btn btn-primary full-width"
             >
-                Add Member
+                Send Recovery Email
             </button>
 
 
-            <button
-                type="button"
-                class="clear"
-                id="clearButton"
-            >
-                Clear
-            </button>
+            <div
+                id="recoveryMessage"
+                class="message"
+            ></div>
 
 
-        </form>
+            <div class="modal-actions">
 
+                <button
+                    id="closeForgotPassword"
+                    class="btn btn-light"
+                >
+                    Close
+                </button>
 
-        <p class="note">
+            </div>
 
-            * Required fields.
-            Contribution amount and purpose are optional.
-
-        </p>
+        </div>
 
     </div>
 
 
+    <!-- =====================================================
+         PASSWORD RESET MODAL
+    ====================================================== -->
 
-    <!-- =================================================
-         FAMILY MEMBERS
-    ================================================== -->
+    <div
+        id="passwordResetBox"
+        class="modal"
+    >
 
-    <div class="card">
+        <div class="modal-card">
 
-        <h2>
-            Family Members
-        </h2>
-
-
-        <div class="database-toolbar">
+            <h2>
+                Reset Administrator Password
+            </h2>
 
 
-            <input
-                type="text"
-                id="search"
-                class="search"
-                placeholder="Search name, phone, email, location or purpose..."
-            >
+            <p>
+                Enter your new administrator password.
+            </p>
+
+
+            <div class="form-group">
+
+                <label for="newAdminPassword">
+                    New Password
+                </label>
+
+                <input
+                    type="password"
+                    id="newAdminPassword"
+                    placeholder="Enter new password"
+                    autocomplete="new-password"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirmAdminPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmAdminPassword"
+                    placeholder="Confirm new password"
+                    autocomplete="new-password"
+                >
+
+            </div>
 
 
             <button
-                type="button"
-                class="export"
-                id="exportButton"
+                id="saveNewPassword"
+                class="btn btn-primary full-width"
             >
-                Export CSV
+                Save New Password
             </button>
 
 
-        </div>
-
-
-        <p id="memberCount">
-            Showing 0 of 0 members
-        </p>
-
-
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            S/N
-                        </th>
-
-                        <th>
-                            Member ID
-                        </th>
-
-                        <th>
-                            Name
-                        </th>
-
-                        <th>
-                            Phone
-                        </th>
-
-                        <th>
-                            Email
-                        </th>
-
-                        <th>
-                            Location
-                        </th>
-
-                        <th>
-                            Amount
-                        </th>
-
-                        <th>
-                            Purpose
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Action
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="memberTable">
-
-                </tbody>
-
-            </table>
+            <div
+                id="resetMessage"
+                class="message"
+            ></div>
 
         </div>
 
     </div>
 
 
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
 
-    <!-- =================================================
-         LOCATION STATISTICS
-    ================================================== -->
+    <footer>
 
-    <div class="card">
-
-        <h2>
-            Family Location Statistics
-        </h2>
-
-
-        <div
-            id="locationList"
-            class="location-list"
-        >
-
-        </div>
-
-    </div>
-
-
-</div>
-
-
-
-<!-- =====================================================
-     FOOTER
-====================================================== -->
-
-<footer>
-
-    <strong>
-        IDOGWU FAMILY UNION
-    </strong>
-
-    <br>
-
-    Building a stronger family together.
-
-    <br><br>
-
-    <small>
         IDOGWU FAMILY DATABASE
-    </small>
 
-</footer>
+        <br>
 
+        Unity • Progress • Collective Responsibility
 
+    </footer>
 
-<!-- =====================================================
-     JAVASCRIPT
-====================================================== -->
 
-<script>
+    <!-- =====================================================
+         APPLICATION JAVASCRIPT
+    ====================================================== -->
 
-
-/*
-=========================================================
-SUPABASE CONNECTION
-=========================================================
-*/
-
-const SUPABASE_URL =
-    "https://hzqawunnchuryzgmgiwi.supabase.co";
-
-
-const SUPABASE_KEY =
-    "sb_publishable_IBjtMX_HXiG1drNw8MksRg_PtddAlBa";
-
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-
-
-/*
-=========================================================
-GLOBAL VARIABLES
-=========================================================
-*/
-
-let members = [];
-
-let editingId = null;
-
-
-
-/*
-=========================================================
-DOM ELEMENTS
-=========================================================
-*/
-
-const memberForm =
-    document.getElementById(
-        "memberForm"
-    );
-
-
-const messageBox =
-    document.getElementById(
-        "message"
-    );
-
-
-const submitButton =
-    document.getElementById(
-        "submitButton"
-    );
-
-
-const memberTable =
-    document.getElementById(
-        "memberTable"
-    );
-
-
-const searchInput =
-    document.getElementById(
-        "search"
-    );
-
-
-
-/*
-=========================================================
-FORMAT NAIRA
-=========================================================
-*/
-
-function formatNaira(amount) {
-
-    return "₦" +
-        Number(amount || 0)
-        .toLocaleString(
-            "en-NG",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        );
-
-}
-
-
-
-/*
-=========================================================
-FORMAT DATE
-=========================================================
-*/
-
-function formatDate(dateValue) {
-
-    if (!dateValue) {
-        return "-";
-    }
-
-
-    const date =
-        new Date(dateValue);
-
-
-    if (isNaN(date.getTime())) {
-        return "-";
-    }
-
-
-    return date.toLocaleDateString(
-        "en-NG",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-
-/*
-=========================================================
-SHOW MESSAGE
-=========================================================
-*/
-
-function showMessage(
-    text,
-    type = "success"
-) {
-
-    messageBox.textContent = text;
-
-    messageBox.className = type;
-
-    setTimeout(
-        function() {
-
-            messageBox.textContent = "";
-
-            messageBox.className = "";
-
-        },
-        5000
-    );
-
-}
-
-
-
-/*
-=========================================================
-ESCAPE HTML
-=========================================================
-*/
-
-function escapeHTML(value) {
-
-    return String(value)
-
-        .replaceAll(
-            "&",
-            "&amp;"
-        )
-
-        .replaceAll(
-            "<",
-            "&lt;"
-        )
-
-        .replaceAll(
-            ">",
-            "&gt;"
-        )
-
-        .replaceAll(
-            '"',
-            "&quot;"
-        )
-
-        .replaceAll(
-            "'",
-            "&#039;"
-        );
-
-}
-
-
-
-/*
-=========================================================
-LOAD MEMBERS
-=========================================================
-*/
-
-async function loadMembers() {
-
-    memberTable.innerHTML = `
-
-        <tr>
-
-            <td
-                colspan="10"
-                class="loading"
-            >
-                Loading family members...
-            </td>
-
-        </tr>
-
-    `;
-
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-
-        .from("idogwu_members")
-
-        .select("*")
-
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Load error:",
-            error
-        );
-
-
-        memberTable.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    Unable to load members.
-                </td>
-
-            </tr>
-
-        `;
-
-
-        showMessage(
-            "Unable to load members: " +
-            error.message,
-            "error"
-        );
-
-
-        return;
-
-    }
-
-
-    members = data || [];
-
-
-    displayMembers();
-
-    updateDashboard();
-
-    updateLocationStatistics();
-
-}
-
-
-
-/*
-=========================================================
-REGISTER / UPDATE MEMBER
-=========================================================
-*/
-
-async function registerMember() {
-
-
-    const fullName =
-        document
-        .getElementById(
-            "fullName"
-        )
-        .value
-        .trim();
-
-
-    const phone =
-        document
-        .getElementById(
-            "phone"
-        )
-        .value
-        .trim();
-
-
-    const email =
-        document
-        .getElementById(
-            "email"
-        )
-        .value
-        .trim();
-
-
-    const location =
-        document
-        .getElementById(
-            "location"
-        )
-        .value
-        .trim();
-
-
-    const amount =
-        document
-        .getElementById(
-            "amount"
-        )
-        .value;
-
-
-    const purpose =
-        document
-        .getElementById(
-            "purpose"
-        )
-        .value
-        .trim();
-
-
-
-    /*
-    =============================================
-    VALIDATION
-    =============================================
-    */
-
-    if (
-        !fullName ||
-        !phone ||
-        !location
-    ) {
-
-        showMessage(
-            "Please complete all required fields.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    /*
-    =============================================
-    PHONE VALIDATION
-    =============================================
-    */
-
-    if (
-        phone.length < 7
-    ) {
-
-        showMessage(
-            "Please enter a valid phone number.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    /*
-    =============================================
-    EMAIL VALIDATION
-    =============================================
-    */
-
-    if (
-        email &&
-        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-            email
-        )
-    ) {
-
-        showMessage(
-            "Please enter a valid email address.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-
-    /*
-    =============================================
-    PREVENT DOUBLE SUBMISSION
-    =============================================
-    */
-
-    submitButton.disabled = true;
-
-
-    submitButton.textContent =
-        editingId
-            ? "Updating..."
-            : "Registering...";
-
-
-
-    /*
-    =============================================
-    EDIT EXISTING MEMBER
-    =============================================
-    */
-
-    if (editingId) {
-
-
-        const {
-            error
-        } = await supabaseClient
-
-            .from("idogwu_members")
-
-            .update({
-
-                full_name:
-                    fullName,
-
-                phone:
-                    phone,
-
-                email:
-                    email || null,
-
-                location:
-                    location,
-
-                amount:
-                    amount
-                        ? Number(amount)
-                        : 0,
-
-                purpose:
-                    purpose || null
-
-            })
-
-            .eq(
-                "id",
-                editingId
-            );
-
-
-        if (error) {
-
-            console.error(
-                "Update error:",
-                error
-            );
-
-
-            showMessage(
-                "Update failed: " +
-                error.message,
-                "error"
-            );
-
-
-            submitButton.disabled =
-                false;
-
-
-            submitButton.textContent =
-                "Update Member";
-
-
-            return;
-
-        }
-
-
-        showMessage(
-            "Member updated successfully."
-        );
-
-    }
-
-
-
-    /*
-    =============================================
-    ADD NEW MEMBER
-    =============================================
-    */
-
-    else {
-
-
-        const {
-            error
-        } = await supabaseClient
-
-            .from("idogwu_members")
-
-            .insert({
-
-                full_name:
-                    fullName,
-
-                phone:
-                    phone,
-
-                email:
-                    email || null,
-
-                location:
-                    location,
-
-                amount:
-                    amount
-                        ? Number(amount)
-                        : 0,
-
-                purpose:
-                    purpose || null
-
-            });
-
-
-        if (error) {
-
-            console.error(
-                "Registration error:",
-                error
-            );
-
-
-            showMessage(
-                "Registration failed: " +
-                error.message,
-                "error"
-            );
-
-
-            submitButton.disabled =
-                false;
-
-
-            submitButton.textContent =
-                "Add Member";
-
-
-            return;
-
-        }
-
-
-        showMessage(
-            "Family member registered successfully!"
-        );
-
-    }
-
-
-
-    /*
-    =============================================
-    RESET
-    =============================================
-    */
-
-    clearForm();
-
-
-    await loadMembers();
-
-
-    submitButton.disabled =
-        false;
-
-}
-
-
-
-/*
-=========================================================
-DISPLAY MEMBERS
-=========================================================
-*/
-
-function displayMembers() {
-
-
-    const searchText =
-        searchInput
-        .value
-        .toLowerCase()
-        .trim();
-
-
-    memberTable.innerHTML = "";
-
-
-    const filtered =
-        members.filter(
-            function(member) {
-
-
-                const fullName =
-                    String(
-                        member.full_name || ""
-                    )
-                    .toLowerCase();
-
-
-                const phone =
-                    String(
-                        member.phone || ""
-                    )
-                    .toLowerCase();
-
-
-                const email =
-                    String(
-                        member.email || ""
-                    )
-                    .toLowerCase();
-
-
-                const location =
-                    String(
-                        member.location || ""
-                    )
-                    .toLowerCase();
-
-
-                const purpose =
-                    String(
-                        member.purpose || ""
-                    )
-                    .toLowerCase();
-
-
-                return (
-
-                    fullName.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    phone.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    email.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    location.includes(
-                        searchText
-                    )
-
-                    ||
-
-                    purpose.includes(
-                        searchText
-                    )
-
-                );
-
-            }
-        );
-
-
-
-    /*
-    =============================================
-    EMPTY RESULT
-    =============================================
-    */
-
-    if (
-        filtered.length === 0
-    ) {
-
-        memberTable.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="10"
-                    class="empty"
-                >
-                    No family members found.
-                </td>
-
-            </tr>
-
-        `;
-
-
-        document.getElementById(
-            "memberCount"
-        ).textContent =
-            "Showing 0 of " +
-            members.length +
-            " members";
-
-
-        return;
-
-    }
-
-
-
-    /*
-    =============================================
-    CREATE ROWS
-    =============================================
-    */
-
-    filtered.forEach(
-        function(member, index) {
-
-
-            const row =
-                document.createElement(
-                    "tr"
-                );
-
-
-            row.innerHTML = `
-
-                <td>
-                    ${index + 1}
-                </td>
-
-
-                <td>
-
-                    <span class="member-id">
-                        #${escapeHTML(
-                            String(member.id)
-                        )}
-                    </span>
-
-                </td>
-
-
-                <td>
-                    <strong>
-                        ${escapeHTML(
-                            member.full_name || "-"
-                        )}
-                    </strong>
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        member.phone || "-"
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        member.email || "-"
-                    )}
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        member.location || "-"
-                    )}
-                </td>
-
-
-                <td class="amount-cell">
-
-                    ${formatNaira(
-                        member.amount
-                    )}
-
-                </td>
-
-
-                <td>
-                    ${escapeHTML(
-                        member.purpose || "-"
-                    )}
-                </td>
-
-
-                <td>
-                    ${formatDate(
-                        member.created_at
-                    )}
-                </td>
-
-
-                <td>
-
-                    <button
-                        type="button"
-                        class="edit"
-                        onclick="editMember(${member.id})"
-                    >
-                        Edit
-                    </button>
-
-
-                    <button
-                        type="button"
-                        class="del"
-                        onclick="deleteMember(${member.id})"
-                    >
-                        Delete
-                    </button>
-
-                </td>
-
-            `;
-
-
-            memberTable.appendChild(
-                row
-            );
-
-        }
-    );
-
-
-
-    /*
-    =============================================
-    COUNT
-    =============================================
-    */
-
-    document.getElementById(
-        "memberCount"
-    ).textContent =
-
-        "Showing " +
-        filtered.length +
-        " of " +
-        members.length +
-        " members";
-
-}
-
-
-
-/*
-=========================================================
-UPDATE DASHBOARD
-=========================================================
-*/
-
-function updateDashboard() {
-
-
-    /*
-    =============================================
-    TOTAL MEMBERS
-    =============================================
-    */
-
-   const totalMembers =
-        members.length;
-
-    document.getElementById(
-        "totalMembers"
-    ).textContent =
-        totalMembers;
-
-
-/*
-    =============================================
-    MEMBERS WHO PAID
-    =============================================
+    <script src="script.js" idogwufamilydatabase></script>
     
-    A member is considered to have paid
-    when amount is greater than zero.
-    */
-
-    const paidMembers =
-        members.filter(
-            function(member) {
-
-                return Number(
-                    member.amount || 0
-                ) > 0;
-
-            }
-        ).length;
-
-
-    document.getElementById(
-        "paidMembers"
-    ).textContent =
-        paidMembers;
-
-
-
-    /*
-
-
-
-
-     /*
-    =============================================
-    MEMBERS WHO HAVE NOT PAID
-    =============================================
-    */
-
-    const unpaidMembers =
-        totalMembers -
-        paidMembers;
-
-
-    document.getElementById(
-        "unpaidMembers"
-    ).textContent =
-        unpaidMembers;
-
-
-
-    /*
-
-    /*
-    /*
-    =============================================
-    TOTAL AMOUNT
-    =============================================
-    */
-
-    const totalAmount =
-        members.reduce(
-            function(total, member) {
-
-                return total +
-                    Number(
-                        member.amount || 0
-                    );
-
-            },
-            0
-        );
-
-
-    document.getElementById(
-        "totalAmount"
-    ).textContent =
-        formatNaira(
-            totalAmount
-        );
-
-
-
-    /*
-    =============================================
-    AVERAGE PAYMENT
-    =============================================
-    */
-
-    const average =
-        paidMembers > 0
-            ? totalAmount / paidMembers
-            : 0;
-
-
-    document.getElementById(
-        "averageAmount"
-    ).textContent =
-        formatNaira(
-            average
-        );
-
-
-
-    /*
-
-    =============================================
-    LOCATIONS
-    =============================================
-    */
-
-    /*
-    =============================================
-    NUMBER OF LOCATIONS
-    =============================================
-    */
-
-    const locations =
-        new Set(
-
-            members
-                .map(
-                    function(member) {
-
-                        return String(
-                            member.location || ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-                    }
-                )
-
-                .filter(
-                    function(location) {
-
-                        return location !== "";
-
-                    }
-                )
-
-        );
-
-
-    document.getElementById(
-        "totalLocations"
-    ).textContent =
-        locations.size;
-
-}
-
-/*
-=========================================================
-LOCATION STATISTICS
-=========================================================
-*/
-
-function updateLocationStatistics() {
-
-
-    const locationMap = {};
-
-
-    members.forEach(
-        function(member) {
-
-
-            const location =
-                String(
-                    member.location || ""
-                ).trim();
-
-
-            if (!location) {
-                return;
-            }
-
-
-            const key =
-                location.toLowerCase();
-
-
-            if (!locationMap[key]) {
-
-                locationMap[key] = {
-
-                    name: location,
-
-                    count: 0
-
-                };
-
-            }
-
-
-            locationMap[key].count++;
-
-        }
-    );
-
-
-    const locations =
-        Object.values(
-            locationMap
-        )
-        .sort(
-            function(a, b) {
-
-                return b.count -
-                    a.count;
-
-            }
-        );
-
-
-    const locationList =
-        document.getElementById(
-            "locationList"
-        );
-
-
-    locationList.innerHTML = "";
-
-
-    if (
-        locations.length === 0
-    ) {
-
-        locationList.innerHTML = `
-
-            <div class="empty">
-
-                No location data available.
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    locations.forEach(
-        function(location) {
-
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "location-item";
-
-
-            item.innerHTML = `
-
-                <div class="location-name">
-
-                    ${escapeHTML(
-                        location.name
-                    )}
-
-                </div>
-
-
-                <div class="location-count">
-
-                    ${location.count}
-                    member${
-                        location.count === 1
-                            ? ""
-                            : "s"
-                    }
-
-                </div>
-
-            `;
-
-
-            locationList.appendChild(
-                item
-            );
-
-        }
-    );
-
-}
-
-
-
-/*
-=========================================================
-EDIT MEMBER
-=========================================================
-*/
-
-function editMember(id) {
-
-
-    const member =
-        members.find(
-            function(item) {
-
-                return item.id === id;
-
-            }
-        );
-
-
-    if (!member) {
-
-        showMessage(
-            "Member record not found.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    editingId = id;
-
-
-
-    /*
-    =============================================
-    FILL FORM
-    =============================================
-    */
-
-    document.getElementById(
-        "fullName"
-    ).value =
-        member.full_name || "";
-
-
-    document.getElementById(
-        "phone"
-    ).value =
-        member.phone || "";
-
-
-    document.getElementById(
-        "email"
-    ).value =
-        member.email || "";
-
-
-    document.getElementById(
-        "location"
-    ).value =
-        member.location || "";
-
-
-    document.getElementById(
-        "amount"
-    ).value =
-        member.amount || "";
-
-
-    document.getElementById(
-        "purpose"
-    ).value =
-        member.purpose || "";
-
-
-
-    /*
-    =============================================
-    CHANGE FORM
-    =============================================
-    */
-
-    document.getElementById(
-        "formTitle"
-    ).textContent =
-        "Edit Family Member";
-
-
-    submitButton.textContent =
-        "Update Member";
-
-
-    clearMessage();
-
-
-
-    /*
-    =============================================
-    SCROLL TO FORM
-    =============================================
-    */
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior: "smooth"
-
-    });
-
-}
-
-
-
-/*
-=========================================================
-DELETE MEMBER
-=========================================================
-*/
-
-async function deleteMember(id) {
-
-
-    const member =
-        members.find(
-            function(item) {
-
-                return item.id === id;
-
-            }
-        );
-
-
-    if (!member) {
-        return;
-    }
-
-
-    const confirmDelete =
-        confirm(
-            "Are you sure you want to delete " +
-            member.full_name +
-            " from the database?"
-        );
-
-
-    if (!confirmDelete) {
-        return;
-    }
-
-
-
-    /*
-    =============================================
-    DELETE
-    =============================================
-    */
-
-    const {
-        error
-    } = await supabaseClient
-
-        .from("idogwu_members")
-
-        .delete()
-
-        .eq(
-            "id",
-            id
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Delete error:",
-            error
-        );
-
-
-        showMessage(
-            "Delete failed: " +
-            error.message,
-            "error"
-        );
-
-
-        return;
-
-    }
-
-
-    showMessage(
-        "Member deleted successfully."
-    );
-
-
-    await loadMembers();
-
-}
-
-
-
-/*
-=========================================================
-CLEAR FORM
-=========================================================
-*/
-
-function clearForm() {
-
-
-    memberForm.reset();
-
-
-    editingId = null;
-
-
-    document.getElementById(
-        "formTitle"
-    ).textContent =
-        "Add Family Member";
-
-
-    submitButton.textContent =
-        "Add Member";
-
-
-    submitButton.disabled =
-        false;
-
-}
-
-
-
-/*
-=========================================================
-CLEAR MESSAGE
-=========================================================
-*/
-
-function clearMessage() {
-
-    messageBox.textContent = "";
-
-    messageBox.className = "";
-
-}
-
-
-
-/*
-=========================================================
-EXPORT CSV
-=========================================================
-*/
-
-function exportCSV() {
-
-
-    if (
-        members.length === 0
-    ) {
-
-        showMessage(
-            "There are no members to export.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const headers = [
-
-        "Member ID",
-
-        "Full Name",
-
-        "Phone",
-
-        "Email",
-
-        "Location",
-
-        "Amount",
-
-        "Purpose",
-
-        "Registration Date"
-
-    ];
-
-
-    const rows =
-        members.map(
-            function(member) {
-
-                return [
-
-                    member.id,
-
-                    member.full_name || "",
-
-                    member.phone || "",
-
-                    member.email || "",
-
-                    member.location || "",
-
-                    Number(
-                        member.amount || 0
-                    ).toFixed(2),
-
-                    member.purpose || "",
-
-                    formatDate(
-                        member.created_at
-                    )
-
-                ];
-
-            }
-        );
-
-
-    const csvData = [
-
-        headers,
-
-        ...rows
-
-    ]
-    .map(
-        function(row) {
-
-            return row.map(
-                function(value) {
-
-                    return '"' +
-                        String(value)
-                        .replaceAll(
-                            '"',
-                            '""'
-                        ) +
-                        '"';
-
-                }
-            ).join(",");
-
-        }
-    )
-    .join("\n");
-
-
-    const blob =
-        new Blob(
-            [csvData],
-            {
-                type:
-                    "text/csv;charset=utf-8;"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.href = url;
-
-
-    link.download =
-        "idogwu_family_members_" +
-        new Date()
-        .toISOString()
-        .slice(0, 10) +
-        ".csv";
-
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-
-    document.body.removeChild(
-        link
-    );
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-
-    showMessage(
-        "Family member database exported successfully."
-    );
-
-}
-
-
-
-/*
-=========================================================
-FORM SUBMISSION
-=========================================================
-*/
-
-memberForm.addEventListener(
-    "submit",
-    function(event) {
-
-        event.preventDefault();
-
-        registerMember();
-
-    }
-);
-
-
-
-/*
-=========================================================
-CLEAR BUTTON
-=========================================================
-*/
-
-document
-    .getElementById(
-        "clearButton"
-    )
-    .addEventListener(
-        "click",
-        function() {
-
-            clearForm();
-
-            clearMessage();
-
-        }
-    );
-
-
-
-/*
-=========================================================
-SEARCH
-=========================================================
-*/
-
-searchInput.addEventListener(
-    "input",
-    function() {
-
-        displayMembers();
-
-    }
-);
-
-
-
-/*
-=========================================================
-EXPORT BUTTON
-=========================================================
-*/
-
-document
-    .getElementById(
-        "exportButton"
-    )
-    .addEventListener(
-        "click",
-        function() {
-
-            exportCSV();
-
-        }
-    );
-
-
-
-/*
-=========================================================
-START APPLICATION
-=========================================================
-*/
-
-loadMembers();
-
-
-</script>
 
 </body>
 
