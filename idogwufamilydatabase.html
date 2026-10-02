@@ -18,9 +18,6 @@
     <!-- Supabase JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Chart.js for Family Location Statistics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 
@@ -136,6 +133,7 @@
         style="display: none;"
     >
 
+
         <!-- =================================================
              TOP BAR
         ================================================== -->
@@ -173,9 +171,14 @@
 
         <section class="dashboard">
 
+
+            <!-- TOTAL MEMBERS -->
+
             <div class="stat-card">
 
-                <h3>Total Members</h3>
+                <h3>
+                    Total Members
+                </h3>
 
                 <div
                     id="totalMembers"
@@ -187,9 +190,13 @@
             </div>
 
 
+            <!-- MEMBERS WHO PAID -->
+
             <div class="stat-card">
 
-                <h3>Members Who Paid</h3>
+                <h3>
+                    Members Who Paid
+                </h3>
 
                 <div
                     id="paidMembers"
@@ -201,9 +208,13 @@
             </div>
 
 
+            <!-- MEMBERS NOT PAID -->
+
             <div class="stat-card">
 
-                <h3>Members Not Paid</h3>
+                <h3>
+                    Members Not Paid
+                </h3>
 
                 <div
                     id="unpaidMembers"
@@ -215,9 +226,13 @@
             </div>
 
 
+            <!-- TOTAL CONTRIBUTIONS -->
+
             <div class="stat-card">
 
-                <h3>Total Contributions</h3>
+                <h3>
+                    Total Contributions
+                </h3>
 
                 <div
                     id="totalAmount"
@@ -229,9 +244,13 @@
             </div>
 
 
+            <!-- AVERAGE PAYMENT -->
+
             <div class="stat-card">
 
-                <h3>Average Payment</h3>
+                <h3>
+                    Average Payment
+                </h3>
 
                 <div
                     id="averageAmount"
@@ -243,9 +262,13 @@
             </div>
 
 
+            <!-- TOTAL LOCATIONS -->
+
             <div class="stat-card">
 
-                <h3>Locations</h3>
+                <h3>
+                    Locations
+                </h3>
 
                 <div
                     id="totalLocations"
@@ -259,27 +282,39 @@
         </section>
 
 
-        <!-- =========================================================
-     FAMILY LOCATION SUMMARY
-========================================================= -->
+        <!-- =================================================
+             FAMILY LOCATION SUMMARY
+        ================================================== -->
 
-<section class="section location-statistics-section">
+        <section
+            class="section location-statistics-section"
+        >
 
-    <h2>Family Location Summary</h2>
+            <h2>
+                Family Location Summary
+            </h2>
 
-    <p class="section-subtitle">
-        Summary of registered Idogwu family members by location.
-    </p>
 
-    <div id="locationStatistics" class="location-grid">
+            <p class="section-subtitle">
+                Summary of registered Idogwu family members
+                by location.
+            </p>
 
-        <div class="table-message">
-            No location statistics available.
-        </div>
 
-    </div>
+            <div
+                id="locationStatistics"
+                class="location-grid"
+            >
 
-</section>
+                <div class="table-message">
+                    No location statistics available.
+                </div>
+
+            </div>
+
+        </section>
+
+
         <!-- =================================================
              IDOGWU FAMILY WORLDWIDE
         ================================================== -->
@@ -289,6 +324,7 @@
             <h2>
                 IDOGWU FAMILY WORLDWIDE
             </h2>
+
 
             <p>
                 <strong>
@@ -301,12 +337,13 @@
                 Our Vision
             </h3>
 
+
             <p>
-                To build a united, peaceful, progressive, and
-                well-connected Idogwu family whose members remain
-                committed to preserving their heritage while creating
-                opportunities for the growth and development of future
-                generations.
+                To build a united, peaceful, progressive,
+                and well-connected Idogwu family whose members
+                remain committed to preserving their heritage
+                while creating opportunities for the growth
+                and development of future generations.
             </p>
 
 
@@ -314,21 +351,23 @@
                 Our Aims
             </h3>
 
+
             <ul>
 
                 <li>
-                    To promote unity, love, and peaceful coexistence
-                    among Idogwu family members worldwide.
+                    To promote unity, love, and peaceful
+                    coexistence among Idogwu family members
+                    worldwide.
                 </li>
 
                 <li>
-                    To strengthen communication and relationships
-                    among family members.
+                    To strengthen communication and
+                    relationships among family members.
                 </li>
 
                 <li>
-                    To preserve our family identity, heritage and
-                    values for future generations.
+                    To preserve our family identity, heritage
+                    and values for future generations.
                 </li>
 
                 <li>
@@ -343,11 +382,12 @@
                 Our Commitment
             </h3>
 
+
             <p>
-                Idogwu Family Worldwide is more than a communication
-                platform; it is a place where family members can
-                reconnect, build relationships, preserve their
-                identity, and support one another.
+                Idogwu Family Worldwide is more than a
+                communication platform; it is a place where
+                family members can reconnect, build relationships,
+                preserve their identity, and support one another.
             </p>
 
         </section>
@@ -367,6 +407,8 @@
             </h2>
 
 
+            <!-- Hidden ID used when editing -->
+
             <input
                 type="hidden"
                 id="memberId"
@@ -374,6 +416,9 @@
 
 
             <div class="form-grid">
+
+
+                <!-- FULL NAME -->
 
                 <div class="form-group">
 
@@ -385,10 +430,13 @@
                         type="text"
                         id="fullName"
                         placeholder="Enter full name"
+                        autocomplete="off"
                     >
 
                 </div>
 
+
+                <!-- PHONE -->
 
                 <div class="form-group">
 
@@ -400,10 +448,13 @@
                         type="tel"
                         id="phone"
                         placeholder="Enter phone number"
+                        autocomplete="off"
                     >
 
                 </div>
 
+
+                <!-- EMAIL -->
 
                 <div class="form-group">
 
@@ -415,10 +466,13 @@
                         type="email"
                         id="email"
                         placeholder="Enter email address"
+                        autocomplete="off"
                     >
 
                 </div>
 
+
+                <!-- LOCATION -->
 
                 <div class="form-group">
 
@@ -430,10 +484,13 @@
                         type="text"
                         id="location"
                         placeholder="State / City / Country"
+                        autocomplete="off"
                     >
 
                 </div>
 
+
+                <!-- AMOUNT -->
 
                 <div class="form-group">
 
@@ -452,6 +509,8 @@
                 </div>
 
 
+                <!-- PURPOSE -->
+
                 <div class="form-group">
 
                     <label for="purpose">
@@ -462,12 +521,15 @@
                         type="text"
                         id="purpose"
                         placeholder="Purpose of contribution"
+                        autocomplete="off"
                     >
 
                 </div>
 
             </div>
 
+
+            <!-- FORM BUTTONS -->
 
             <div class="form-actions">
 
@@ -491,6 +553,8 @@
             </div>
 
 
+            <!-- FORM MESSAGE -->
+
             <div
                 id="memberMessage"
                 class="message"
@@ -509,6 +573,8 @@
                 Registered Family Members
             </h2>
 
+
+            <!-- SEARCH AND BUTTONS -->
 
             <div class="toolbar">
 
@@ -540,6 +606,8 @@
             </div>
 
 
+            <!-- TABLE -->
+
             <div class="table-container">
 
                 <table>
@@ -548,15 +616,41 @@
 
                         <tr>
 
-                            <th>S/N</th>
-                            <th>Full Name</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Location</th>
-                            <th>Amount</th>
-                            <th>Purpose</th>
-                            <th>Date</th>
-                            <th>Actions</th>
+                            <th>
+                                S/N
+                            </th>
+
+                            <th>
+                                Full Name
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Location
+                            </th>
+
+                            <th>
+                                Amount
+                            </th>
+
+                            <th>
+                                Purpose
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
 
                         </tr>
 
