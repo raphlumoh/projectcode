@@ -1,12 +1,12 @@
-/* =====================================================
-   IDOGWU FAMILY DATABASE
-   APPLICATION JAVASCRIPT
-====================================================== */
+// =========================================================
+// IDOGWU FAMILY DATABASE
+// COMPLETE SCRIPT.JS
+// =========================================================
 
 
-/* =====================================================
-   SUPABASE CONFIGURATION
-====================================================== */
+// =========================================================
+// SUPABASE CONFIGURATION
+// =========================================================
 
 const SUPABASE_URL =
     "https://hzqawunnchuryzgmgiwi.supabase.co";
@@ -21,200 +21,464 @@ const supabaseClient =
     );
 
 
-/* =====================================================
-   GLOBAL VARIABLES
-====================================================== */
+// =========================================================
+// GLOBAL VARIABLES
+// =========================================================
 
 let currentUser = null;
 
-let currentUserIsAdmin = false;
+let currentRole = "member";
+
+let currentUsername = "";
 
 let allMembers = [];
 
-let locationChart = null;
+
+// =========================================================
+// PAGE ELEMENTS
+// =========================================================
+
+const adminLoginBox =
+    document.getElementById("adminLoginBox");
+
+const adminApplication =
+    document.getElementById("adminApplication");
+
+const adminEmail =
+    document.getElementById("adminEmail");
+
+const adminPassword =
+    document.getElementById("adminPassword");
+
+const adminLoginButton =
+    document.getElementById("adminLoginButton");
+
+const forgotPasswordButton =
+    document.getElementById("forgotPasswordButton");
+
+const loginMessage =
+    document.getElementById("loginMessage");
+
+const logoutButton =
+    document.getElementById("logoutButton");
+
+const loggedInUser =
+    document.getElementById("loggedInUser");
 
 
-/* =====================================================
-   DOM HELPER
-====================================================== */
+// =========================================================
+// MEMBER FORM ELEMENTS
+// =========================================================
 
-function getElement(id) {
+const memberId =
+    document.getElementById("memberId");
 
-    return document.getElementById(id);
+const fullName =
+    document.getElementById("fullName");
+
+const phone =
+    document.getElementById("phone");
+
+const email =
+    document.getElementById("email");
+
+const locationInput =
+    document.getElementById("location");
+
+const amount =
+    document.getElementById("amount");
+
+const purpose =
+    document.getElementById("purpose");
+
+const saveMemberButton =
+    document.getElementById("saveMemberButton");
+
+const clearFormButton =
+    document.getElementById("clearFormButton");
+
+const memberMessage =
+    document.getElementById("memberMessage");
+
+
+// =========================================================
+// DATABASE ELEMENTS
+// =========================================================
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const refreshButton =
+    document.getElementById("refreshButton");
+
+const exportButton =
+    document.getElementById("exportButton");
+
+const membersTableBody =
+    document.getElementById("membersTableBody");
+
+
+// =========================================================
+// DASHBOARD ELEMENTS
+// =========================================================
+
+const totalMembers =
+    document.getElementById("totalMembers");
+
+const paidMembers =
+    document.getElementById("paidMembers");
+
+const unpaidMembers =
+    document.getElementById("unpaidMembers");
+
+const totalAmount =
+    document.getElementById("totalAmount");
+
+const averageAmount =
+    document.getElementById("averageAmount");
+
+const totalLocations =
+    document.getElementById("totalLocations");
+
+
+// =========================================================
+// LOCATION SUMMARY
+// =========================================================
+
+const locationStatistics =
+    document.getElementById("locationStatistics");
+
+
+// =========================================================
+// FORGOT PASSWORD ELEMENTS
+// =========================================================
+
+const forgotPasswordBox =
+    document.getElementById("forgotPasswordBox");
+
+const recoveryEmail =
+    document.getElementById("recoveryEmail");
+
+const sendRecoveryButton =
+    document.getElementById("sendRecoveryButton");
+
+const recoveryMessage =
+    document.getElementById("recoveryMessage");
+
+const closeForgotPassword =
+    document.getElementById("closeForgotPassword");
+
+
+// =========================================================
+// PASSWORD RESET ELEMENTS
+// =========================================================
+
+const passwordResetBox =
+    document.getElementById("passwordResetBox");
+
+const newAdminPassword =
+    document.getElementById("newAdminPassword");
+
+const confirmAdminPassword =
+    document.getElementById("confirmAdminPassword");
+
+const saveNewPassword =
+    document.getElementById("saveNewPassword");
+
+const resetMessage =
+    document.getElementById("resetMessage");
+
+
+// =========================================================
+// INITIAL PAGE STATE
+// =========================================================
+
+if (adminApplication) {
+    adminApplication.style.display = "none";
+}
+
+if (adminLoginBox) {
+    adminLoginBox.style.display = "block";
 }
 
 
-/* =====================================================
-   HTML ESCAPE
-====================================================== */
+// =========================================================
+// PAGE LOAD
+// =========================================================
 
-function escapeHtml(value) {
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
 
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return "";
+        setupEventListeners();
+
+        await checkExistingSession();
+
+    }
+);
+
+
+// =========================================================
+// EVENT LISTENERS
+// =========================================================
+
+function setupEventListeners() {
+
+    if (adminLoginButton) {
+
+        adminLoginButton.addEventListener(
+            "click",
+            loginUser
+        );
+
     }
 
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
 
+    if (logoutButton) {
 
-/* =====================================================
-   MESSAGE
-====================================================== */
+        logoutButton.addEventListener(
+            "click",
+            logoutUser
+        );
 
-function showMessage(
-    elementId,
-    message,
-    type = ""
-) {
-
-    const element =
-        getElement(elementId);
-
-    if (!element) {
-        return;
     }
 
-    element.textContent =
-        message;
 
-    element.className =
-        "message";
+    if (saveMemberButton) {
 
-    if (type) {
-        element.classList.add(type);
+        saveMemberButton.addEventListener(
+            "click",
+            saveMember
+        );
+
     }
-}
 
 
-/* =====================================================
-   CURRENCY
-====================================================== */
+    if (clearFormButton) {
 
-function formatCurrency(amount) {
+        clearFormButton.addEventListener(
+            "click",
+            clearMemberForm
+        );
 
-    const number =
-        Number(amount) || 0;
+    }
 
-    return new Intl.NumberFormat(
-        "en-NG",
-        {
-            style: "currency",
-            currency: "NGN"
+
+    if (refreshButton) {
+
+        refreshButton.addEventListener(
+            "click",
+            loadMembers
+        );
+
+    }
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            renderMembers
+        );
+
+    }
+
+
+    if (exportButton) {
+
+        exportButton.addEventListener(
+            "click",
+            exportCSV
+        );
+
+    }
+
+
+    if (forgotPasswordButton) {
+
+        forgotPasswordButton.addEventListener(
+            "click",
+            openForgotPassword
+        );
+
+    }
+
+
+    if (closeForgotPassword) {
+
+        closeForgotPassword.addEventListener(
+            "click",
+            closeForgotPasswordBox
+        );
+
+    }
+
+
+    if (sendRecoveryButton) {
+
+        sendRecoveryButton.addEventListener(
+            "click",
+            sendPasswordRecovery
+        );
+
+    }
+
+
+    if (saveNewPassword) {
+
+        saveNewPassword.addEventListener(
+            "click",
+            updatePassword
+        );
+
+    }
+
+
+    // Allow ENTER key for login
+    if (adminPassword) {
+
+        adminPassword.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    loginUser();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // Allow ENTER key for email recovery
+    if (recoveryEmail) {
+
+        recoveryEmail.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+
+                    sendPasswordRecovery();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // Supabase authentication changes
+    supabaseClient.auth.onAuthStateChange(
+        async function (event, session) {
+
+            if (
+                event === "PASSWORD_RECOVERY"
+            ) {
+
+                currentUser =
+                    session?.user || null;
+
+                showPasswordReset();
+
+                return;
+            }
+
+
+            if (
+                event === "SIGNED_OUT"
+            ) {
+
+                currentUser = null;
+
+                currentRole = "member";
+
+                currentUsername = "";
+
+                showLoginScreen();
+
+            }
+
         }
-    ).format(number);
+    );
+
 }
 
 
-/* =====================================================
-   CHECK ADMIN
-====================================================== */
+// =========================================================
+// CHECK EXISTING SESSION
+// =========================================================
 
-async function checkAdminRole(userId) {
+async function checkExistingSession() {
 
-    if (!userId) {
-        return false;
-    }
+    try {
 
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .maybeSingle();
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
 
 
-    if (error) {
+        if (error) {
+
+            console.error(
+                "Session error:",
+                error
+            );
+
+            showLoginScreen();
+
+            return;
+        }
+
+
+        if (data.session) {
+
+            currentUser =
+                data.session.user;
+
+            await startApplication();
+
+        } else {
+
+            showLoginScreen();
+
+        }
+
+    } catch (error) {
 
         console.error(
-            "Admin role check error:",
+            "Session check failed:",
             error
         );
 
-        return false;
+        showLoginScreen();
+
     }
 
-
-    return data?.role === "admin";
 }
 
 
-/* =====================================================
-   APPLY PERMISSIONS
-====================================================== */
-
-function applyUserPermissions() {
-
-    const registrationSection =
-        getElement(
-            "memberRegistrationSection"
-        );
-
-    const exportButton =
-        getElement(
-            "exportButton"
-        );
-
-
-    if (currentUserIsAdmin) {
-
-        if (registrationSection) {
-            registrationSection.style.display =
-                "";
-        }
-
-        if (exportButton) {
-            exportButton.style.display =
-                "";
-        }
-
-    } else {
-
-        if (registrationSection) {
-            registrationSection.style.display =
-                "none";
-        }
-
-        if (exportButton) {
-            exportButton.style.display =
-                "none";
-        }
-    }
-}
-
-
-/* =====================================================
-   LOGIN
-====================================================== */
+// =========================================================
+// LOGIN
+// =========================================================
 
 async function loginUser() {
 
-    const email =
-        getElement(
-            "adminEmail"
-        )?.value.trim();
+    const emailValue =
+        adminEmail?.value.trim();
+
+    const passwordValue =
+        adminPassword?.value;
 
 
-    const password =
-        getElement(
-            "adminPassword"
-        )?.value;
+    if (!emailValue || !passwordValue) {
 
-
-    if (!email || !password) {
-
-        showMessage(
-            "loginMessage",
+        showLoginMessage(
             "Please enter your email and password.",
             "error"
         );
@@ -223,844 +487,706 @@ async function loginUser() {
     }
 
 
-    showMessage(
-        "loginMessage",
+    showLoginMessage(
         "Signing in...",
-        ""
+        "info"
     );
 
 
-    const {
-        data,
-        error
-    } = await supabaseClient.auth
-        .signInWithPassword({
-            email: email,
-            password: password
-        });
+    if (adminLoginButton) {
 
+        adminLoginButton.disabled = true;
 
-    if (error) {
-
-        console.error(error);
-
-        showMessage(
-            "loginMessage",
-            error.message,
-            "error"
-        );
-
-        return;
     }
 
 
-    if (!data.user) {
+    try {
 
-        showMessage(
-            "loginMessage",
-            "Login failed. Please try again.",
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email: emailValue,
+
+                password: passwordValue
+
+            });
+
+
+        if (error) {
+
+            showLoginMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        // Clear password field after login
+        if (adminPassword) {
+
+            adminPassword.value = "";
+
+        }
+
+
+        await startApplication();
+
+
+    } catch (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+        showLoginMessage(
+            "Unable to sign in. Please try again.",
             "error"
         );
 
-        return;
+    } finally {
+
+        if (adminLoginButton) {
+
+            adminLoginButton.disabled = false;
+
+        }
+
     }
 
-
-    currentUser =
-        data.user;
-
-
-    currentUserIsAdmin =
-        await checkAdminRole(
-            currentUser.id
-        );
-
-
-    await showApplication();
 }
 
 
-/* =====================================================
-   SHOW APPLICATION
-====================================================== */
+// =========================================================
+// START APPLICATION
+// =========================================================
 
-async function showApplication() {
+async function startApplication() {
 
-    const loginBox =
-        getElement(
-            "adminLoginBox"
-        );
+    if (!currentUser) {
 
+        showLoginScreen();
 
-    const application =
-        getElement(
-            "adminApplication"
-        );
+        return;
 
-
-    if (loginBox) {
-        loginBox.style.display =
-            "none";
     }
 
 
-    if (application) {
-        application.style.display =
-            "block";
-    }
+    await loadUserRole(
+        currentUser.id
+    );
 
 
-    const loggedInUser =
-        getElement(
-            "loggedInUser"
-        );
+    showApplication();
 
-
-    if (
-        loggedInUser &&
-        currentUser
-    ) {
-
-        loggedInUser.textContent =
-            currentUser.email +
-            (
-                currentUserIsAdmin
-                    ? " • Administrator"
-                    : " • Member"
-            );
-    }
-
-
-    applyUserPermissions();
 
     await loadMembers();
+
 }
 
 
-/* =====================================================
-   LOGOUT
-====================================================== */
+// =========================================================
+// LOAD USER ROLE
+// =========================================================
+
+async function loadUserRole(userId) {
+
+    currentRole = "member";
+
+    currentUsername =
+        currentUser?.email || "";
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("user_roles")
+                .select("role, username")
+                .eq("user_id", userId)
+                .maybeSingle();
+
+
+        if (error) {
+
+            console.warn(
+                "Role lookup:",
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        if (data) {
+
+            currentRole =
+                String(
+                    data.role || "member"
+                ).toLowerCase();
+
+
+            if (data.username) {
+
+                currentUsername =
+                    data.username;
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Role error:",
+            error
+        );
+
+    }
+
+
+    applyPermissions();
+
+}
+
+
+// =========================================================
+// CHECK ADMIN
+// =========================================================
+
+function isAdmin() {
+
+    return currentRole === "admin";
+
+}
+
+
+// =========================================================
+// APPLY PERMISSIONS
+// =========================================================
+
+function applyPermissions() {
+
+    const registrationSection =
+        document.getElementById(
+            "memberRegistrationSection"
+        );
+
+
+    // -----------------------------------------------------
+    // ADMIN
+    // -----------------------------------------------------
+
+    if (isAdmin()) {
+
+        if (registrationSection) {
+
+            registrationSection.style.display =
+                "block";
+
+        }
+
+
+        if (exportButton) {
+
+            exportButton.style.display =
+                "inline-block";
+
+        }
+
+
+        return;
+    }
+
+
+    // -----------------------------------------------------
+    // NORMAL LOGGED-IN MEMBER
+    // -----------------------------------------------------
+
+    if (registrationSection) {
+
+        registrationSection.style.display =
+            "none";
+
+    }
+
+
+    if (exportButton) {
+
+        exportButton.style.display =
+            "none";
+
+    }
+
+}
+
+
+// =========================================================
+// SHOW APPLICATION
+// =========================================================
+
+function showApplication() {
+
+    if (adminLoginBox) {
+
+        adminLoginBox.style.display =
+            "none";
+
+    }
+
+
+    if (adminApplication) {
+
+        adminApplication.style.display =
+            "block";
+
+    }
+
+
+    if (loggedInUser) {
+
+        loggedInUser.textContent =
+            "Logged in as: " +
+            currentUsername +
+            " (" +
+            currentRole +
+            ")";
+
+    }
+
+}
+
+
+// =========================================================
+// SHOW LOGIN SCREEN
+// =========================================================
+
+function showLoginScreen() {
+
+    if (adminApplication) {
+
+        adminApplication.style.display =
+            "none";
+
+    }
+
+
+    if (adminLoginBox) {
+
+        adminLoginBox.style.display =
+            "block";
+
+    }
+
+
+    if (adminEmail) {
+
+        adminEmail.value = "";
+
+    }
+
+
+    if (adminPassword) {
+
+        adminPassword.value = "";
+
+    }
+
+
+    showLoginMessage(
+        "",
+        ""
+    );
+
+}
+
+
+// =========================================================
+// LOGOUT
+// =========================================================
 
 async function logoutUser() {
 
-    await supabaseClient.auth.signOut();
+    try {
+
+        await supabaseClient.auth.signOut();
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
 
 
     currentUser = null;
 
-    currentUserIsAdmin = false;
+    currentRole = "member";
+
+    currentUsername = "";
 
     allMembers = [];
 
+    clearMemberForm();
 
-    const loginBox =
-        getElement(
-            "adminLoginBox"
-        );
+    showLoginScreen();
 
-
-    const application =
-        getElement(
-            "adminApplication"
-        );
-
-
-    if (application) {
-        application.style.display =
-            "none";
-    }
-
-
-    if (loginBox) {
-        loginBox.style.display =
-            "";
-    }
-
-
-    const email =
-        getElement(
-            "adminEmail"
-        );
-
-
-    const password =
-        getElement(
-            "adminPassword"
-        );
-
-
-    if (email) {
-        email.value = "";
-    }
-
-
-    if (password) {
-        password.value = "";
-    }
 }
 
 
-/* =====================================================
-   LOAD MEMBERS
-====================================================== */
+// =========================================================
+// LOAD MEMBERS
+// =========================================================
 
 async function loadMembers() {
 
     if (!currentUser) {
+
         return;
+
     }
 
 
-    const tableBody =
-        getElement(
-            "membersTableBody"
-        );
+    if (membersTableBody) {
 
-
-    if (tableBody) {
-
-        tableBody.innerHTML = `
+        membersTableBody.innerHTML = `
             <tr>
-                <td
-                    colspan="9"
-                    class="table-message"
-                >
-                    Loading family members...
+                <td colspan="9" class="table-message">
+                    Loading members...
                 </td>
             </tr>
         `;
+
     }
 
 
-    const {
-        data,
-        error
-    } = await supabaseClient
-        .from("idogwu_members")
-        .select("*")
-        .order(
-            "created_at",
-            {
-                ascending: false
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("idogwu_members")
+                .select(`
+                    id,
+                    full_name,
+                    phone,
+                    email,
+                    location,
+                    amount,
+                    purpose,
+                    created_at
+                `)
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Load members error:",
+                error
+            );
+
+            if (membersTableBody) {
+
+                membersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="9" class="table-message">
+                            Unable to load members.
+                        </td>
+                    </tr>
+                `;
+
             }
-        );
+
+            return;
+        }
 
 
-    if (error) {
+        allMembers =
+            data || [];
+
+
+        updateDashboard();
+
+        renderMembers();
+
+        renderLocationStatistics();
+
+
+    } catch (error) {
 
         console.error(
-            "Load members error:",
+            "Unexpected load error:",
             error
         );
 
-
-        if (tableBody) {
-
-            tableBody.innerHTML = `
-                <tr>
-                    <td
-                        colspan="9"
-                        class="table-message"
-                    >
-                        Unable to load members:
-                        ${escapeHtml(
-                            error.message
-                        )}
-                    </td>
-                </tr>
-            `;
-        }
-
-        return;
     }
 
-
-    allMembers =
-        data || [];
-
-
-    updateDashboard(
-        allMembers
-    );
-
-
-    updateLocationStatistics(
-        allMembers
-    );
-
-
-    renderMembers(
-        allMembers
-    );
 }
 
 
-/* =====================================================
-   DASHBOARD
-====================================================== */
+// =========================================================
+// UPDATE DASHBOARD
+// =========================================================
 
-function updateDashboard(
-    members
-) {
+function updateDashboard() {
 
     const total =
-        members.length;
+        allMembers.length;
 
 
-    const paid =
-        members.filter(
-            member =>
+    let paid = 0;
+
+    let unpaid = 0;
+
+    let contributionTotal = 0;
+
+
+    const locations =
+        new Set();
+
+
+    allMembers.forEach(
+        function (member) {
+
+            const memberAmount =
                 Number(
                     member.amount || 0
-                ) > 0
-        ).length;
+                );
 
 
-    const unpaid =
-        total - paid;
+            contributionTotal +=
+                memberAmount;
 
 
-    const totalAmount =
-        members.reduce(
-            (
-                sum,
-                member
-            ) =>
-                sum +
-                Number(
-                    member.amount || 0
-                ),
-            0
-        );
+            if (memberAmount > 0) {
+
+                paid++;
+
+            } else {
+
+                unpaid++;
+
+            }
+
+
+            const location =
+                String(
+                    member.location || ""
+                ).trim();
+
+
+            if (location) {
+
+                locations.add(
+                    location.toLowerCase()
+                );
+
+            }
+
+        }
+    );
 
 
     const average =
         total > 0
-            ? totalAmount / total
+            ? contributionTotal / total
             : 0;
 
 
-    const locations =
-        new Set(
-            members
-                .map(
-                    member =>
-                        (
-                            member.location ||
-                            ""
-                        )
-                            .trim()
-                            .toLowerCase()
-                )
-                .filter(Boolean)
-        ).size;
+    if (totalMembers) {
 
-
-    if (
-        getElement(
-            "totalMembers"
-        )
-    ) {
-
-        getElement(
-            "totalMembers"
-        ).textContent =
+        totalMembers.textContent =
             total;
+
     }
 
 
-    if (
-        getElement(
-            "paidMembers"
-        )
-    ) {
+    if (paidMembers) {
 
-        getElement(
-            "paidMembers"
-        ).textContent =
+        paidMembers.textContent =
             paid;
+
     }
 
 
-    if (
-        getElement(
-            "unpaidMembers"
-        )
-    ) {
+    if (unpaidMembers) {
 
-        getElement(
-            "unpaidMembers"
-        ).textContent =
+        unpaidMembers.textContent =
             unpaid;
+
     }
 
 
-    if (
-        getElement(
-            "totalAmount"
-        )
-    ) {
+    if (totalAmount) {
 
-        getElement(
-            "totalAmount"
-        ).textContent =
+        totalAmount.textContent =
             formatCurrency(
-                totalAmount
+                contributionTotal
             );
+
     }
 
 
-    if (
-        getElement(
-            "averageAmount"
-        )
-    ) {
+    if (averageAmount) {
 
-        getElement(
-            "averageAmount"
-        ).textContent =
+        averageAmount.textContent =
             formatCurrency(
                 average
             );
+
     }
 
 
-    if (
-        getElement(
-            "totalLocations"
-        )
-    ) {
+    if (totalLocations) {
 
-        getElement(
-            "totalLocations"
-        ).textContent =
-            locations;
+        totalLocations.textContent =
+            locations.size;
+
     }
+
 }
 
 
-/* =====================================================
-   FAMILY LOCATION STATISTICS
-====================================================== */
+// =========================================================
+// RENDER MEMBERS TABLE
+// =========================================================
 
-function updateLocationStatistics(
-    members
-) {
+function renderMembers() {
 
-    const statisticsBody =
-        getElement(
-            "locationStatisticsBody"
-        );
-
-
-    const chartCanvas =
-        getElement(
-            "locationChart"
-        );
-
-
-    if (
-        !statisticsBody ||
-        !chartCanvas
-    ) {
-        return;
-    }
-
-
-    /* ---------------------------------------------
-       COUNT LOCATIONS
-    --------------------------------------------- */
-
-    const locationCounts = {};
-
-
-    members.forEach(
-        member => {
-
-            let location =
-                (
-                    member.location ||
-                    ""
-                ).trim();
-
-
-            if (!location) {
-                location =
-                    "Not Specified";
-            }
-
-
-            if (
-                !locationCounts[
-                    location
-                ]
-            ) {
-
-                locationCounts[
-                    location
-                ] = 0;
-            }
-
-
-            locationCounts[
-                location
-            ]++;
-        }
-    );
-
-
-    let locations =
-        Object.keys(
-            locationCounts
-        );
-
-
-    /* ---------------------------------------------
-       CLEAR TABLE
-    --------------------------------------------- */
-
-    statisticsBody.innerHTML =
-        "";
-
-
-    if (!members.length) {
-
-        statisticsBody.innerHTML = `
-            <tr>
-                <td
-                    colspan="4"
-                    class="table-message"
-                >
-                    No location data available.
-                </td>
-            </tr>
-        `;
-
-
-        if (locationChart) {
-
-            locationChart.destroy();
-
-            locationChart = null;
-        }
-
+    if (!membersTableBody) {
 
         return;
+
     }
 
 
-    /* ---------------------------------------------
-       SORT
-    --------------------------------------------- */
-
-    locations.sort(
-        (
-            a,
-            b
-        ) =>
-            locationCounts[b] -
-            locationCounts[a]
-    );
+    const searchTerm =
+        String(
+            searchInput?.value || ""
+        )
+            .trim()
+            .toLowerCase();
 
 
-    /* ---------------------------------------------
-       LOCATION TABLE
-    --------------------------------------------- */
-
-    locations.forEach(
-        (
-            location,
-            index
-        ) => {
-
-            const count =
-                locationCounts[
-                    location
-                ];
+    let filteredMembers =
+        allMembers;
 
 
-            const percentage =
-                (
-                    count /
-                    members.length *
-                    100
-                ).toFixed(1);
+    if (searchTerm) {
 
+        filteredMembers =
+            allMembers.filter(
+                function (member) {
 
-            const row =
-                document.createElement(
-                    "tr"
-                );
+                    return [
 
+                        member.full_name,
 
-            row.innerHTML = `
+                        member.phone,
 
-                <td>
-                    ${index + 1}
-                </td>
+                        member.email,
 
-                <td>
-                    ${escapeHtml(
-                        location
-                    )}
-                </td>
+                        member.location,
 
-                <td>
-                    ${count}
-                </td>
-
-                <td>
-                    ${percentage}%
-                </td>
-
-            `;
-
-
-            statisticsBody.appendChild(
-                row
-            );
-        }
-    );
-
-
-    /* ---------------------------------------------
-       CHART
-    --------------------------------------------- */
-
-    if (locationChart) {
-
-        locationChart.destroy();
-
-        locationChart = null;
-    }
-
-
-    locationChart =
-        new Chart(
-            chartCanvas,
-            {
-
-                type: "bar",
-
-                data: {
-
-                    labels:
-                        locations,
-
-                    datasets: [
-
-                        {
-
-                            label:
-                                "Family Members",
-
-                            data:
-                                locations.map(
-                                    location =>
-                                        locationCounts[
-                                            location
-                                        ]
-                                ),
-
-                            borderWidth: 1
-
-                        }
+                        member.purpose
 
                     ]
+                        .some(
+                            function (value) {
 
-                },
-
-
-                options: {
-
-                    responsive: true,
-
-                    maintainAspectRatio:
-                        false,
-
-
-                    plugins: {
-
-                        legend: {
-
-                            display: false
-
-                        },
-
-
-                        tooltip: {
-
-                            callbacks: {
-
-                                label:
-                                    function(
-                                        context
-                                    ) {
-
-                                        const count =
-                                            context.raw;
-
-
-                                        const percentage =
-                                            (
-                                                count /
-                                                members.length *
-                                                100
-                                            ).toFixed(1);
-
-
-                                        return (
-                                            count +
-                                            " member(s) — " +
-                                            percentage +
-                                            "%"
-                                        );
-                                    }
-                            }
-                        }
-                    },
-
-
-                    scales: {
-
-                        y: {
-
-                            beginAtZero:
-                                true,
-
-                            ticks: {
-
-                                precision:
-                                    0
-
-                            },
-
-                            title: {
-
-                                display:
-                                    true,
-
-                                text:
-                                    "Number of Members"
+                                return String(
+                                    value || ""
+                                )
+                                    .toLowerCase()
+                                    .includes(
+                                        searchTerm
+                                    );
 
                             }
-
-                        },
-
-
-                        x: {
-
-                            title: {
-
-                                display:
-                                    true,
-
-                                text:
-                                    "Location"
-
-                            }
-
-                        }
-
-                    }
+                        );
 
                 }
+            );
 
-            }
-        );
-}
-
-
-/* =====================================================
-   RENDER MEMBERS
-====================================================== */
-
-function renderMembers(
-    members
-) {
-
-    const tableBody =
-        getElement(
-            "membersTableBody"
-        );
-
-
-    if (!tableBody) {
-        return;
     }
 
 
-    if (!members.length) {
+    if (filteredMembers.length === 0) {
 
-        tableBody.innerHTML = `
+        membersTableBody.innerHTML = `
             <tr>
-                <td
-                    colspan="9"
-                    class="table-message"
-                >
-                    No registered family members found.
+                <td colspan="9" class="table-message">
+                    No members found.
                 </td>
             </tr>
         `;
 
         return;
+
     }
 
 
-    tableBody.innerHTML =
-        "";
+    membersTableBody.innerHTML = "";
 
 
-    members.forEach(
-        (
-            member,
-            index
-        ) => {
+    filteredMembers.forEach(
+        function (member, index) {
 
             const row =
-                document.createElement(
-                    "tr"
+                document.createElement("tr");
+
+
+            const amountValue =
+                Number(
+                    member.amount || 0
                 );
 
 
-            const createdDate =
-                member.created_at
-                    ? new Date(
-                        member.created_at
-                    ).toLocaleDateString(
-                        "en-NG"
-                    )
-                    : "";
-
-
-            const actions =
-                currentUserIsAdmin
-
+            const actionHTML =
+                isAdmin()
                     ? `
                         <div class="action-buttons">
 
                             <button
-                                class="btn btn-primary"
-                                type="button"
-                                onclick="editMember('${member.id}')"
-                            >
+                                class="btn btn-warning"
+                                onclick="editMember('${member.id}')">
                                 Edit
                             </button>
 
                             <button
                                 class="btn btn-danger"
-                                type="button"
-                                onclick="deleteMember('${member.id}')"
-                            >
+                                onclick="deleteMember('${member.id}')">
                                 Delete
                             </button>
 
                         </div>
                     `
-
                     : `
                         <span>
-                            View Only
+                            View only
                         </span>
                     `;
 
@@ -1072,555 +1198,837 @@ function renderMembers(
                 </td>
 
                 <td>
-                    ${escapeHtml(
+                    ${escapeHTML(
                         member.full_name
                     )}
                 </td>
 
                 <td>
-                    ${escapeHtml(
+                    ${escapeHTML(
                         member.phone
                     )}
                 </td>
 
                 <td>
-                    ${escapeHtml(
+                    ${escapeHTML(
                         member.email
                     )}
                 </td>
 
                 <td>
-                    ${escapeHtml(
+                    ${escapeHTML(
                         member.location
                     )}
                 </td>
 
                 <td>
                     ${formatCurrency(
-                        member.amount
+                        amountValue
                     )}
                 </td>
 
                 <td>
-                    ${escapeHtml(
+                    ${escapeHTML(
                         member.purpose
                     )}
                 </td>
 
                 <td>
-                    ${createdDate}
+                    ${formatDate(
+                        member.created_at
+                    )}
                 </td>
 
                 <td>
-                    ${actions}
+                    ${actionHTML}
                 </td>
 
             `;
 
 
-            tableBody.appendChild(
+            membersTableBody.appendChild(
                 row
             );
-        }
-    );
-}
 
-
-/* =====================================================
-   SEARCH
-====================================================== */
-
-function searchMembers() {
-
-    const searchInput =
-        getElement(
-            "searchInput"
-        );
-
-
-    if (!searchInput) {
-        return;
-    }
-
-
-    const search =
-        searchInput.value
-            .trim()
-            .toLowerCase();
-
-
-    if (!search) {
-
-        renderMembers(
-            allMembers
-        );
-
-        return;
-    }
-
-
-    const filtered =
-        allMembers.filter(
-            member => {
-
-                const values = [
-
-                    member.full_name,
-
-                    member.phone,
-
-                    member.email,
-
-                    member.location,
-
-                    member.purpose
-
-                ];
-
-
-                return values.some(
-                    value =>
-                        String(
-                            value || ""
-                        )
-                            .toLowerCase()
-                            .includes(
-                                search
-                            )
-                );
-            }
-        );
-
-
-    renderMembers(
-        filtered
-    );
-}
-
-
-/* =====================================================
-   CLEAR FORM
-====================================================== */
-
-function clearMemberForm() {
-
-    const fields = [
-
-        "memberId",
-
-        "fullName",
-
-        "phone",
-
-        "email",
-
-        "location",
-
-        "amount",
-
-        "purpose"
-
-    ];
-
-
-    fields.forEach(
-        id => {
-
-            const element =
-                getElement(id);
-
-
-            if (element) {
-                element.value =
-                    "";
-            }
         }
     );
 
-
-    const title =
-        getElement(
-            "formTitle"
-        );
-
-
-    if (title) {
-
-        title.textContent =
-            "Register Family Member";
-    }
-
-
-    showMessage(
-        "memberMessage",
-        "",
-        ""
-    );
 }
 
 
-/* =====================================================
-   SAVE MEMBER
-====================================================== */
+// =========================================================
+// FAMILY LOCATION SUMMARY
+// =========================================================
 
-async function saveMember() {
+function renderLocationStatistics() {
 
-    if (!currentUserIsAdmin) {
-
-        showMessage(
-            "memberMessage",
-            "Only administrators can add or edit members.",
-            "error"
-        );
+    if (!locationStatistics) {
 
         return;
+
     }
 
 
-    const memberId =
-        getElement(
-            "memberId"
-        )?.value.trim();
-
-
-    const fullName =
-        getElement(
-            "fullName"
-        )?.value.trim();
-
-
-    const phone =
-        getElement(
-            "phone"
-        )?.value.trim();
-
-
-    const email =
-        getElement(
-            "email"
-        )?.value.trim();
-
-
-    const location =
-        getElement(
-            "location"
-        )?.value.trim();
-
-
-    const amount =
-        getElement(
-            "amount"
-        )?.value;
-
-
-    const purpose =
-        getElement(
-            "purpose"
-        )?.value.trim();
+    locationStatistics.innerHTML = "";
 
 
     if (
-        !fullName ||
-        !phone ||
-        !location
+        !allMembers ||
+        allMembers.length === 0
     ) {
 
-        showMessage(
-            "memberMessage",
-            "Please complete Full Name, Phone Number and Location.",
-            "error"
-        );
+        locationStatistics.innerHTML = `
+            <div class="table-message">
+                No location statistics available.
+            </div>
+        `;
 
         return;
+
     }
 
 
-    const memberData = {
-
-        full_name:
-            fullName,
-
-        phone:
-            phone,
-
-        email:
-            email || null,
-
-        location:
-            location,
-
-        amount:
-            Number(
-                amount || 0
-            ),
-
-        purpose:
-            purpose || null
-
-    };
+    const locationCounts = {};
 
 
-    showMessage(
-        "memberMessage",
-        "Saving member...",
-        ""
+    allMembers.forEach(
+        function (member) {
+
+            let location =
+                String(
+                    member.location || ""
+                ).trim();
+
+
+            if (!location) {
+
+                location =
+                    "Location Not Provided";
+
+            }
+
+
+            // Ignore capitalization when grouping
+            const key =
+                location.toLowerCase();
+
+
+            if (!locationCounts[key]) {
+
+                locationCounts[key] = {
+
+                    name: location,
+
+                    count: 0
+
+                };
+
+            }
+
+
+            locationCounts[key].count++;
+
+        }
     );
 
 
-    let result;
+    const locations =
+        Object.values(
+            locationCounts
+        )
+            .sort(
+                function (a, b) {
+
+                    return b.count - a.count;
+
+                }
+            );
 
 
-    if (memberId) {
+    locations.forEach(
+        function (location) {
 
-        result =
-            await supabaseClient
-                .from(
-                    "idogwu_members"
-                )
-                .update(
-                    memberData
-                )
-                .eq(
-                    "id",
-                    memberId
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "location-card";
+
+
+            const name =
+                document.createElement("div");
+
+
+            name.className =
+                "location-name";
+
+
+            name.textContent =
+                location.name;
+
+
+            const count =
+                document.createElement("div");
+
+
+            count.className =
+                "location-count";
+
+
+            count.textContent =
+                location.count +
+                (
+                    location.count === 1
+                        ? " Member"
+                        : " Members"
                 );
 
-    } else {
 
-        result =
-            await supabaseClient
-                .from(
-                    "idogwu_members"
-                )
-                .insert(
-                    memberData
-                );
-    }
+            card.appendChild(name);
+
+            card.appendChild(count);
 
 
-    if (result.error) {
+            locationStatistics.appendChild(
+                card
+            );
 
-        console.error(
-            "Save member error:",
-            result.error
-        );
-
-
-        showMessage(
-            "memberMessage",
-            result.error.message,
-            "error"
-        );
-
-        return;
-    }
-
-
-    showMessage(
-        "memberMessage",
-
-        memberId
-            ? "Member information updated successfully."
-            : "Family member registered successfully.",
-
-        "success"
+        }
     );
 
-
-    clearMemberForm();
-
-
-    await loadMembers();
 }
 
 
-/* =====================================================
-   EDIT MEMBER
-====================================================== */
+// =========================================================
+// SAVE MEMBER
+// =========================================================
 
-async function editMember(
-    memberId
-) {
+async function saveMember() {
 
-    if (!currentUserIsAdmin) {
+    // Only administrators can add/edit
+    if (!isAdmin()) {
 
-        alert(
-            "Only administrators can edit members."
+        showMemberMessage(
+            "You do not have permission to add or edit members.",
+            "error"
         );
 
         return;
+
+    }
+
+
+    const nameValue =
+        fullName?.value.trim();
+
+    const phoneValue =
+        phone?.value.trim();
+
+    const emailValue =
+        email?.value.trim();
+
+    const locationValue =
+        locationInput?.value.trim();
+
+    const amountValue =
+        Number(
+            amount?.value || 0
+        );
+
+    const purposeValue =
+        purpose?.value.trim();
+
+
+    if (!nameValue) {
+
+        showMemberMessage(
+            "Please enter the member's full name.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!phoneValue) {
+
+        showMemberMessage(
+            "Please enter the member's phone number.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!locationValue) {
+
+        showMemberMessage(
+            "Please enter the member's location.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        Number.isNaN(amountValue) ||
+        amountValue < 0
+    ) {
+
+        showMemberMessage(
+            "Please enter a valid amount.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (saveMemberButton) {
+
+        saveMemberButton.disabled = true;
+
+    }
+
+
+    showMemberMessage(
+        "Saving member...",
+        "info"
+    );
+
+
+    try {
+
+        let result;
+
+
+        // -------------------------------------------------
+        // EDIT EXISTING MEMBER
+        // -------------------------------------------------
+
+        if (memberId?.value) {
+
+            result =
+                await supabaseClient
+                    .from("idogwu_members")
+                    .update({
+
+                        full_name:
+                            nameValue,
+
+                        phone:
+                            phoneValue,
+
+                        email:
+                            emailValue || null,
+
+                        location:
+                            locationValue,
+
+                        amount:
+                            amountValue,
+
+                        purpose:
+                            purposeValue || null
+
+                    })
+                    .eq(
+                        "id",
+                        memberId.value
+                    );
+
+        }
+
+
+        // -------------------------------------------------
+        // ADD NEW MEMBER
+        // -------------------------------------------------
+
+        else {
+
+            result =
+                await supabaseClient
+                    .from("idogwu_members")
+                    .insert({
+
+                        full_name:
+                            nameValue,
+
+                        phone:
+                            phoneValue,
+
+                        email:
+                            emailValue || null,
+
+                        location:
+                            locationValue,
+
+                        amount:
+                            amountValue,
+
+                        purpose:
+                            purposeValue || null
+
+                    });
+
+        }
+
+
+        if (result.error) {
+
+            console.error(
+                "Save member error:",
+                result.error
+            );
+
+
+            showMemberMessage(
+                result.error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showMemberMessage(
+            memberId?.value
+                ? "Member information updated successfully."
+                : "Member added successfully.",
+            "success"
+        );
+
+
+        clearMemberForm();
+
+
+        await loadMembers();
+
+
+    } catch (error) {
+
+        console.error(
+            "Save error:",
+            error
+        );
+
+
+        showMemberMessage(
+            "Unable to save member.",
+            "error"
+        );
+
+    } finally {
+
+        if (saveMemberButton) {
+
+            saveMemberButton.disabled = false;
+
+        }
+
+    }
+
+}
+
+
+// =========================================================
+// EDIT MEMBER
+// =========================================================
+
+async function editMember(id) {
+
+    if (!isAdmin()) {
+
+        alert(
+            "You do not have permission to edit members."
+        );
+
+        return;
+
     }
 
 
     const member =
         allMembers.find(
-            item =>
-                String(
+            function (item) {
+
+                return String(
                     item.id
-                ) ===
-                String(
-                    memberId
-                )
+                ) === String(id);
+
+            }
         );
 
 
     if (!member) {
 
         alert(
-            "Member information could not be found."
+            "Member not found."
         );
 
         return;
+
     }
 
 
-    getElement(
-        "memberId"
-    ).value =
-        member.id || "";
+    if (memberId) {
+
+        memberId.value =
+            member.id;
+
+    }
 
 
-    getElement(
-        "fullName"
-    ).value =
-        member.full_name || "";
+    if (fullName) {
+
+        fullName.value =
+            member.full_name || "";
+
+    }
 
 
-    getElement(
-        "phone"
-    ).value =
-        member.phone || "";
+    if (phone) {
+
+        phone.value =
+            member.phone || "";
+
+    }
 
 
-    getElement(
-        "email"
-    ).value =
-        member.email || "";
+    if (email) {
+
+        email.value =
+            member.email || "";
+
+    }
 
 
-    getElement(
-        "location"
-    ).value =
-        member.location || "";
+    if (locationInput) {
+
+        locationInput.value =
+            member.location || "";
+
+    }
 
 
-    getElement(
-        "amount"
-    ).value =
-        member.amount || "";
+    if (amount) {
+
+        amount.value =
+            member.amount || 0;
+
+    }
 
 
-    getElement(
-        "purpose"
-    ).value =
-        member.purpose || "";
+    if (purpose) {
+
+        purpose.value =
+            member.purpose || "";
+
+    }
 
 
-    getElement(
-        "formTitle"
-    ).textContent =
-        "Edit Family Member";
+    if (saveMemberButton) {
+
+        saveMemberButton.textContent =
+            "Update Member";
+
+    }
 
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    showMemberMessage(
+        "You are editing this member.",
+        "info"
+    );
+
+
+    // Scroll to form
+    const formSection =
+        document.getElementById(
+            "memberRegistrationSection"
+        );
+
+
+    if (formSection) {
+
+        formSection.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
 }
 
 
-/* =====================================================
-   DELETE MEMBER
-====================================================== */
+// =========================================================
+// DELETE MEMBER
+// =========================================================
 
-async function deleteMember(
-    memberId
-) {
+async function deleteMember(id) {
 
-    if (!currentUserIsAdmin) {
+    if (!isAdmin()) {
 
         alert(
-            "Only administrators can delete members."
+            "You do not have permission to delete members."
         );
 
         return;
+
+    }
+
+
+    const member =
+        allMembers.find(
+            function (item) {
+
+                return String(
+                    item.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!member) {
+
+        return;
+
     }
 
 
     const confirmed =
-        window.confirm(
-            "Are you sure you want to delete this family member?"
+        confirm(
+            "Are you sure you want to delete " +
+            (member.full_name || "this member") +
+            "?"
         );
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
-    const {
-        error
-    } =
-        await supabaseClient
-            .from(
-                "idogwu_members"
-            )
-            .delete()
-            .eq(
-                "id",
-                memberId
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("idogwu_members")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Delete error:",
+                error
             );
 
 
-    if (error) {
+            alert(
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "Member deleted successfully."
+        );
+
+
+        await loadMembers();
+
+
+    } catch (error) {
 
         console.error(
-            "Delete member error:",
+            "Delete error:",
             error
         );
 
 
         alert(
-            "Unable to delete member: " +
-            error.message
+            "Unable to delete member."
         );
 
-        return;
     }
 
-
-    alert(
-        "Family member deleted successfully."
-    );
-
-
-    await loadMembers();
 }
 
 
-/* =====================================================
-   EXPORT CSV
-====================================================== */
+// =========================================================
+// CLEAR MEMBER FORM
+// =========================================================
 
-function exportMembersCSV() {
+function clearMemberForm() {
 
-    if (!currentUserIsAdmin) {
+    if (memberId) {
+
+        memberId.value = "";
+
+    }
+
+
+    if (fullName) {
+
+        fullName.value = "";
+
+    }
+
+
+    if (phone) {
+
+        phone.value = "";
+
+    }
+
+
+    if (email) {
+
+        email.value = "";
+
+    }
+
+
+    if (locationInput) {
+
+        locationInput.value = "";
+
+    }
+
+
+    if (amount) {
+
+        amount.value = "";
+
+    }
+
+
+    if (purpose) {
+
+        purpose.value = "";
+
+    }
+
+
+    if (saveMemberButton) {
+
+        saveMemberButton.textContent =
+            "Save Member";
+
+    }
+
+
+    if (memberMessage) {
+
+        memberMessage.textContent = "";
+
+    }
+
+}
+
+
+// =========================================================
+// EXPORT CSV
+// =========================================================
+
+function exportCSV() {
+
+    // VERY IMPORTANT:
+    // Only administrators can export/download data.
+
+    if (!isAdmin()) {
 
         alert(
             "Only administrators can export member data."
         );
 
         return;
+
     }
 
 
-    if (!allMembers.length) {
+    if (
+        !allMembers ||
+        allMembers.length === 0
+    ) {
 
         alert(
             "There are no members to export."
         );
 
         return;
+
+    }
+
+
+    const searchTerm =
+        String(
+            searchInput?.value || ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    let membersToExport =
+        allMembers;
+
+
+    if (searchTerm) {
+
+        membersToExport =
+            allMembers.filter(
+                function (member) {
+
+                    return [
+
+                        member.full_name,
+
+                        member.phone,
+
+                        member.email,
+
+                        member.location,
+
+                        member.purpose
+
+                    ]
+                        .some(
+                            function (value) {
+
+                                return String(
+                                    value || ""
+                                )
+                                    .toLowerCase()
+                                    .includes(
+                                        searchTerm
+                                    );
+
+                            }
+                        );
+
+                }
+            );
+
     }
 
 
@@ -1646,64 +2054,68 @@ function exportMembersCSV() {
 
 
     const rows =
-        allMembers.map(
-            (
-                member,
-                index
-            ) => [
+        membersToExport.map(
+            function (member, index) {
 
-                index + 1,
+                return [
 
-                member.full_name || "",
+                    index + 1,
 
-                member.phone || "",
+                    member.full_name || "",
 
-                member.email || "",
+                    member.phone || "",
 
-                member.location || "",
+                    member.email || "",
 
-                member.amount || 0,
+                    member.location || "",
 
-                member.purpose || "",
+                    Number(
+                        member.amount || 0
+                    ).toFixed(2),
 
-                member.created_at
-                    ? new Date(
+                    member.purpose || "",
+
+                    formatDate(
                         member.created_at
-                    ).toLocaleDateString(
-                        "en-NG"
                     )
-                    : ""
 
-            ]
+                ];
+
+            }
         );
 
 
-    const csvRows = [
+    const csv = [
 
         headers,
 
         ...rows
 
-    ];
+    ]
+        .map(
+            function (row) {
 
+                return row
+                    .map(
+                        function (value) {
 
-    const csv =
-        csvRows
-            .map(
-                row =>
-                    row
-                        .map(
-                            value =>
-                                `"${String(
+                            return '"' +
+                                String(
                                     value
-                                ).replace(
-                                    /"/g,
-                                    '""'
-                                )}"`
-                        )
-                        .join(",")
-            )
-            .join("\n");
+                                )
+                                    .replace(
+                                        /"/g,
+                                        '""'
+                                    ) +
+                                '"';
+
+                        }
+                    )
+                    .join(",");
+
+            }
+        )
+        .join("\n");
 
 
     const blob =
@@ -1723,9 +2135,7 @@ function exportMembersCSV() {
 
 
     const link =
-        document.createElement(
-            "a"
-        );
+        document.createElement("a");
 
 
     link.href =
@@ -1752,229 +2162,337 @@ function exportMembersCSV() {
     URL.revokeObjectURL(
         url
     );
+
 }
 
 
-/* =====================================================
-   FORGOT PASSWORD
-====================================================== */
+// =========================================================
+// FORGOT PASSWORD
+// =========================================================
 
 function openForgotPassword() {
 
-    const modal =
-        getElement(
-            "forgotPasswordBox"
-        );
+    if (!forgotPasswordBox) {
 
+        return;
 
-    if (modal) {
-
-        modal.style.display =
-            "flex";
     }
+
+
+    forgotPasswordBox.style.display =
+        "flex";
+
+
+    if (recoveryEmail) {
+
+        recoveryEmail.value = "";
+
+        recoveryEmail.focus();
+
+    }
+
+
+    if (recoveryMessage) {
+
+        recoveryMessage.textContent = "";
+
+    }
+
 }
 
 
-function closeForgotPassword() {
+// =========================================================
+// CLOSE FORGOT PASSWORD
+// =========================================================
 
-    const modal =
-        getElement(
-            "forgotPasswordBox"
-        );
+function closeForgotPasswordBox() {
 
+    if (forgotPasswordBox) {
 
-    if (modal) {
-
-        modal.style.display =
+        forgotPasswordBox.style.display =
             "none";
+
     }
 
-
-    showMessage(
-        "recoveryMessage",
-        "",
-        ""
-    );
 }
 
 
-/* =====================================================
-   PASSWORD RECOVERY
-====================================================== */
+// =========================================================
+// SEND PASSWORD RECOVERY
+// =========================================================
 
 async function sendPasswordRecovery() {
 
-    const email =
-        getElement(
-            "recoveryEmail"
-        )
-            ?.value
-            .trim();
+    const emailValue =
+        recoveryEmail?.value.trim();
 
 
-    if (!email) {
+    if (!emailValue) {
 
-        showMessage(
-            "recoveryMessage",
-            "Please enter your email address.",
+        showRecoveryMessage(
+            "Please enter your registered email address.",
             "error"
         );
 
         return;
+
     }
 
 
-    showMessage(
-        "recoveryMessage",
-        "Sending recovery email...",
-        ""
+    if (sendRecoveryButton) {
+
+        sendRecoveryButton.disabled = true;
+
+    }
+
+
+    showRecoveryMessage(
+        "Sending password recovery email...",
+        "info"
     );
 
 
-    const redirectTo =
-        window.location.origin +
-        window.location.pathname;
+    try {
+
+        const redirectUrl =
+            window.location.origin +
+            window.location.pathname;
 
 
-    const {
-        error
-    } =
-        await supabaseClient
-            .auth
-            .resetPasswordForEmail(
-                email,
-                {
-                    redirectTo:
-                        redirectTo
-                }
+        const {
+            error
+        } =
+            await supabaseClient.auth
+                .resetPasswordForEmail(
+                    emailValue,
+                    {
+                        redirectTo:
+                            redirectUrl
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Recovery error:",
+                error
             );
 
 
-    if (error) {
+            showRecoveryMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showRecoveryMessage(
+            "Password recovery email sent. Please check your email.",
+            "success"
+        );
+
+
+    } catch (error) {
 
         console.error(
-            "Password recovery error:",
+            "Recovery error:",
             error
         );
 
 
-        showMessage(
-            "recoveryMessage",
-            error.message,
+        showRecoveryMessage(
+            "Unable to send recovery email.",
             "error"
         );
 
-        return;
+    } finally {
+
+        if (sendRecoveryButton) {
+
+            sendRecoveryButton.disabled = false;
+
+        }
+
     }
 
-
-    showMessage(
-        "recoveryMessage",
-        "Password recovery email sent. Please check your email.",
-        "success"
-    );
 }
 
 
-/* =====================================================
-   PASSWORD RESET
-====================================================== */
+// =========================================================
+// SHOW PASSWORD RESET
+// =========================================================
 
-function openPasswordReset() {
+function showPasswordReset() {
 
-    const modal =
-        getElement(
-            "passwordResetBox"
-        );
+    if (passwordResetBox) {
 
-
-    if (modal) {
-
-        modal.style.display =
+        passwordResetBox.style.display =
             "flex";
+
     }
+
+
+    if (newAdminPassword) {
+
+        newAdminPassword.value = "";
+
+    }
+
+
+    if (confirmAdminPassword) {
+
+        confirmAdminPassword.value = "";
+
+    }
+
+
+    if (resetMessage) {
+
+        resetMessage.textContent = "";
+
+    }
+
 }
 
 
-async function saveNewPassword() {
+// =========================================================
+// UPDATE PASSWORD
+// =========================================================
 
-    const password =
-        getElement(
-            "newAdminPassword"
-        )
-            ?.value;
+async function updatePassword() {
+
+    const newPassword =
+        newAdminPassword?.value || "";
 
 
     const confirmPassword =
-        getElement(
-            "confirmAdminPassword"
-        )
-            ?.value;
+        confirmAdminPassword?.value || "";
 
 
-    if (
-        !password ||
-        !confirmPassword
-    ) {
+    if (!newPassword) {
 
-        showMessage(
-            "resetMessage",
-            "Please enter and confirm your new password.",
+        showResetMessage(
+            "Please enter a new password.",
             "error"
         );
 
         return;
+
+    }
+
+
+    if (newPassword.length < 6) {
+
+        showResetMessage(
+            "Password must be at least 6 characters.",
+            "error"
+        );
+
+        return;
+
     }
 
 
     if (
-        password !==
+        newPassword !==
         confirmPassword
     ) {
 
-        showMessage(
-            "resetMessage",
+        showResetMessage(
             "The passwords do not match.",
             "error"
         );
 
         return;
+
     }
 
 
-    if (
-        password.length < 6
-    ) {
+    if (saveNewPassword) {
 
-        showMessage(
-            "resetMessage",
-            "Password should contain at least 6 characters.",
-            "error"
-        );
+        saveNewPassword.disabled = true;
 
-        return;
     }
 
 
-    showMessage(
-        "resetMessage",
-        "Saving new password...",
-        ""
+    showResetMessage(
+        "Updating password...",
+        "info"
     );
 
 
-    const {
-        error
-    } =
-        await supabaseClient
-            .auth
-            .updateUser({
-                password:
-                    password
-            });
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient.auth
+                .updateUser({
+
+                    password:
+                        newPassword
+
+                });
 
 
-    if (error) {
+        if (error) {
+
+            console.error(
+                "Password update error:",
+                error
+            );
+
+
+            showResetMessage(
+                error.message,
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showResetMessage(
+            "Password updated successfully.",
+            "success"
+        );
+
+
+        if (newAdminPassword) {
+
+            newAdminPassword.value = "";
+
+        }
+
+
+        if (confirmAdminPassword) {
+
+            confirmAdminPassword.value = "";
+
+        }
+
+
+        setTimeout(
+            function () {
+
+                if (passwordResetBox) {
+
+                    passwordResetBox.style.display =
+                        "none";
+
+                }
+
+            },
+            2000
+        );
+
+
+    } catch (error) {
 
         console.error(
             "Password update error:",
@@ -1982,251 +2500,317 @@ async function saveNewPassword() {
         );
 
 
-        showMessage(
-            "resetMessage",
-            error.message,
+        showResetMessage(
+            "Unable to update password.",
             "error"
         );
 
-        return;
+    } finally {
+
+        if (saveNewPassword) {
+
+            saveNewPassword.disabled = false;
+
+        }
+
     }
 
-
-    showMessage(
-        "resetMessage",
-        "Password updated successfully. You can now login with your new password.",
-        "success"
-    );
-
-
-    getElement(
-        "newAdminPassword"
-    ).value = "";
-
-
-    getElement(
-        "confirmAdminPassword"
-    ).value = "";
 }
 
 
-/* =====================================================
-   AUTH STATE
-====================================================== */
+// =========================================================
+// MESSAGE FUNCTIONS
+// =========================================================
 
-async function handleAuthState() {
+function showLoginMessage(
+    message,
+    type
+) {
 
-    const {
-        data
-    } =
-        await supabaseClient
-            .auth
-            .getSession();
+    if (!loginMessage) {
+
+        return;
+
+    }
+
+
+    loginMessage.textContent =
+        message;
+
+
+    loginMessage.className =
+        "message";
+
+
+    if (type === "error") {
+
+        loginMessage.style.color =
+            "#c62828";
+
+    }
+
+    else if (type === "success") {
+
+        loginMessage.style.color =
+            "#126b35";
+
+    }
+
+    else {
+
+        loginMessage.style.color =
+            "#666";
+
+    }
+
+}
+
+
+function showMemberMessage(
+    message,
+    type
+) {
+
+    if (!memberMessage) {
+
+        return;
+
+    }
+
+
+    memberMessage.textContent =
+        message;
+
+
+    memberMessage.className =
+        "message";
+
+
+    if (type === "error") {
+
+        memberMessage.style.color =
+            "#c62828";
+
+    }
+
+    else if (type === "success") {
+
+        memberMessage.style.color =
+            "#126b35";
+
+    }
+
+    else {
+
+        memberMessage.style.color =
+            "#666";
+
+    }
+
+}
+
+
+function showRecoveryMessage(
+    message,
+    type
+) {
+
+    if (!recoveryMessage) {
+
+        return;
+
+    }
+
+
+    recoveryMessage.textContent =
+        message;
+
+
+    recoveryMessage.className =
+        "message";
+
+
+    if (type === "error") {
+
+        recoveryMessage.style.color =
+            "#c62828";
+
+    }
+
+    else if (type === "success") {
+
+        recoveryMessage.style.color =
+            "#126b35";
+
+    }
+
+    else {
+
+        recoveryMessage.style.color =
+            "#666";
+
+    }
+
+}
+
+
+function showResetMessage(
+    message,
+    type
+) {
+
+    if (!resetMessage) {
+
+        return;
+
+    }
+
+
+    resetMessage.textContent =
+        message;
+
+
+    resetMessage.className =
+        "message";
+
+
+    if (type === "error") {
+
+        resetMessage.style.color =
+            "#c62828";
+
+    }
+
+    else if (type === "success") {
+
+        resetMessage.style.color =
+            "#126b35";
+
+    }
+
+    else {
+
+        resetMessage.style.color =
+            "#666";
+
+    }
+
+}
+
+
+// =========================================================
+// FORMAT CURRENCY
+// =========================================================
+
+function formatCurrency(value) {
+
+    const number =
+        Number(value || 0);
+
+
+    return new Intl.NumberFormat(
+        "en-NG",
+        {
+            style: "currency",
+
+            currency: "NGN",
+
+            minimumFractionDigits: 2
+        }
+    ).format(number);
+
+}
+
+
+// =========================================================
+// FORMAT DATE
+// =========================================================
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
 
 
     if (
-        data?.session?.user
+        Number.isNaN(
+            date.getTime()
+        )
     ) {
 
-        currentUser =
-            data.session.user;
+        return "";
 
-
-        currentUserIsAdmin =
-            await checkAdminRole(
-                currentUser.id
-            );
-
-
-        await showApplication();
-
-    } else {
-
-        const loginBox =
-            getElement(
-                "adminLoginBox"
-            );
-
-
-        const application =
-            getElement(
-                "adminApplication"
-            );
-
-
-        if (loginBox) {
-
-            loginBox.style.display =
-                "";
-        }
-
-
-        if (application) {
-
-            application.style.display =
-                "none";
-        }
     }
+
+
+    return new Intl.DateTimeFormat(
+        "en-NG",
+        {
+            day: "2-digit",
+
+            month: "short",
+
+            year: "numeric"
+        }
+    ).format(date);
+
 }
 
 
-/* =====================================================
-   AUTH LISTENER
-====================================================== */
+// =========================================================
+// ESCAPE HTML
+// =========================================================
 
-supabaseClient.auth.onAuthStateChange(
-    async (
-        event,
-        session
-    ) => {
+function escapeHTML(value) {
 
-        if (
-            event ===
-            "PASSWORD_RECOVERY"
-        ) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
-            openPasswordReset();
-
-            return;
-        }
-
-
-        if (
-            session?.user
-        ) {
-
-            currentUser =
-                session.user;
-
-
-            currentUserIsAdmin =
-                await checkAdminRole(
-                    currentUser.id
-                );
-
-
-            await showApplication();
-        }
-    }
-);
-
-
-/* =====================================================
-   EVENT LISTENERS
-====================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-
-        /* LOGIN */
-
-        getElement(
-            "adminLoginButton"
-        )?.addEventListener(
-            "click",
-            loginUser
-        );
-
-
-        /* LOGOUT */
-
-        getElement(
-            "logoutButton"
-        )?.addEventListener(
-            "click",
-            logoutUser
-        );
-
-
-        /* FORGOT PASSWORD */
-
-        getElement(
-            "forgotPasswordButton"
-        )?.addEventListener(
-            "click",
-            openForgotPassword
-        );
-
-
-        getElement(
-            "closeForgotPassword"
-        )?.addEventListener(
-            "click",
-            closeForgotPassword
-        );
-
-
-        getElement(
-            "sendRecoveryButton"
-        )?.addEventListener(
-            "click",
-            sendPasswordRecovery
-        );
-
-
-        /* PASSWORD RESET */
-
-        getElement(
-            "saveNewPassword"
-        )?.addEventListener(
-            "click",
-            saveNewPassword
-        );
-
-
-        /* MEMBER */
-
-        getElement(
-            "saveMemberButton"
-        )?.addEventListener(
-            "click",
-            saveMember
-        );
-
-
-        getElement(
-            "clearFormButton"
-        )?.addEventListener(
-            "click",
-            clearMemberForm
-        );
-
-
-        /* SEARCH */
-
-        getElement(
-            "searchInput"
-        )?.addEventListener(
-            "input",
-            searchMembers
-        );
-
-
-        /* REFRESH */
-
-        getElement(
-            "refreshButton"
-        )?.addEventListener(
-            "click",
-            loadMembers
-        );
-
-
-        /* EXPORT */
-
-        getElement(
-            "exportButton"
-        )?.addEventListener(
-            "click",
-            exportMembersCSV
-        );
-
-
-        /* START APPLICATION */
-
-        handleAuthState();
+        return "";
 
     }
-);
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// =========================================================
+// MAKE FUNCTIONS AVAILABLE TO HTML BUTTONS
+// =========================================================
+
+window.editMember =
+    editMember;
+
+window.deleteMember =
+    deleteMember;
