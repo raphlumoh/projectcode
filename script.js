@@ -1,8 +1,12 @@
-"use strict";
+/* =====================================================
+   IDOGWU FAMILY DATABASE
+   APPLICATION JAVASCRIPT
+====================================================== */
 
-/* =========================================================
+
+/* =====================================================
    SUPABASE CONFIGURATION
-========================================================= */
+====================================================== */
 
 const SUPABASE_URL =
     "https://hzqawunnchuryzgmgiwi.supabase.co";
@@ -17,73 +21,43 @@ const supabaseClient =
     );
 
 
-/* =========================================================
+/* =====================================================
    GLOBAL VARIABLES
-========================================================= */
+====================================================== */
 
-let members = [];
-let filteredMembers = [];
+let currentUser = null;
+
+let currentUserIsAdmin = false;
+
+let allMembers = [];
+
+let locationChart = null;
 
 
-/* =========================================================
-   BASIC HELPER
-========================================================= */
+/* =====================================================
+   DOM HELPER
+====================================================== */
 
 function getElement(id) {
+
     return document.getElementById(id);
 }
 
 
-/* =========================================================
-   NAIRA FORMAT
-========================================================= */
+/* =====================================================
+   HTML ESCAPE
+====================================================== */
 
-function formatNaira(amount) {
-    return new Intl.NumberFormat(
-        "en-NG",
-        {
-            style: "currency",
-            currency: "NGN",
-            minimumFractionDigits: 2
-        }
-    ).format(Number(amount || 0));
-}
+function escapeHtml(value) {
 
-
-/* =========================================================
-   DATE FORMAT
-========================================================= */
-
-function formatDate(dateValue) {
-
-    if (!dateValue) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
-    const date = new Date(dateValue);
-
-    if (Number.isNaN(date.getTime())) {
-        return "";
-    }
-
-    return date.toLocaleDateString(
-        "en-NG",
-        {
-            year: "numeric",
-            month: "short",
-            day: "numeric"
-        }
-    );
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(value) {
-
-    return String(value ?? "")
+    return String(value)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -92,740 +66,939 @@ function escapeHTML(value) {
 }
 
 
-/* =========================================================
-   SHOW LOGIN
-========================================================= */
+/* =====================================================
+   MESSAGE
+====================================================== */
 
-function showLogin() {
+function showMessage(
+    elementId,
+    message,
+    type = ""
+) {
 
-    const loginBox = getElement("adminLoginBox");
-    const application = getElement("adminApplication");
-    const loggedInUser = getElement("loggedInUser");
+    const element =
+        getElement(elementId);
 
-    if (loginBox) {
-        loginBox.style.display = "flex";
+    if (!element) {
+        return;
     }
 
-    if (application) {
-        application.style.display = "none";
-    }
+    element.textContent =
+        message;
 
-    if (loggedInUser) {
-        loggedInUser.textContent = "";
-    }
-}
+    element.className =
+        "message";
 
-
-/* =========================================================
-   SHOW APPLICATION
-========================================================= */
-
-function showApplication(user) {
-
-    const loginBox = getElement("adminLoginBox");
-    const application = getElement("adminApplication");
-    const loggedInUser = getElement("loggedInUser");
-
-    if (loginBox) {
-        loginBox.style.display = "none";
-    }
-
-    if (application) {
-        application.style.display = "block";
-    }
-
-    if (loggedInUser && user) {
-
-        loggedInUser.textContent =
-            "Logged in as: " +
-            (user.email || "Administrator");
+    if (type) {
+        element.classList.add(type);
     }
 }
 
 
-/* =========================================================
-   CHECK ADMIN SESSION
-========================================================= */
+/* =====================================================
+   CURRENCY
+====================================================== */
 
-async function checkAdminSession() {
+function formatCurrency(amount) {
 
-    try {
+    const number =
+        Number(amount) || 0;
 
-        const result =
-            await supabaseClient.auth.getSession();
-
-        const session = result.data?.session;
-
-        if (session && session.user) {
-
-            showApplication(session.user);
-
-            await loadMembers();
-
-        } else {
-
-            showLogin();
+    return new Intl.NumberFormat(
+        "en-NG",
+        {
+            style: "currency",
+            currency: "NGN"
         }
+    ).format(number);
+}
 
-    } catch (error) {
+
+/* =====================================================
+   CHECK ADMIN
+====================================================== */
+
+async function checkAdminRole(userId) {
+
+    if (!userId) {
+        return false;
+    }
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+
+    if (error) {
 
         console.error(
-            "Session check error:",
+            "Admin role check error:",
             error
         );
 
-        showLogin();
+        return false;
     }
+
+
+    return data?.role === "admin";
 }
 
 
-/* =========================================================
-   ADMIN LOGIN
-========================================================= */
-
-const adminLoginButton =
-    getElement("adminLoginButton");
-
-if (adminLoginButton) {
-
-    adminLoginButton.addEventListener(
-        "click",
-        async function () {
-
-            const email =
-                getElement("adminEmail")?.value
-                    .trim();
-
-            const password =
-                getElement("adminPassword")?.value;
-
-            const message =
-                getElement("loginMessage");
-
-            if (message) {
-                message.textContent = "";
-                message.className = "message";
-            }
-
-            if (!email || !password) {
-
-                if (message) {
-
-                    message.textContent =
-                        "Please enter your email and password.";
-
-                    message.className =
-                        "message error";
-                }
-
-                return;
-            }
-
-            if (message) {
-
-                message.textContent =
-                    "Signing in...";
-
-                message.className =
-                    "message";
-            }
-
-            try {
-
-                const result =
-                    await supabaseClient.auth.signInWithPassword({
-                        email: email,
-                        password: password
-                    });
-
-                if (result.error) {
-                    throw result.error;
-                }
-
-                showApplication(result.data.user);
-
-                if (message) {
-
-                    message.textContent =
-                        "Login successful.";
-
-                    message.className =
-                        "message success";
-                }
-
-                await loadMembers();
-
-            } catch (error) {
-
-                console.error(
-                    "Login error:",
-                    error
-                );
-
-                if (message) {
-
-                    message.textContent =
-                        error.message ||
-                        "Login failed. Please check your email and password.";
-
-                    message.className =
-                        "message error";
-                }
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   LOGIN WITH ENTER KEY
-========================================================= */
-
-const adminPassword =
-    getElement("adminPassword");
-
-if (adminPassword) {
-
-    adminPassword.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (event.key === "Enter") {
-
-                event.preventDefault();
-
-                if (adminLoginButton) {
-                    adminLoginButton.click();
-                }
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   FORGOT PASSWORD - OPEN MODAL
-========================================================= */
-
-const forgotPasswordButton =
-    getElement("forgotPasswordButton");
-
-if (forgotPasswordButton) {
-
-    forgotPasswordButton.addEventListener(
-        "click",
-        function () {
-
-            const box =
-                getElement("forgotPasswordBox");
-
-            const recoveryEmail =
-                getElement("recoveryEmail");
-
-            const recoveryMessage =
-                getElement("recoveryMessage");
-
-            if (box) {
-                box.style.display = "flex";
-            }
-
-            if (recoveryEmail) {
-
-                const adminEmail =
-                    getElement("adminEmail")?.value.trim();
-
-                if (adminEmail) {
-                    recoveryEmail.value = adminEmail;
-                }
-
-                recoveryEmail.focus();
-            }
-
-            if (recoveryMessage) {
-                recoveryMessage.textContent = "";
-                recoveryMessage.className = "message";
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   CLOSE FORGOT PASSWORD
-========================================================= */
-
-const closeForgotPassword =
-    getElement("closeForgotPassword");
-
-if (closeForgotPassword) {
-
-    closeForgotPassword.addEventListener(
-        "click",
-        function () {
-
-            const box =
-                getElement("forgotPasswordBox");
-
-            if (box) {
-                box.style.display = "none";
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   SEND PASSWORD RECOVERY EMAIL
-========================================================= */
-
-const sendRecoveryButton =
-    getElement("sendRecoveryButton");
-
-if (sendRecoveryButton) {
-
-    sendRecoveryButton.addEventListener(
-        "click",
-        async function () {
-
-            const email =
-                getElement("recoveryEmail")?.value.trim();
-
-            const message =
-                getElement("recoveryMessage");
-
-            if (message) {
-                message.textContent = "";
-                message.className = "message";
-            }
-
-            if (!email) {
-
-                if (message) {
-
-                    message.textContent =
-                        "Please enter your administrator email.";
-
-                    message.className =
-                        "message error";
-                }
-
-                return;
-            }
-
-            const emailPattern =
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            if (!emailPattern.test(email)) {
-
-                if (message) {
-
-                    message.textContent =
-                        "Please enter a valid email address.";
-
-                    message.className =
-                        "message error";
-                }
-
-                return;
-            }
-
-            if (message) {
-
-                message.textContent =
-                    "Sending recovery email...";
-
-                message.className =
-                    "message";
-            }
-
-            try {
-
-                const redirectTo =
-                    window.location.origin +
-                    window.location.pathname;
-
-                const result =
-                    await supabaseClient.auth
-                        .resetPasswordForEmail(
-                            email,
-                            {
-                                redirectTo: redirectTo
-                            }
-                        );
-
-                if (result.error) {
-                    throw result.error;
-                }
-
-                if (message) {
-
-                    message.textContent =
-                        "Password reset instructions have been sent to your email.";
-
-                    message.className =
-                        "message success";
-                }
-
-            } catch (error) {
-
-                console.error(
-                    "Password recovery error:",
-                    error
-                );
-
-                if (message) {
-
-                    message.textContent =
-                        error.message ||
-                        "Unable to send password recovery email.";
-
-                    message.className =
-                        "message error";
-                }
-            }
-        }
-    );
-}
-
-
-/* =========================================================
-   SUPABASE AUTH STATE
-========================================================= */
-
-supabaseClient.auth.onAuthStateChange(
-    function (event, session) {
-
-        console.log(
-            "Auth event:",
-            event
+/* =====================================================
+   APPLY PERMISSIONS
+====================================================== */
+
+function applyUserPermissions() {
+
+    const registrationSection =
+        getElement(
+            "memberRegistrationSection"
         );
 
-        if (event === "PASSWORD_RECOVERY") {
+    const exportButton =
+        getElement(
+            "exportButton"
+        );
 
-            const resetBox =
-                getElement("passwordResetBox");
 
-            const resetMessage =
-                getElement("resetMessage");
+    if (currentUserIsAdmin) {
 
-            if (resetBox) {
-                resetBox.style.display = "flex";
-            }
-
-            if (resetMessage) {
-                resetMessage.textContent = "";
-            }
+        if (registrationSection) {
+            registrationSection.style.display =
+                "";
         }
 
-        if (
-            event === "SIGNED_IN" &&
-            session &&
-            session.user
-        ) {
-
-            showApplication(
-                session.user
-            );
+        if (exportButton) {
+            exportButton.style.display =
+                "";
         }
 
-        if (event === "SIGNED_OUT") {
+    } else {
 
-            members = [];
-            filteredMembers = [];
+        if (registrationSection) {
+            registrationSection.style.display =
+                "none";
+        }
 
-            showLogin();
-
-            const tableBody =
-                getElement("membersTableBody");
-
-            if (tableBody) {
-                tableBody.innerHTML = "";
-            }
+        if (exportButton) {
+            exportButton.style.display =
+                "none";
         }
     }
-);
-
-
-/* =========================================================
-   SAVE NEW PASSWORD
-========================================================= */
-
-const saveNewPassword =
-    getElement("saveNewPassword");
-
-if (saveNewPassword) {
-
-    saveNewPassword.addEventListener(
-        "click",
-        async function () {
-
-            const newPassword =
-                getElement("newAdminPassword")?.value;
-
-            const confirmPassword =
-                getElement("confirmAdminPassword")?.value;
-
-            const message =
-                getElement("resetMessage");
-
-            if (message) {
-                message.textContent = "";
-                message.className = "message";
-            }
-
-            if (!newPassword || !confirmPassword) {
-
-                if (message) {
-
-                    message.textContent =
-                        "Please enter and confirm your new password.";
-
-                    message.className =
-                        "message error";
-                }
-
-                return;
-            }
-
-            if (newPassword.length < 6) {
-
-                if (message) {
-
-                    message.textContent =
-                        "Password must be at least 6 characters.";
-
-                    message.className =
-                        "message error";
-                }
-
-                return;
-            }
-
-            if (newPassword !== confirmPassword) {
-
-                if (message) {
-
-                    message.textContent =
-                        "Passwords do not match.";
-
-                    message.className =
-                        "message error";
-                }
-
-                return;
-            }
-
-            try {
-
-                const result =
-                    await supabaseClient.auth.updateUser({
-                        password: newPassword
-                    });
-
-                if (result.error) {
-                    throw result.error;
-                }
-
-                if (message) {
-
-                    message.textContent =
-                        "Password changed successfully.";
-
-                    message.className =
-                        "message success";
-                }
-
-                if (getElement("newAdminPassword")) {
-                    getElement("newAdminPassword").value = "";
-                }
-
-                if (getElement("confirmAdminPassword")) {
-                    getElement("confirmAdminPassword").value = "";
-                }
-
-                setTimeout(
-                    async function () {
-
-                        const resetBox =
-                            getElement("passwordResetBox");
-
-                        if (resetBox) {
-                            resetBox.style.display = "none";
-                        }
-
-                        await supabaseClient.auth.signOut();
-
-                        showLogin();
-
-                    },
-                    1800
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Password update error:",
-                    error
-                );
-
-                if (message) {
-
-                    message.textContent =
-                        error.message ||
-                        "Unable to change password.";
-
-                    message.className =
-                        "message error";
-                }
-            }
-        }
-    );
 }
 
 
-/* =========================================================
+/* =====================================================
+   LOGIN
+====================================================== */
+
+async function loginUser() {
+
+    const email =
+        getElement(
+            "adminEmail"
+        )?.value.trim();
+
+
+    const password =
+        getElement(
+            "adminPassword"
+        )?.value;
+
+
+    if (!email || !password) {
+
+        showMessage(
+            "loginMessage",
+            "Please enter your email and password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "loginMessage",
+        "Signing in...",
+        ""
+    );
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth
+        .signInWithPassword({
+            email: email,
+            password: password
+        });
+
+
+    if (error) {
+
+        console.error(error);
+
+        showMessage(
+            "loginMessage",
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!data.user) {
+
+        showMessage(
+            "loginMessage",
+            "Login failed. Please try again.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    currentUserIsAdmin =
+        await checkAdminRole(
+            currentUser.id
+        );
+
+
+    await showApplication();
+}
+
+
+/* =====================================================
+   SHOW APPLICATION
+====================================================== */
+
+async function showApplication() {
+
+    const loginBox =
+        getElement(
+            "adminLoginBox"
+        );
+
+
+    const application =
+        getElement(
+            "adminApplication"
+        );
+
+
+    if (loginBox) {
+        loginBox.style.display =
+            "none";
+    }
+
+
+    if (application) {
+        application.style.display =
+            "block";
+    }
+
+
+    const loggedInUser =
+        getElement(
+            "loggedInUser"
+        );
+
+
+    if (
+        loggedInUser &&
+        currentUser
+    ) {
+
+        loggedInUser.textContent =
+            currentUser.email +
+            (
+                currentUserIsAdmin
+                    ? " • Administrator"
+                    : " • Member"
+            );
+    }
+
+
+    applyUserPermissions();
+
+    await loadMembers();
+}
+
+
+/* =====================================================
    LOGOUT
-========================================================= */
+====================================================== */
 
-const logoutButton =
-    getElement("logoutButton");
+async function logoutUser() {
 
-if (logoutButton) {
+    await supabaseClient.auth.signOut();
 
-    logoutButton.addEventListener(
-        "click",
-        async function () {
 
-            try {
+    currentUser = null;
 
-                const result =
-                    await supabaseClient.auth.signOut();
+    currentUserIsAdmin = false;
 
-                if (result.error) {
-                    throw result.error;
-                }
+    allMembers = [];
 
-                members = [];
-                filteredMembers = [];
 
-                const tableBody =
-                    getElement("membersTableBody");
+    const loginBox =
+        getElement(
+            "adminLoginBox"
+        );
 
-                if (tableBody) {
-                    tableBody.innerHTML = "";
-                }
 
-                const loginEmail =
-                    getElement("adminEmail");
+    const application =
+        getElement(
+            "adminApplication"
+        );
 
-                const loginPassword =
-                    getElement("adminPassword");
 
-                if (loginEmail) {
-                    loginEmail.value = "";
-                }
+    if (application) {
+        application.style.display =
+            "none";
+    }
 
-                if (loginPassword) {
-                    loginPassword.value = "";
-                }
 
-                showLogin();
+    if (loginBox) {
+        loginBox.style.display =
+            "";
+    }
 
-            } catch (error) {
 
-                console.error(
-                    "Logout error:",
-                    error
-                );
+    const email =
+        getElement(
+            "adminEmail"
+        );
 
-                alert(
-                    error.message ||
-                    "Unable to log out."
-                );
-            }
-        }
-    );
+
+    const password =
+        getElement(
+            "adminPassword"
+        );
+
+
+    if (email) {
+        email.value = "";
+    }
+
+
+    if (password) {
+        password.value = "";
+    }
 }
 
 
-/* =========================================================
+/* =====================================================
    LOAD MEMBERS
-========================================================= */
+====================================================== */
 
 async function loadMembers() {
 
-    try {
+    if (!currentUser) {
+        return;
+    }
 
-        const result =
-            await supabaseClient
-                .from("idogwu_members")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
 
-        if (result.error) {
-            throw result.error;
-        }
-
-        members =
-            result.data || [];
-
-        filteredMembers =
-            [...members];
-
-        displayMembers(
-            filteredMembers
+    const tableBody =
+        getElement(
+            "membersTableBody"
         );
 
-        updateDashboard();
 
-    } catch (error) {
+    if (tableBody) {
+
+        tableBody.innerHTML = `
+            <tr>
+                <td
+                    colspan="9"
+                    class="table-message"
+                >
+                    Loading family members...
+                </td>
+            </tr>
+        `;
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("idogwu_members")
+        .select("*")
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
 
         console.error(
             "Load members error:",
             error
         );
 
-        const tableBody =
-            getElement("membersTableBody");
 
         if (tableBody) {
 
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="9" style="text-align:center;">
-                        Unable to load family members.
+                    <td
+                        colspan="9"
+                        class="table-message"
+                    >
+                        Unable to load members:
+                        ${escapeHtml(
+                            error.message
+                        )}
                     </td>
                 </tr>
             `;
         }
+
+        return;
+    }
+
+
+    allMembers =
+        data || [];
+
+
+    updateDashboard(
+        allMembers
+    );
+
+
+    updateLocationStatistics(
+        allMembers
+    );
+
+
+    renderMembers(
+        allMembers
+    );
+}
+
+
+/* =====================================================
+   DASHBOARD
+====================================================== */
+
+function updateDashboard(
+    members
+) {
+
+    const total =
+        members.length;
+
+
+    const paid =
+        members.filter(
+            member =>
+                Number(
+                    member.amount || 0
+                ) > 0
+        ).length;
+
+
+    const unpaid =
+        total - paid;
+
+
+    const totalAmount =
+        members.reduce(
+            (
+                sum,
+                member
+            ) =>
+                sum +
+                Number(
+                    member.amount || 0
+                ),
+            0
+        );
+
+
+    const average =
+        total > 0
+            ? totalAmount / total
+            : 0;
+
+
+    const locations =
+        new Set(
+            members
+                .map(
+                    member =>
+                        (
+                            member.location ||
+                            ""
+                        )
+                            .trim()
+                            .toLowerCase()
+                )
+                .filter(Boolean)
+        ).size;
+
+
+    if (
+        getElement(
+            "totalMembers"
+        )
+    ) {
+
+        getElement(
+            "totalMembers"
+        ).textContent =
+            total;
+    }
+
+
+    if (
+        getElement(
+            "paidMembers"
+        )
+    ) {
+
+        getElement(
+            "paidMembers"
+        ).textContent =
+            paid;
+    }
+
+
+    if (
+        getElement(
+            "unpaidMembers"
+        )
+    ) {
+
+        getElement(
+            "unpaidMembers"
+        ).textContent =
+            unpaid;
+    }
+
+
+    if (
+        getElement(
+            "totalAmount"
+        )
+    ) {
+
+        getElement(
+            "totalAmount"
+        ).textContent =
+            formatCurrency(
+                totalAmount
+            );
+    }
+
+
+    if (
+        getElement(
+            "averageAmount"
+        )
+    ) {
+
+        getElement(
+            "averageAmount"
+        ).textContent =
+            formatCurrency(
+                average
+            );
+    }
+
+
+    if (
+        getElement(
+            "totalLocations"
+        )
+    ) {
+
+        getElement(
+            "totalLocations"
+        ).textContent =
+            locations;
     }
 }
 
 
-/* =========================================================
-   DISPLAY MEMBERS
-========================================================= */
+/* =====================================================
+   FAMILY LOCATION STATISTICS
+====================================================== */
 
-function displayMembers(list) {
+function updateLocationStatistics(
+    members
+) {
+
+    const statisticsBody =
+        getElement(
+            "locationStatisticsBody"
+        );
+
+
+    const chartCanvas =
+        getElement(
+            "locationChart"
+        );
+
+
+    if (
+        !statisticsBody ||
+        !chartCanvas
+    ) {
+        return;
+    }
+
+
+    /* ---------------------------------------------
+       COUNT LOCATIONS
+    --------------------------------------------- */
+
+    const locationCounts = {};
+
+
+    members.forEach(
+        member => {
+
+            let location =
+                (
+                    member.location ||
+                    ""
+                ).trim();
+
+
+            if (!location) {
+                location =
+                    "Not Specified";
+            }
+
+
+            if (
+                !locationCounts[
+                    location
+                ]
+            ) {
+
+                locationCounts[
+                    location
+                ] = 0;
+            }
+
+
+            locationCounts[
+                location
+            ]++;
+        }
+    );
+
+
+    let locations =
+        Object.keys(
+            locationCounts
+        );
+
+
+    /* ---------------------------------------------
+       CLEAR TABLE
+    --------------------------------------------- */
+
+    statisticsBody.innerHTML =
+        "";
+
+
+    if (!members.length) {
+
+        statisticsBody.innerHTML = `
+            <tr>
+                <td
+                    colspan="4"
+                    class="table-message"
+                >
+                    No location data available.
+                </td>
+            </tr>
+        `;
+
+
+        if (locationChart) {
+
+            locationChart.destroy();
+
+            locationChart = null;
+        }
+
+
+        return;
+    }
+
+
+    /* ---------------------------------------------
+       SORT
+    --------------------------------------------- */
+
+    locations.sort(
+        (
+            a,
+            b
+        ) =>
+            locationCounts[b] -
+            locationCounts[a]
+    );
+
+
+    /* ---------------------------------------------
+       LOCATION TABLE
+    --------------------------------------------- */
+
+    locations.forEach(
+        (
+            location,
+            index
+        ) => {
+
+            const count =
+                locationCounts[
+                    location
+                ];
+
+
+            const percentage =
+                (
+                    count /
+                    members.length *
+                    100
+                ).toFixed(1);
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        location
+                    )}
+                </td>
+
+                <td>
+                    ${count}
+                </td>
+
+                <td>
+                    ${percentage}%
+                </td>
+
+            `;
+
+
+            statisticsBody.appendChild(
+                row
+            );
+        }
+    );
+
+
+    /* ---------------------------------------------
+       CHART
+    --------------------------------------------- */
+
+    if (locationChart) {
+
+        locationChart.destroy();
+
+        locationChart = null;
+    }
+
+
+    locationChart =
+        new Chart(
+            chartCanvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels:
+                        locations,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Family Members",
+
+                            data:
+                                locations.map(
+                                    location =>
+                                        locationCounts[
+                                            location
+                                        ]
+                                ),
+
+                            borderWidth: 1
+
+                        }
+
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    plugins: {
+
+                        legend: {
+
+                            display: false
+
+                        },
+
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(
+                                        context
+                                    ) {
+
+                                        const count =
+                                            context.raw;
+
+
+                                        const percentage =
+                                            (
+                                                count /
+                                                members.length *
+                                                100
+                                            ).toFixed(1);
+
+
+                                        return (
+                                            count +
+                                            " member(s) — " +
+                                            percentage +
+                                            "%"
+                                        );
+                                    }
+                            }
+                        }
+                    },
+
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+                            ticks: {
+
+                                precision:
+                                    0
+
+                            },
+
+                            title: {
+
+                                display:
+                                    true,
+
+                                text:
+                                    "Number of Members"
+
+                            }
+
+                        },
+
+
+                        x: {
+
+                            title: {
+
+                                display:
+                                    true,
+
+                                text:
+                                    "Location"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+}
+
+
+/* =====================================================
+   RENDER MEMBERS
+====================================================== */
+
+function renderMembers(
+    members
+) {
 
     const tableBody =
-        getElement("membersTableBody");
+        getElement(
+            "membersTableBody"
+        );
+
 
     if (!tableBody) {
         return;
     }
 
-    if (!list || list.length === 0) {
+
+    if (!members.length) {
 
         tableBody.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align:center;">
-                    No family members found.
+                <td
+                    colspan="9"
+                    class="table-message"
+                >
+                    No registered family members found.
                 </td>
             </tr>
         `;
@@ -833,718 +1006,615 @@ function displayMembers(list) {
         return;
     }
 
+
     tableBody.innerHTML =
-        list.map(
-            function (member, index) {
+        "";
 
-                const memberId =
-                    JSON.stringify(member.id);
 
-                return `
-                    <tr>
+    members.forEach(
+        (
+            member,
+            index
+        ) => {
 
-                        <td>
-                            ${index + 1}
-                        </td>
+            const row =
+                document.createElement(
+                    "tr"
+                );
 
-                        <td>
-                            ${escapeHTML(member.full_name)}
-                        </td>
 
-                        <td>
-                            ${escapeHTML(member.phone)}
-                        </td>
+            const createdDate =
+                member.created_at
+                    ? new Date(
+                        member.created_at
+                    ).toLocaleDateString(
+                        "en-NG"
+                    )
+                    : "";
 
-                        <td>
-                            ${escapeHTML(member.email)}
-                        </td>
 
-                        <td>
-                            ${escapeHTML(member.location)}
-                        </td>
+            const actions =
+                currentUserIsAdmin
 
-                        <td>
-                            ${formatNaira(member.amount)}
-                        </td>
-
-                        <td>
-                            ${escapeHTML(member.purpose)}
-                        </td>
-
-                        <td>
-                            ${formatDate(member.created_at)}
-                        </td>
-
-                        <td>
+                    ? `
+                        <div class="action-buttons">
 
                             <button
+                                class="btn btn-primary"
                                 type="button"
-                                class="btn btn-warning action-btn"
-                                onclick='editMember(${memberId})'>
+                                onclick="editMember('${member.id}')"
+                            >
                                 Edit
                             </button>
 
                             <button
+                                class="btn btn-danger"
                                 type="button"
-                                class="btn btn-danger action-btn"
-                                onclick='deleteMember(${memberId})'>
+                                onclick="deleteMember('${member.id}')"
+                            >
                                 Delete
                             </button>
 
-                        </td>
+                        </div>
+                    `
 
-                    </tr>
-                `;
-            }
-        )
-        .join("");
+                    : `
+                        <span>
+                            View Only
+                        </span>
+                    `;
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        member.full_name
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        member.phone
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        member.email
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        member.location
+                    )}
+                </td>
+
+                <td>
+                    ${formatCurrency(
+                        member.amount
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        member.purpose
+                    )}
+                </td>
+
+                <td>
+                    ${createdDate}
+                </td>
+
+                <td>
+                    ${actions}
+                </td>
+
+            `;
+
+
+            tableBody.appendChild(
+                row
+            );
+        }
+    );
 }
 
 
-/* =========================================================
-   UPDATE DASHBOARD
-========================================================= */
+/* =====================================================
+   SEARCH
+====================================================== */
 
-function updateDashboard() {
+function searchMembers() {
 
-    const total =
-        members.length;
-
-    const paid =
-        members.filter(
-            function (member) {
-                return Number(
-                    member.amount || 0
-                ) > 0;
-            }
-        ).length;
-
-    const unpaid =
-        total - paid;
-
-    const totalAmount =
-        members.reduce(
-            function (sum, member) {
-
-                return sum +
-                    Number(
-                        member.amount || 0
-                    );
-
-            },
-            0
+    const searchInput =
+        getElement(
+            "searchInput"
         );
 
-    const averageAmount =
-        paid > 0
-            ? totalAmount / paid
-            : 0;
 
-    const locations =
-        new Set(
-            members
-                .map(
-                    function (member) {
-                        return String(
-                            member.location || ""
+    if (!searchInput) {
+        return;
+    }
+
+
+    const search =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    if (!search) {
+
+        renderMembers(
+            allMembers
+        );
+
+        return;
+    }
+
+
+    const filtered =
+        allMembers.filter(
+            member => {
+
+                const values = [
+
+                    member.full_name,
+
+                    member.phone,
+
+                    member.email,
+
+                    member.location,
+
+                    member.purpose
+
+                ];
+
+
+                return values.some(
+                    value =>
+                        String(
+                            value || ""
                         )
-                            .trim()
-                            .toLowerCase();
-                    }
-                )
-                .filter(Boolean)
-        ).size;
-
-    if (getElement("totalMembers")) {
-
-        getElement("totalMembers")
-            .textContent = total;
-    }
-
-    if (getElement("paidMembers")) {
-
-        getElement("paidMembers")
-            .textContent = paid;
-    }
-
-    if (getElement("unpaidMembers")) {
-
-        getElement("unpaidMembers")
-            .textContent = unpaid;
-    }
-
-    if (getElement("totalAmount")) {
-
-        getElement("totalAmount")
-            .textContent =
-            formatNaira(totalAmount);
-    }
-
-    if (getElement("averageAmount")) {
-
-        getElement("averageAmount")
-            .textContent =
-            formatNaira(averageAmount);
-    }
-
-    if (getElement("totalLocations")) {
-
-        getElement("totalLocations")
-            .textContent = locations;
-    }
-}
+                            .toLowerCase()
+                            .includes(
+                                search
+                            )
+                );
+            }
+        );
 
 
-/* =========================================================
-   REGISTER / UPDATE MEMBER
-========================================================= */
-
-const saveMemberButton =
-    getElement("saveMemberButton");
-
-if (saveMemberButton) {
-
-    saveMemberButton.addEventListener(
-        "click",
-        registerMember
+    renderMembers(
+        filtered
     );
 }
 
 
-async function registerMember() {
-
-    const memberId =
-        getElement("memberId")?.value.trim();
-
-    const fullName =
-        getElement("fullName")?.value.trim();
-
-    const phone =
-        getElement("phone")?.value.trim();
-
-    const email =
-        getElement("email")?.value.trim();
-
-    const location =
-        getElement("location")?.value.trim();
-
-    const amountValue =
-        getElement("amount")?.value.trim();
-
-    const purpose =
-        getElement("purpose")?.value.trim();
-
-    const message =
-        getElement("memberMessage");
-
-    if (message) {
-        message.textContent = "";
-        message.className = "message";
-    }
-
-    /* ---------- VALIDATION ---------- */
-
-    if (!fullName) {
-
-        showMemberMessage(
-            "Please enter the full name.",
-            "error"
-        );
-
-        return;
-    }
-
-    if (!phone) {
-
-        showMemberMessage(
-            "Please enter the phone number.",
-            "error"
-        );
-
-        return;
-    }
-
-    if (phone.length < 7) {
-
-        showMemberMessage(
-            "Please enter a valid phone number.",
-            "error"
-        );
-
-        return;
-    }
-
-    if (!location) {
-
-        showMemberMessage(
-            "Please enter the location.",
-            "error"
-        );
-
-        return;
-    }
-
-    if (email) {
-
-        const emailPattern =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailPattern.test(email)) {
-
-            showMemberMessage(
-                "Please enter a valid email address.",
-                "error"
-            );
-
-            return;
-        }
-    }
-
-    const amount =
-        Number(amountValue || 0);
-
-    if (
-        amountValue !== "" &&
-        (!Number.isFinite(amount) || amount < 0)
-    ) {
-
-        showMemberMessage(
-            "Please enter a valid contribution amount.",
-            "error"
-        );
-
-        return;
-    }
-
-    const memberData = {
-
-        full_name: fullName,
-
-        phone: phone,
-
-        email: email || null,
-
-        location: location,
-
-        amount: amount,
-
-        purpose: purpose || null
-    };
-
-    try {
-
-        saveMemberButton.disabled = true;
-
-        saveMemberButton.textContent =
-            memberId
-                ? "Updating..."
-                : "Saving...";
-
-        if (memberId) {
-
-            const result =
-                await supabaseClient
-                    .from("idogwu_members")
-                    .update(memberData)
-                    .eq("id", memberId);
-
-            if (result.error) {
-                throw result.error;
-            }
-
-            showMemberMessage(
-                "Family member updated successfully.",
-                "success"
-            );
-
-        } else {
-
-            const result =
-                await supabaseClient
-                    .from("idogwu_members")
-                    .insert([
-                        memberData
-                    ]);
-
-            if (result.error) {
-                throw result.error;
-            }
-
-            showMemberMessage(
-                "Family member registered successfully.",
-                "success"
-            );
-        }
-
-        clearMemberForm();
-
-        await loadMembers();
-
-    } catch (error) {
-
-        console.error(
-            "Save member error:",
-            error
-        );
-
-        showMemberMessage(
-            error.message ||
-            "Unable to save family member.",
-            "error"
-        );
-
-    } finally {
-
-        saveMemberButton.disabled = false;
-
-        saveMemberButton.textContent =
-            getElement("memberId")?.value
-                ? "Update Member"
-                : "Save Member";
-    }
-}
-
-
-/* =========================================================
-   MEMBER MESSAGE
-========================================================= */
-
-function showMemberMessage(
-    message,
-    type
-) {
-
-    const element =
-        getElement("memberMessage");
-
-    if (!element) {
-        return;
-    }
-
-    element.textContent = message;
-
-    element.className =
-        "message " +
-        (type || "");
-}
-
-
-/* =========================================================
-   EDIT MEMBER
-========================================================= */
-
-window.editMember =
-    function (memberId) {
-
-        const member =
-            members.find(
-                function (item) {
-                    return String(item.id) ===
-                        String(memberId);
-                }
-            );
-
-        if (!member) {
-
-            alert(
-                "Family member could not be found."
-            );
-
-            return;
-        }
-
-        getElement("memberId").value =
-            member.id;
-
-        getElement("fullName").value =
-            member.full_name || "";
-
-        getElement("phone").value =
-            member.phone || "";
-
-        getElement("email").value =
-            member.email || "";
-
-        getElement("location").value =
-            member.location || "";
-
-        getElement("amount").value =
-            member.amount || "";
-
-        getElement("purpose").value =
-            member.purpose || "";
-
-        if (getElement("formTitle")) {
-
-            getElement("formTitle")
-                .textContent =
-                "Edit Family Member";
-        }
-
-        if (getElement("saveMemberButton")) {
-
-            getElement("saveMemberButton")
-                .textContent =
-                "Update Member";
-        }
-
-        showMemberMessage(
-            "You are editing this family member.",
-            ""
-        );
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    };
-
-
-/* =========================================================
-   DELETE MEMBER
-========================================================= */
-
-window.deleteMember =
-    async function (memberId) {
-
-        const member =
-            members.find(
-                function (item) {
-                    return String(item.id) ===
-                        String(memberId);
-                }
-            );
-
-        if (!member) {
-
-            alert(
-                "Family member could not be found."
-            );
-
-            return;
-        }
-
-        const confirmed =
-            window.confirm(
-                "Are you sure you want to delete " +
-                (member.full_name || "this member") +
-                "?"
-            );
-
-        if (!confirmed) {
-            return;
-        }
-
-        try {
-
-            const result =
-                await supabaseClient
-                    .from("idogwu_members")
-                    .delete()
-                    .eq("id", memberId);
-
-            if (result.error) {
-                throw result.error;
-            }
-
-            await loadMembers();
-
-            alert(
-                "Family member deleted successfully."
-            );
-
-        } catch (error) {
-
-            console.error(
-                "Delete member error:",
-                error
-            );
-
-            alert(
-                error.message ||
-                "Unable to delete family member."
-            );
-        }
-    };
-
-
-/* =========================================================
-   CLEAR MEMBER FORM
-========================================================= */
-
-const clearFormButton =
-    getElement("clearFormButton");
-
-if (clearFormButton) {
-
-    clearFormButton.addEventListener(
-        "click",
-        clearMemberForm
-    );
-}
-
+/* =====================================================
+   CLEAR FORM
+====================================================== */
 
 function clearMemberForm() {
 
-    if (getElement("memberId")) {
-        getElement("memberId").value = "";
-    }
+    const fields = [
 
-    if (getElement("fullName")) {
-        getElement("fullName").value = "";
-    }
+        "memberId",
 
-    if (getElement("phone")) {
-        getElement("phone").value = "";
-    }
+        "fullName",
 
-    if (getElement("email")) {
-        getElement("email").value = "";
-    }
+        "phone",
 
-    if (getElement("location")) {
-        getElement("location").value = "";
-    }
+        "email",
 
-    if (getElement("amount")) {
-        getElement("amount").value = "";
-    }
+        "location",
 
-    if (getElement("purpose")) {
-        getElement("purpose").value = "";
-    }
+        "amount",
 
-    if (getElement("formTitle")) {
+        "purpose"
 
-        getElement("formTitle")
-            .textContent =
+    ];
+
+
+    fields.forEach(
+        id => {
+
+            const element =
+                getElement(id);
+
+
+            if (element) {
+                element.value =
+                    "";
+            }
+        }
+    );
+
+
+    const title =
+        getElement(
+            "formTitle"
+        );
+
+
+    if (title) {
+
+        title.textContent =
             "Register Family Member";
     }
 
-    if (getElement("saveMemberButton")) {
 
-        getElement("saveMemberButton")
-            .textContent =
-            "Save Member";
-
-        getElement("saveMemberButton")
-            .disabled = false;
-    }
-
-    if (getElement("memberMessage")) {
-
-        getElement("memberMessage")
-            .textContent = "";
-
-        getElement("memberMessage")
-            .className = "message";
-    }
+    showMessage(
+        "memberMessage",
+        "",
+        ""
+    );
 }
 
 
-/* =========================================================
-   SEARCH MEMBERS
-========================================================= */
+/* =====================================================
+   SAVE MEMBER
+====================================================== */
 
-const searchInput =
-    getElement("searchInput");
+async function saveMember() {
 
-if (searchInput) {
+    if (!currentUserIsAdmin) {
 
-    searchInput.addEventListener(
-        "input",
-        function () {
+        showMessage(
+            "memberMessage",
+            "Only administrators can add or edit members.",
+            "error"
+        );
 
-            const search =
-                searchInput.value
-                    .trim()
-                    .toLowerCase();
+        return;
+    }
 
-            if (!search) {
 
-                filteredMembers =
-                    [...members];
+    const memberId =
+        getElement(
+            "memberId"
+        )?.value.trim();
 
-            } else {
 
-                filteredMembers =
-                    members.filter(
-                        function (member) {
+    const fullName =
+        getElement(
+            "fullName"
+        )?.value.trim();
 
-                            const text =
-                                [
-                                    member.full_name,
-                                    member.phone,
-                                    member.email,
-                                    member.location,
-                                    member.purpose
-                                ]
-                                    .filter(Boolean)
-                                    .join(" ")
-                                    .toLowerCase();
 
-                            return text.includes(
-                                search
-                            );
-                        }
-                    );
-            }
+    const phone =
+        getElement(
+            "phone"
+        )?.value.trim();
 
-            displayMembers(
-                filteredMembers
+
+    const email =
+        getElement(
+            "email"
+        )?.value.trim();
+
+
+    const location =
+        getElement(
+            "location"
+        )?.value.trim();
+
+
+    const amount =
+        getElement(
+            "amount"
+        )?.value;
+
+
+    const purpose =
+        getElement(
+            "purpose"
+        )?.value.trim();
+
+
+    if (
+        !fullName ||
+        !phone ||
+        !location
+    ) {
+
+        showMessage(
+            "memberMessage",
+            "Please complete Full Name, Phone Number and Location.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const memberData = {
+
+        full_name:
+            fullName,
+
+        phone:
+            phone,
+
+        email:
+            email || null,
+
+        location:
+            location,
+
+        amount:
+            Number(
+                amount || 0
+            ),
+
+        purpose:
+            purpose || null
+
+    };
+
+
+    showMessage(
+        "memberMessage",
+        "Saving member...",
+        ""
+    );
+
+
+    let result;
+
+
+    if (memberId) {
+
+        result =
+            await supabaseClient
+                .from(
+                    "idogwu_members"
+                )
+                .update(
+                    memberData
+                )
+                .eq(
+                    "id",
+                    memberId
+                );
+
+    } else {
+
+        result =
+            await supabaseClient
+                .from(
+                    "idogwu_members"
+                )
+                .insert(
+                    memberData
+                );
+    }
+
+
+    if (result.error) {
+
+        console.error(
+            "Save member error:",
+            result.error
+        );
+
+
+        showMessage(
+            "memberMessage",
+            result.error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "memberMessage",
+
+        memberId
+            ? "Member information updated successfully."
+            : "Family member registered successfully.",
+
+        "success"
+    );
+
+
+    clearMemberForm();
+
+
+    await loadMembers();
+}
+
+
+/* =====================================================
+   EDIT MEMBER
+====================================================== */
+
+async function editMember(
+    memberId
+) {
+
+    if (!currentUserIsAdmin) {
+
+        alert(
+            "Only administrators can edit members."
+        );
+
+        return;
+    }
+
+
+    const member =
+        allMembers.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(
+                    memberId
+                )
+        );
+
+
+    if (!member) {
+
+        alert(
+            "Member information could not be found."
+        );
+
+        return;
+    }
+
+
+    getElement(
+        "memberId"
+    ).value =
+        member.id || "";
+
+
+    getElement(
+        "fullName"
+    ).value =
+        member.full_name || "";
+
+
+    getElement(
+        "phone"
+    ).value =
+        member.phone || "";
+
+
+    getElement(
+        "email"
+    ).value =
+        member.email || "";
+
+
+    getElement(
+        "location"
+    ).value =
+        member.location || "";
+
+
+    getElement(
+        "amount"
+    ).value =
+        member.amount || "";
+
+
+    getElement(
+        "purpose"
+    ).value =
+        member.purpose || "";
+
+
+    getElement(
+        "formTitle"
+    ).textContent =
+        "Edit Family Member";
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =====================================================
+   DELETE MEMBER
+====================================================== */
+
+async function deleteMember(
+    memberId
+) {
+
+    if (!currentUserIsAdmin) {
+
+        alert(
+            "Only administrators can delete members."
+        );
+
+        return;
+    }
+
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to delete this family member?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from(
+                "idogwu_members"
+            )
+            .delete()
+            .eq(
+                "id",
+                memberId
             );
-        }
+
+
+    if (error) {
+
+        console.error(
+            "Delete member error:",
+            error
+        );
+
+
+        alert(
+            "Unable to delete member: " +
+            error.message
+        );
+
+        return;
+    }
+
+
+    alert(
+        "Family member deleted successfully."
     );
+
+
+    await loadMembers();
 }
 
 
-/* =========================================================
-   REFRESH MEMBERS
-========================================================= */
-
-const refreshButton =
-    getElement("refreshButton");
-
-if (refreshButton) {
-
-    refreshButton.addEventListener(
-        "click",
-        async function () {
-
-            refreshButton.disabled = true;
-
-            try {
-
-                await loadMembers();
-
-            } finally {
-
-                refreshButton.disabled = false;
-            }
-        }
-    );
-}
-
-
-/* =========================================================
+/* =====================================================
    EXPORT CSV
-========================================================= */
+====================================================== */
 
-const exportButton =
-    getElement("exportButton");
+function exportMembersCSV() {
 
-if (exportButton) {
+    if (!currentUserIsAdmin) {
 
-    exportButton.addEventListener(
-        "click",
-        exportCSV
-    );
-}
+        alert(
+            "Only administrators can export member data."
+        );
+
+        return;
+    }
 
 
-function exportCSV() {
-
-    if (!filteredMembers.length) {
+    if (!allMembers.length) {
 
         alert(
             "There are no members to export."
@@ -1553,73 +1623,88 @@ function exportCSV() {
         return;
     }
 
+
     const headers = [
+
         "S/N",
+
         "Full Name",
+
         "Phone",
+
         "Email",
+
         "Location",
+
         "Amount",
+
         "Purpose",
-        "Created At"
+
+        "Date"
+
     ];
+
 
     const rows =
-        filteredMembers.map(
-            function (member, index) {
+        allMembers.map(
+            (
+                member,
+                index
+            ) => [
 
-                return [
+                index + 1,
 
-                    index + 1,
+                member.full_name || "",
 
-                    member.full_name || "",
+                member.phone || "",
 
-                    member.phone || "",
+                member.email || "",
 
-                    member.email || "",
+                member.location || "",
 
-                    member.location || "",
+                member.amount || 0,
 
-                    Number(
-                        member.amount || 0
-                    ).toFixed(2),
+                member.purpose || "",
 
-                    member.purpose || "",
-
-                    formatDate(
+                member.created_at
+                    ? new Date(
                         member.created_at
+                    ).toLocaleDateString(
+                        "en-NG"
                     )
-                ];
-            }
+                    : ""
+
+            ]
         );
 
+
     const csvRows = [
+
         headers,
+
         ...rows
+
     ];
+
 
     const csv =
         csvRows
             .map(
-                function (row) {
-
-                    return row
+                row =>
+                    row
                         .map(
-                            function (value) {
-
-                                return '"' +
-                                    String(value)
-                                        .replace(
-                                            /"/g,
-                                            '""'
-                                        ) +
-                                    '"';
-                            }
+                            value =>
+                                `"${String(
+                                    value
+                                ).replace(
+                                    /"/g,
+                                    '""'
+                                )}"`
                         )
-                        .join(",");
-                }
+                        .join(",")
             )
             .join("\n");
+
 
     const blob =
         new Blob(
@@ -1630,64 +1715,518 @@ function exportCSV() {
             }
         );
 
+
     const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+            blob
+        );
+
 
     const link =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
 
-    link.href = url;
+
+    link.href =
+        url;
+
 
     link.download =
         "idogwu_family_members.csv";
 
-    document.body.appendChild(link);
+
+    document.body.appendChild(
+        link
+    );
+
 
     link.click();
 
-    document.body.removeChild(link);
 
-    URL.revokeObjectURL(url);
+    document.body.removeChild(
+        link
+    );
+
+
+    URL.revokeObjectURL(
+        url
+    );
 }
 
 
-/* =========================================================
-   MODAL OUTSIDE CLICK
-========================================================= */
+/* =====================================================
+   FORGOT PASSWORD
+====================================================== */
 
-window.addEventListener(
-    "click",
-    function (event) {
+function openForgotPassword() {
 
-        const forgotBox =
-            getElement("forgotPasswordBox");
+    const modal =
+        getElement(
+            "forgotPasswordBox"
+        );
 
-        if (
-            forgotBox &&
-            event.target === forgotBox
-        ) {
 
-            forgotBox.style.display =
-                "none";
+    if (modal) {
+
+        modal.style.display =
+            "flex";
+    }
+}
+
+
+function closeForgotPassword() {
+
+    const modal =
+        getElement(
+            "forgotPasswordBox"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "none";
+    }
+
+
+    showMessage(
+        "recoveryMessage",
+        "",
+        ""
+    );
+}
+
+
+/* =====================================================
+   PASSWORD RECOVERY
+====================================================== */
+
+async function sendPasswordRecovery() {
+
+    const email =
+        getElement(
+            "recoveryEmail"
+        )
+            ?.value
+            .trim();
+
+
+    if (!email) {
+
+        showMessage(
+            "recoveryMessage",
+            "Please enter your email address.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "recoveryMessage",
+        "Sending recovery email...",
+        ""
+    );
+
+
+    const redirectTo =
+        window.location.origin +
+        window.location.pathname;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .auth
+            .resetPasswordForEmail(
+                email,
+                {
+                    redirectTo:
+                        redirectTo
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Password recovery error:",
+            error
+        );
+
+
+        showMessage(
+            "recoveryMessage",
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "recoveryMessage",
+        "Password recovery email sent. Please check your email.",
+        "success"
+    );
+}
+
+
+/* =====================================================
+   PASSWORD RESET
+====================================================== */
+
+function openPasswordReset() {
+
+    const modal =
+        getElement(
+            "passwordResetBox"
+        );
+
+
+    if (modal) {
+
+        modal.style.display =
+            "flex";
+    }
+}
+
+
+async function saveNewPassword() {
+
+    const password =
+        getElement(
+            "newAdminPassword"
+        )
+            ?.value;
+
+
+    const confirmPassword =
+        getElement(
+            "confirmAdminPassword"
+        )
+            ?.value;
+
+
+    if (
+        !password ||
+        !confirmPassword
+    ) {
+
+        showMessage(
+            "resetMessage",
+            "Please enter and confirm your new password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        password !==
+        confirmPassword
+    ) {
+
+        showMessage(
+            "resetMessage",
+            "The passwords do not match.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        password.length < 6
+    ) {
+
+        showMessage(
+            "resetMessage",
+            "Password should contain at least 6 characters.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "resetMessage",
+        "Saving new password...",
+        ""
+    );
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .auth
+            .updateUser({
+                password:
+                    password
+            });
+
+
+    if (error) {
+
+        console.error(
+            "Password update error:",
+            error
+        );
+
+
+        showMessage(
+            "resetMessage",
+            error.message,
+            "error"
+        );
+
+        return;
+    }
+
+
+    showMessage(
+        "resetMessage",
+        "Password updated successfully. You can now login with your new password.",
+        "success"
+    );
+
+
+    getElement(
+        "newAdminPassword"
+    ).value = "";
+
+
+    getElement(
+        "confirmAdminPassword"
+    ).value = "";
+}
+
+
+/* =====================================================
+   AUTH STATE
+====================================================== */
+
+async function handleAuthState() {
+
+    const {
+        data
+    } =
+        await supabaseClient
+            .auth
+            .getSession();
+
+
+    if (
+        data?.session?.user
+    ) {
+
+        currentUser =
+            data.session.user;
+
+
+        currentUserIsAdmin =
+            await checkAdminRole(
+                currentUser.id
+            );
+
+
+        await showApplication();
+
+    } else {
+
+        const loginBox =
+            getElement(
+                "adminLoginBox"
+            );
+
+
+        const application =
+            getElement(
+                "adminApplication"
+            );
+
+
+        if (loginBox) {
+
+            loginBox.style.display =
+                "";
         }
 
-        const resetBox =
-            getElement("passwordResetBox");
+
+        if (application) {
+
+            application.style.display =
+                "none";
+        }
+    }
+}
+
+
+/* =====================================================
+   AUTH LISTENER
+====================================================== */
+
+supabaseClient.auth.onAuthStateChange(
+    async (
+        event,
+        session
+    ) => {
 
         if (
-            resetBox &&
-            event.target === resetBox
+            event ===
+            "PASSWORD_RECOVERY"
         ) {
 
-            resetBox.style.display =
-                "none";
+            openPasswordReset();
+
+            return;
+        }
+
+
+        if (
+            session?.user
+        ) {
+
+            currentUser =
+                session.user;
+
+
+            currentUserIsAdmin =
+                await checkAdminRole(
+                    currentUser.id
+                );
+
+
+            await showApplication();
         }
     }
 );
 
 
-/* =========================================================
-   START APPLICATION
-========================================================= */
+/* =====================================================
+   EVENT LISTENERS
+====================================================== */
 
-checkAdminSession();
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+
+        /* LOGIN */
+
+        getElement(
+            "adminLoginButton"
+        )?.addEventListener(
+            "click",
+            loginUser
+        );
+
+
+        /* LOGOUT */
+
+        getElement(
+            "logoutButton"
+        )?.addEventListener(
+            "click",
+            logoutUser
+        );
+
+
+        /* FORGOT PASSWORD */
+
+        getElement(
+            "forgotPasswordButton"
+        )?.addEventListener(
+            "click",
+            openForgotPassword
+        );
+
+
+        getElement(
+            "closeForgotPassword"
+        )?.addEventListener(
+            "click",
+            closeForgotPassword
+        );
+
+
+        getElement(
+            "sendRecoveryButton"
+        )?.addEventListener(
+            "click",
+            sendPasswordRecovery
+        );
+
+
+        /* PASSWORD RESET */
+
+        getElement(
+            "saveNewPassword"
+        )?.addEventListener(
+            "click",
+            saveNewPassword
+        );
+
+
+        /* MEMBER */
+
+        getElement(
+            "saveMemberButton"
+        )?.addEventListener(
+            "click",
+            saveMember
+        );
+
+
+        getElement(
+            "clearFormButton"
+        )?.addEventListener(
+            "click",
+            clearMemberForm
+        );
+
+
+        /* SEARCH */
+
+        getElement(
+            "searchInput"
+        )?.addEventListener(
+            "input",
+            searchMembers
+        );
+
+
+        /* REFRESH */
+
+        getElement(
+            "refreshButton"
+        )?.addEventListener(
+            "click",
+            loadMembers
+        );
+
+
+        /* EXPORT */
+
+        getElement(
+            "exportButton"
+        )?.addEventListener(
+            "click",
+            exportMembersCSV
+        );
+
+
+        /* START APPLICATION */
+
+        handleAuthState();
+
+    }
+);
