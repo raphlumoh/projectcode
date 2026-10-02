@@ -16,9 +16,10 @@
     <link rel="stylesheet" href="style.css">
 
     <!-- Supabase JavaScript -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Chart.js for Family Location Statistics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -100,6 +101,7 @@
             <button
                 id="adminLoginButton"
                 class="btn btn-primary full-width"
+                type="button"
             >
                 Login
             </button>
@@ -125,12 +127,13 @@
 
 
     <!-- =====================================================
-         ADMIN APPLICATION
+         MAIN APPLICATION
     ====================================================== -->
 
     <main
         id="adminApplication"
         class="container"
+        style="display: none;"
     >
 
         <!-- =================================================
@@ -257,10 +260,172 @@
 
 
         <!-- =================================================
-             MEMBER REGISTRATION
+             FAMILY LOCATION STATISTICS
         ================================================== -->
 
         <section class="section">
+
+            <h2>
+                📍 Family Location Statistics
+            </h2>
+
+            <p>
+                Distribution of Idogwu family members by location.
+            </p>
+
+
+            <div class="location-statistics-grid">
+
+                <!-- LOCATION CHART -->
+
+                <div class="location-chart-card">
+
+                    <h3>
+                        Members by Location
+                    </h3>
+
+                    <div class="chart-container">
+
+                        <canvas id="locationChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOCATION TABLE -->
+
+                <div class="location-table-card">
+
+                    <h3>
+                        Location Summary
+                    </h3>
+
+                    <div class="table-container">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>S/N</th>
+                                    <th>Location</th>
+                                    <th>Members</th>
+                                    <th>Percentage</th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="locationStatisticsBody">
+
+                                <tr>
+
+                                    <td
+                                        colspan="4"
+                                        class="table-message"
+                                    >
+                                        No location data available.
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             IDOGWU FAMILY WORLDWIDE
+        ================================================== -->
+
+        <section class="section">
+
+            <h2>
+                IDOGWU FAMILY WORLDWIDE
+            </h2>
+
+            <p>
+                <strong>
+                    Unity, Love, Heritage and Progress
+                </strong>
+            </p>
+
+
+            <h3>
+                Our Vision
+            </h3>
+
+            <p>
+                To build a united, peaceful, progressive, and
+                well-connected Idogwu family whose members remain
+                committed to preserving their heritage while creating
+                opportunities for the growth and development of future
+                generations.
+            </p>
+
+
+            <h3>
+                Our Aims
+            </h3>
+
+            <ul>
+
+                <li>
+                    To promote unity, love, and peaceful coexistence
+                    among Idogwu family members worldwide.
+                </li>
+
+                <li>
+                    To strengthen communication and relationships
+                    among family members.
+                </li>
+
+                <li>
+                    To preserve our family identity, heritage and
+                    values for future generations.
+                </li>
+
+                <li>
+                    To encourage collective responsibility,
+                    development and mutual support.
+                </li>
+
+            </ul>
+
+
+            <h3>
+                Our Commitment
+            </h3>
+
+            <p>
+                Idogwu Family Worldwide is more than a communication
+                platform; it is a place where family members can
+                reconnect, build relationships, preserve their
+                identity, and support one another.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             MEMBER REGISTRATION
+        ================================================== -->
+
+        <section
+            id="memberRegistrationSection"
+            class="section"
+        >
 
             <h2 id="formTitle">
                 Register Family Member
@@ -416,6 +581,7 @@
                     type="text"
                     id="searchInput"
                     placeholder="Search by name, phone, email, location or purpose..."
+                    autocomplete="off"
                 >
 
 
@@ -650,14 +816,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>
-
-
-**IDOGWU FAMILY WORLDWIDE**
-Unity, Love, Heritage and Progress
-Our Vision
-To build a united, peaceful, progressive, and well-connected Idogwu family whose members remain committed to preserving their heritage while creating opportunities for the growth and development of future generations.
-Our Aims
-* To promote unity, love, and peaceful coexistence among Idogwu family members worldwide.
-Our Commitment
-Idogwu Family Worldwide** is more than a communication platform; it is a place where family members can reconnect, build relationships, preserve their identity, support on.
