@@ -1,4 +1,10 @@
 /* =========================================================
+   IDOGWU FAMILY DATABASE
+   COMPLETE STYLE.CSS
+========================================================= */
+
+
+/* =========================================================
    GLOBAL
 ========================================================= */
 
@@ -139,7 +145,8 @@ textarea {
 
     padding: 12px;
 
-    border: 1px solid #ccc;
+    border:
+        1px solid #ccc;
 
     border-radius: 6px;
 
@@ -385,12 +392,102 @@ textarea:focus {
     color: #126b35;
 }
 
-.section h3 {
-    color: #126b35;
+
+/* =========================================================
+   SECTION SUBTITLE
+========================================================= */
+
+.section-subtitle {
+    color: #666;
+
+    margin-top: -5px;
+
+    margin-bottom: 15px;
+
+    line-height: 1.5;
+
+    font-size: 14px;
 }
 
-.section p {
-    line-height: 1.6;
+
+/* =========================================================
+   FAMILY LOCATION SUMMARY
+========================================================= */
+
+.location-statistics-section {
+    margin-bottom: 25px;
+}
+
+.location-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+.location-card {
+    background: #f8faf9;
+
+    border:
+        1px solid #dfe7e2;
+
+    border-radius: 10px;
+
+    padding: 20px 15px;
+
+    text-align: center;
+
+    min-height: 100px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.location-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #126b35;
+
+    box-shadow:
+        0 4px 12px
+        rgba(0, 0, 0, 0.08);
+}
+
+.location-name {
+    font-size: 17px;
+
+    font-weight: bold;
+
+    color: #126b35;
+
+    margin-bottom: 8px;
+
+    word-break: break-word;
+}
+
+.location-count {
+    font-size: 14px;
+
+    color: #666;
+
+    font-weight: 600;
 }
 
 
@@ -450,6 +547,8 @@ textarea:focus {
     width: 100%;
 
     overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -509,125 +608,6 @@ tbody tr:hover {
     padding: 7px 10px;
 
     font-size: 12px;
-}
-
-
-/* =========================================================
-   FAMILY LOCATION STATISTICS
-========================================================= */
-
-.location-statistics-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(0, 1fr)
-        );
-
-    gap: 25px;
-
-    margin-top: 20px;
-}
-
-.location-chart-card,
-.location-table-card {
-    background: #f8faf8;
-
-    border:
-        1px solid #e2e8e3;
-
-    border-radius: 10px;
-
-    padding: 20px;
-}
-
-.location-chart-card h3,
-.location-table-card h3 {
-    margin-top: 0;
-
-    margin-bottom: 18px;
-
-    color: #126b35;
-
-    text-align: center;
-
-    font-size: 18px;
-}
-
-
-/* =========================================================
-   LOCATION CHART
-========================================================= */
-
-.chart-container {
-    position: relative;
-
-    width: 100%;
-
-    height: 350px;
-}
-
-#locationChart {
-    width: 100% !important;
-
-    height: 100% !important;
-}
-
-
-/* =========================================================
-   LOCATION TABLE
-========================================================= */
-
-.location-table-card .table-container {
-    width: 100%;
-
-    overflow-x: auto;
-}
-
-.location-table-card table {
-    width: 100%;
-
-    min-width: 450px;
-
-    border-collapse: collapse;
-}
-
-.location-table-card th,
-.location-table-card td {
-    padding: 11px;
-
-    border-bottom:
-        1px solid #ddd;
-
-    text-align: left;
-}
-
-.location-table-card th {
-    background: #126b35;
-
-    color: white;
-
-    white-space: nowrap;
-}
-
-.location-table-card tbody tr:hover {
-    background: #eef7f0;
-}
-
-
-/* =========================================================
-   IDOGWU FAMILY WORLDWIDE
-========================================================= */
-
-.section ul {
-    padding-left: 25px;
-
-    line-height: 1.8;
-}
-
-.section li {
-    margin-bottom: 6px;
 }
 
 
@@ -720,26 +700,24 @@ footer {
    MOBILE
 ========================================================= */
 
-@media (max-width: 850px) {
-
-    .location-statistics-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .chart-container {
-        height: 320px;
-    }
-}
-
-
 @media (max-width: 700px) {
+
+    header {
+        padding: 24px 12px;
+    }
 
     header h1 {
         font-size: 23px;
     }
 
+    header p {
+        font-size: 14px;
+    }
+
     .container {
         width: 94%;
+
+        margin-top: 18px;
     }
 
     .section {
@@ -771,23 +749,30 @@ footer {
         width: 100%;
     }
 
-    .location-chart-card,
-    .location-table-card {
-        padding: 15px;
-    }
-}
+    .location-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
 
-
-@media (max-width: 500px) {
-
-    .chart-container {
-        height: 280px;
+        gap: 10px;
     }
 
-    .location-chart-card h3,
-    .location-table-card h3 {
-        font-size: 16px;
+    .location-card {
+        padding: 16px 10px;
+
+        min-height: 90px;
     }
+
+    .location-name {
+        font-size: 15px;
+    }
+
+    .location-count {
+        font-size: 13px;
+    }
+
 }
 
 
@@ -805,11 +790,48 @@ footer {
         font-size: 20px;
     }
 
+    header p {
+        font-size: 13px;
+    }
+
     .stat-value {
         font-size: 21px;
     }
 
-    .location-table-card table {
-        min-width: 400px;
+    .location-grid {
+        grid-template-columns: 1fr;
     }
+
+    .location-card {
+        min-height: 85px;
+    }
+
+    .location-name {
+        font-size: 16px;
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY / FOCUS
+========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline:
+        2px solid #126b35;
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   HIDDEN ELEMENTS
+========================================================= */
+
+[hidden] {
+    display: none !important;
 }
