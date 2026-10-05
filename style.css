@@ -1,11 +1,12 @@
 /* =========================================================
    IDOGWU FAMILY DATABASE
-   COMPLETE CSS
-   ========================================================= */
+   COMPLETE STYLE.CSS
+========================================================= */
 
-/* =========================
-   GLOBAL RESET
-   ========================= */
+
+/* =========================================================
+   GLOBAL
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -18,57 +19,59 @@ html {
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background: #f4f7f9;
-    color: #333;
-    line-height: 1.6;
+
+    color: #222;
 }
 
-/* =========================
+
+/* =========================================================
    HEADER
-   ========================= */
+========================================================= */
 
 header {
     background: #126b35;
+
     color: white;
+
     text-align: center;
+
     padding: 28px 15px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
 }
 
 header h1 {
-    margin: 0;
+    margin: 0 0 8px;
+
     font-size: 30px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
 }
 
 header p {
-    margin: 6px 0 0;
+    margin: 5px 0;
+
     font-size: 15px;
 }
 
-header p:first-of-type {
-    font-weight: 600;
-    font-size: 16px;
-}
 
-/* =========================
-   GENERAL CONTAINER
-   ========================= */
+/* =========================================================
+   CONTAINER
+========================================================= */
 
 .container {
     width: 95%;
+
     max-width: 1350px;
+
     margin: 25px auto;
 }
 
-/* =========================================================
-   LOGIN SECTION
-   IMPORTANT:
-   This section is directly below the header, so we use
-   calc() instead of 100vh.
-   ========================================================= */
+
+
 
 /* =========================================================
    LOGIN SECTION
@@ -118,376 +121,433 @@ header p:first-of-type {
     line-height: 1.5;
     margin-bottom: 25px;
 }
-
-/* =========================
-   FORM ELEMENTS
-   ========================= */
+/* =========================================================
+   FORMS
+========================================================= */
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 15px;
 }
 
-.form-group label {
+label {
     display: block;
-    margin-bottom: 7px;
-    font-weight: 600;
-    color: #333;
+
+    font-weight: bold;
+
+    margin-bottom: 6px;
 }
 
-.form-control,
-.form-group input,
-.form-group select,
-.form-group textarea {
+input,
+select,
+textarea {
     width: 100%;
-    padding: 12px 13px;
 
-    border: 1px solid #ccc;
-    border-radius: 7px;
+    padding: 12px;
+
+    border:
+        1px solid #ccc;
+
+    border-radius: 6px;
 
     font-size: 15px;
-    font-family: inherit;
-
-    background: #fff;
 
     outline: none;
 
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    background: white;
 }
 
-.form-control:focus,
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
     border-color: #126b35;
 
     box-shadow:
-        0 0 0 3px rgba(18, 107, 53, 0.12);
+        0 0 0 2px
+        rgba(18, 107, 53, 0.08);
 }
 
-/* Textarea */
 
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-/* =========================
+/* =========================================================
    BUTTONS
-   ========================= */
+========================================================= */
 
 .btn {
     border: none;
-    border-radius: 7px;
 
-    padding: 12px 18px;
+    border-radius: 6px;
 
-    font-size: 15px;
-    font-weight: 600;
+    padding: 11px 17px;
 
     cursor: pointer;
 
+    font-size: 14px;
+
+    font-weight: bold;
+
     transition:
-        background 0.2s ease,
-        transform 0.1s ease,
-        opacity 0.2s ease;
+        opacity 0.2s ease,
+        transform 0.1s ease;
 }
 
 .btn:hover {
-    opacity: 0.92;
+    opacity: 0.9;
 }
 
 .btn:active {
-    transform: scale(0.98);
+    transform: translateY(1px);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
 }
 
 .btn-primary {
     background: #126b35;
-    color: white;
-}
 
-.btn-primary:hover {
-    background: #0b4d27;
+    color: white;
 }
 
 .btn-secondary {
     background: #555;
-    color: white;
-}
 
-.btn-secondary:hover {
-    background: #444;
+    color: white;
 }
 
 .btn-danger {
     background: #c62828;
+
     color: white;
 }
 
-.btn-danger:hover {
-    background: #a91f1f;
-}
+.btn-warning {
+    background: #e69500;
 
-.btn-success {
-    background: #2e7d32;
     color: white;
 }
 
 .btn-light {
-    background: #f0f2f3;
-    color: #333;
-    border: 1px solid #ddd;
-}
+    background: #e9ecef;
 
-.btn-light:hover {
-    background: #e3e6e8;
+    color: #222;
 }
 
 .full-width {
     width: 100%;
-    display: block;
-    margin-bottom: 12px;
 }
 
-/* =========================
+
+/* =========================================================
+   LOGIN BUTTON SPACING
+========================================================= */
+
+#forgotPasswordButton {
+    margin-top: 10px;
+}
+
+
+/* =========================================================
    MESSAGES
-   ========================= */
+========================================================= */
 
 .message {
-    margin-top: 15px;
-    padding: 10px 12px;
-
-    border-radius: 6px;
-
-    font-size: 14px;
-
-    display: none;
-}
-
-.message.success {
-    display: block;
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-}
-
-.message.error {
-    display: block;
-    background: #ffebee;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-}
-
-.message.info {
-    display: block;
-    background: #e3f2fd;
-    color: #1565c0;
-    border: 1px solid #bbdefb;
-}
-
-/* =========================
-   ADMIN APPLICATION
-   ========================= */
-
-#adminApplication {
-    padding-bottom: 40px;
-}
-
-/* =========================
-   SECTION CARDS
-   ========================= */
-
-.section {
-    background: #ffffff;
-
-    padding: 25px;
-
-    margin-bottom: 25px;
-
-    border-radius: 10px;
-
-    box-shadow:
-        0 2px 12px rgba(0, 0, 0, 0.08);
-}
-
-.section h2 {
-    color: #126b35;
-
-    margin-top: 0;
-    margin-bottom: 18px;
-
-    font-size: 24px;
-}
-
-.section h3 {
-    color: #126b35;
-}
-
-/* =========================
-   DASHBOARD
-   ========================= */
-
-.dashboard-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fit, minmax(180px, 1fr));
-
-    gap: 18px;
-
-    margin-bottom: 25px;
-}
-
-.dashboard-card {
-    background: #ffffff;
-
-    border-radius: 10px;
-
-    padding: 20px;
+    margin-top: 12px;
 
     text-align: center;
 
-    box-shadow:
-        0 2px 10px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
 
-    border-top: 4px solid #126b35;
+    min-height: 20px;
+
+    line-height: 1.5;
 }
 
-.dashboard-card h3 {
-    margin: 0 0 8px;
 
-    font-size: 14px;
+/* =========================================================
+   ADMIN APPLICATION
+========================================================= */
+
+#adminApplication {
+    display: none;
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.top-bar {
+    background: white;
+
+    padding: 15px 20px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.08);
+}
+
+.top-bar strong {
+    color: #126b35;
+
+    font-size: 18px;
+}
+
+.logged-user {
+    margin-top: 5px;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.08);
+
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px;
 
     color: #666;
 
-    font-weight: 600;
+    font-size: 14px;
 }
 
-.dashboard-card .value {
+.stat-value {
     font-size: 25px;
 
-    font-weight: 700;
+    font-weight: bold;
+
+    color: #126b35;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.section {
+    background: white;
+
+    padding: 20px;
+
+    margin-bottom: 25px;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.08);
+}
+
+.section h2 {
+    margin-top: 0;
 
     color: #126b35;
 }
 
-/* =========================
-   LOCATION CARDS
-   ========================= */
+
+/* =========================================================
+   SECTION SUBTITLE
+========================================================= */
+
+.section-subtitle {
+    color: #666;
+
+    margin-top: -5px;
+
+    margin-bottom: 15px;
+
+    line-height: 1.5;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FAMILY LOCATION SUMMARY
+========================================================= */
+
+.location-statistics-section {
+    margin-bottom: 25px;
+}
 
 .location-grid {
     display: grid;
 
     grid-template-columns:
-        repeat(auto-fit, minmax(200px, 1fr));
+        repeat(
+            auto-fit,
+            minmax(180px, 1fr)
+        );
 
     gap: 15px;
+
+    margin-top: 20px;
 }
 
 .location-card {
     background: #f8faf9;
 
-    border: 1px solid #dce8df;
+    border:
+        1px solid #dfe7e2;
 
-    border-radius: 8px;
+    border-radius: 10px;
 
-    padding: 18px;
+    padding: 20px 15px;
 
     text-align: center;
+
+    min-height: 100px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 
-.location-card h4 {
-    margin: 0 0 5px;
+.location-card:hover {
+    transform: translateY(-2px);
+
+    border-color: #126b35;
+
+    box-shadow:
+        0 4px 12px
+        rgba(0, 0, 0, 0.08);
+}
+
+.location-name {
+    font-size: 17px;
+
+    font-weight: bold;
 
     color: #126b35;
+
+    margin-bottom: 8px;
+
+    word-break: break-word;
 }
 
-.location-card p {
-    margin: 0;
+.location-count {
+    font-size: 14px;
 
     color: #666;
+
+    font-weight: 600;
 }
 
-/* =========================
+
+/* =========================================================
    FORM GRID
-   ========================= */
+========================================================= */
 
 .form-grid {
     display: grid;
 
     grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 18px;
-}
-
-.form-grid .full {
-    grid-column: 1 / -1;
-}
-
-/* =========================
-   TOOLBAR
-   ========================= */
-
-.toolbar {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
 
     gap: 15px;
-
-    margin-bottom: 20px;
-
-    flex-wrap: wrap;
 }
 
-.toolbar-left,
-.toolbar-right {
-    display: flex;
+.form-actions {
+    margin-top: 18px;
 
-    align-items: center;
+    display: flex;
 
     gap: 10px;
 
     flex-wrap: wrap;
 }
 
-.search-box {
-    min-width: 250px;
 
-    padding: 11px 13px;
+/* =========================================================
+   TOOLBAR
+========================================================= */
 
-    border: 1px solid #ccc;
+.toolbar {
+    display: flex;
 
-    border-radius: 7px;
+    gap: 10px;
 
-    font-size: 14px;
+    margin-bottom: 15px;
 
-    outline: none;
+    flex-wrap: wrap;
 }
 
-.search-box:focus {
-    border-color: #126b35;
+.toolbar input {
+    flex: 1;
 
-    box-shadow:
-        0 0 0 3px rgba(18, 107, 53, 0.1);
+    min-width: 220px;
 }
 
-/* =========================
+
+/* =========================================================
    TABLE
-   ========================= */
+========================================================= */
 
-.table-wrapper {
+.table-container {
     width: 100%;
 
     overflow-x: auto;
 
-    border-radius: 8px;
-
-    border: 1px solid #ddd;
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
@@ -495,55 +555,50 @@ table {
 
     border-collapse: collapse;
 
-    min-width: 900px;
-
-    background: #fff;
+    min-width: 1000px;
 }
 
-thead {
-    background: #126b35;
+th,
+td {
+    padding: 11px;
 
-    color: white;
-}
-
-th {
-    padding: 13px 10px;
+    border-bottom:
+        1px solid #ddd;
 
     text-align: left;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-}
-
-td {
-    padding: 12px 10px;
-
-    border-bottom: 1px solid #eee;
-
-    font-size: 14px;
 
     vertical-align: middle;
 }
 
+th {
+    background: #126b35;
+
+    color: white;
+
+    white-space: nowrap;
+}
+
 tbody tr:hover {
-    background: #f7faf8;
+    background: #f5f5f5;
 }
 
-tbody tr:last-child td {
-    border-bottom: none;
+.table-message {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #666;
 }
 
-/* =========================
-   TABLE ACTION BUTTONS
-   ========================= */
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
 
 .action-buttons {
     display: flex;
 
-    gap: 6px;
+    gap: 5px;
 
     flex-wrap: wrap;
 }
@@ -554,264 +609,100 @@ tbody tr:last-child td {
     font-size: 12px;
 }
 
-/* =========================
-   BADGES
-   ========================= */
 
-.badge {
-    display: inline-block;
-
-    padding: 4px 9px;
-
-    border-radius: 20px;
-
-    font-size: 12px;
-
-    font-weight: 600;
-}
-
-.badge-paid {
-    background: #e8f5e9;
-
-    color: #2e7d32;
-}
-
-.badge-unpaid {
-    background: #ffebee;
-
-    color: #c62828;
-}
-
-/* =========================
+/* =========================================================
    MODAL
-   ========================= */
+========================================================= */
 
 .modal {
+    display: none;
+
     position: fixed;
+
+    z-index: 9999;
 
     inset: 0;
 
-    width: 100%;
-    height: 100%;
-
-    background: rgba(0, 0, 0, 0.55);
-
-    display: none;
+    background:
+        rgba(0, 0, 0, 0.55);
 
     justify-content: center;
 
     align-items: center;
 
     padding: 20px;
-
-    z-index: 9999;
 }
 
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
+.modal-card {
     background: white;
 
     width: 100%;
 
-    max-width: 600px;
+    max-width: 450px;
+
+    border-radius: 10px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 10px 40px
+        rgba(0, 0, 0, 0.25);
 
     max-height: 90vh;
 
     overflow-y: auto;
+}
+
+.modal-card h2 {
+    margin-top: 0;
+
+    color: #126b35;
+}
+
+.modal-card p {
+    color: #666;
+
+    line-height: 1.5;
+}
+
+.modal-actions {
+    margin-top: 15px;
+
+    display: flex;
+
+    gap: 10px;
+
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    text-align: center;
 
     padding: 25px;
 
-    border-radius: 10px;
-
-    box-shadow:
-        0 8px 35px rgba(0, 0, 0, 0.2);
-
-    position: relative;
-}
-
-.modal-header {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    margin-bottom: 20px;
-}
-
-.modal-header h2 {
-    margin: 0;
-
-    color: #126b35;
-}
-
-.modal-close {
-    background: none;
-
-    border: none;
-
-    font-size: 28px;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    color: #666;
-}
-
-.modal-close:hover {
-    color: #c62828;
-}
-
-/* =========================
-   CARD / INFORMATION BOX
-   ========================= */
-
-.info-box {
-    background: #f8faf9;
-
-    border-left: 4px solid #126b35;
-
-    padding: 15px;
-
-    margin: 15px 0;
-
-    border-radius: 5px;
-}
-
-.info-box strong {
-    color: #126b35;
-}
-
-/* =========================
-   IDOGWU FAMILY INTRODUCTION
-   ========================= */
-
-.family-intro {
-    background: #ffffff;
-
-    padding: 30px;
-
-    border-radius: 10px;
-
-    margin-bottom: 25px;
-
-    box-shadow:
-        0 2px 12px rgba(0, 0, 0, 0.08);
-
-    text-align: center;
-}
-
-.family-intro h2 {
-    color: #126b35;
-
-    margin-top: 0;
-}
-
-.family-intro p {
-    max-width: 900px;
-
-    margin: 10px auto;
-
-    line-height: 1.8;
-}
-
-/* =========================
-   LOADING
-   ========================= */
-
-.loading {
-    text-align: center;
-
-    padding: 30px;
-
-    color: #666;
-}
-
-.spinner {
-    width: 35px;
-    height: 35px;
-
-    border: 4px solid #ddd;
-
-    border-top-color: #126b35;
-
-    border-radius: 50%;
-
-    animation: spin 0.8s linear infinite;
-
-    margin: 0 auto 12px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* =========================
-   EMPTY STATE
-   ========================= */
-
-.empty-state {
-    text-align: center;
-
-    padding: 35px 20px;
-
     color: #777;
+
+    font-size: 13px;
+
+    line-height: 1.7;
 }
 
-.empty-state h3 {
-    color: #555;
-
-    margin-bottom: 8px;
-}
-
-/* =========================
-   FOOTER
-   ========================= */
-
-footer {
-    background: #0b4d27;
-
-    color: white;
-
-    text-align: center;
-
-    padding: 25px 15px;
-
-    margin-top: 40px;
-}
-
-footer strong {
-    display: block;
-
-    font-size: 16px;
-
-    margin-bottom: 5px;
-}
-
-footer p {
-    margin: 0;
-
-    font-size: 14px;
-
-    opacity: 0.9;
-}
 
 /* =========================================================
-   MOBILE RESPONSIVE
-   ========================================================= */
+   MOBILE
+========================================================= */
 
 @media (max-width: 700px) {
 
-    /* Header */
-
     header {
-        padding: 22px 12px;
+        padding: 24px 12px;
     }
 
     header h1 {
@@ -819,10 +710,8 @@ footer p {
     }
 
     header p {
-        font-size: 13px;
+        font-size: 14px;
     }
-
-    /* General container */
 
     .container {
         width: 94%;
@@ -830,194 +719,118 @@ footer p {
         margin-top: 18px;
     }
 
-    /* LOGIN */
-
-    .login-wrapper {
-        min-height: calc(100vh - 150px);
-
-        padding: 20px 15px;
-
-        align-items: center;
+    .section {
+        padding: 15px;
     }
 
     .login-card {
-        max-width: 430px;
-
         padding: 20px;
-
-        border-radius: 10px;
     }
 
-    .login-card h2 {
-        font-size: 22px;
+    .top-bar {
+        align-items: stretch;
     }
 
-    /* Sections */
-
-    .section {
-        padding: 18px;
-
-        margin-bottom: 18px;
+    .top-bar button {
+        width: 100%;
     }
 
-    .section h2 {
-        font-size: 21px;
+    .form-actions .btn {
+        width: 100%;
     }
-
-    /* Dashboard */
-
-    .dashboard-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        gap: 10px;
-    }
-
-    .dashboard-card {
-        padding: 15px 10px;
-    }
-
-    .dashboard-card .value {
-        font-size: 21px;
-    }
-
-    /* Form */
-
-    .form-grid {
-        grid-template-columns: 1fr;
-
-        gap: 12px;
-    }
-
-    .form-grid .full {
-        grid-column: auto;
-    }
-
-    /* Toolbar */
 
     .toolbar {
-        align-items: stretch;
-
         flex-direction: column;
     }
 
-    .toolbar-left,
-    .toolbar-right {
-        width: 100%;
-
-        flex-direction: column;
-
-        align-items: stretch;
-    }
-
-    .search-box {
-        width: 100%;
-
-        min-width: 0;
-    }
-
+    .toolbar input,
     .toolbar .btn {
         width: 100%;
     }
 
-    /* Location */
-
     .location-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
 
         gap: 10px;
     }
 
     .location-card {
-        padding: 14px 8px;
+        padding: 16px 10px;
+
+        min-height: 90px;
     }
 
-    /* Modal */
-
-    .modal {
-        padding: 12px;
+    .location-name {
+        font-size: 15px;
     }
 
-    .modal-content {
-        padding: 20px;
-
-        max-height: 94vh;
+    .location-count {
+        font-size: 13px;
     }
 
-    /* Buttons */
-
-    .action-buttons {
-        flex-direction: column;
-    }
-
-    .action-buttons .btn {
-        width: 100%;
-    }
-
-    /* Footer */
-
-    footer {
-        padding: 20px 12px;
-    }
 }
 
-/* =========================================================
-   VERY SMALL PHONES
-   ========================================================= */
 
-@media (max-width: 420px) {
+/* =========================================================
+   VERY SMALL SCREENS
+========================================================= */
+
+@media (max-width: 400px) {
+
+    header {
+        padding: 22px 10px;
+    }
 
     header h1 {
         font-size: 20px;
     }
 
-    .dashboard-grid {
-        grid-template-columns: 1fr;
+    header p {
+        font-size: 13px;
+    }
+
+    .stat-value {
+        font-size: 21px;
     }
 
     .location-grid {
         grid-template-columns: 1fr;
     }
 
-    .login-card {
-        padding: 18px;
+    .location-card {
+        min-height: 85px;
     }
 
-    .btn {
-        font-size: 14px;
+    .location-name {
+        font-size: 16px;
     }
+
 }
+
 
 /* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
+   ACCESSIBILITY / FOCUS
+========================================================= */
 
-button:focus,
-input:focus,
-select:focus,
-textarea:focus {
-    outline: none;
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline:
+        2px solid #126b35;
+
+    outline-offset: 2px;
 }
 
-/* Prevent accidental horizontal scrolling */
 
-html,
-body {
-    max-width: 100%;
-    overflow-x: hidden;
-}
+/* =========================================================
+   HIDDEN ELEMENTS
+========================================================= */
 
-/* Disabled buttons */
-
-button:disabled {
-    cursor: not-allowed;
-
-    opacity: 0.6;
-}
-
-/* Hidden helper */
-
-.hidden {
+[hidden] {
     display: none !important;
 }
-
