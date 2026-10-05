@@ -81,26 +81,27 @@ header p:first-of-type {
     padding: 30px 15px;
 
     box-sizing: border-box;
+
+    margin: 0;
 }
 
-/* Login card */
-
 .login-card {
-    background: #ffffff;
     width: 100%;
     max-width: 430px;
 
+    margin: 0 auto;
+
     padding: 30px;
+
+    background: #ffffff;
 
     border-radius: 12px;
 
-    box-shadow:
-        0 5px 25px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
 
     box-sizing: border-box;
 }
-
-/* Login heading */
+/* Login card */
 
 .login-card h2 {
     text-align: center;
@@ -1019,4 +1020,18 @@ button:disabled {
 
 .hidden {
     display: none !important;
+}
+
+#adminLoginBox {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+#adminLoginBox .login-card {
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
