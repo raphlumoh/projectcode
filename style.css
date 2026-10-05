@@ -320,52 +320,72 @@ textarea:focus {
    DASHBOARD
 ========================================================= */
 
-.dashboard {
+/* ================================
+   DASHBOARD STATISTICS
+================================ */
+
+.dashboard-stats {
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(180px, 1fr)
-        );
-
+    grid-template-columns: repeat(6, 1fr);
     gap: 15px;
-
+    width: 100%;
     margin-bottom: 25px;
 }
 
 .stat-card {
-    background: white;
-
-    padding: 20px;
-
+    background: #ffffff;
     border-radius: 10px;
-
-    box-shadow:
-        0 2px 8px
-        rgba(0, 0, 0, 0.08);
-
+    padding: 18px 15px;
     text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e5e5e5;
+    min-width: 0;
 }
 
 .stat-card h3 {
-    margin: 0 0 10px;
-
-    color: #666;
-
+    margin: 0 0 8px;
     font-size: 14px;
+    font-weight: 600;
+    color: #555;
 }
 
-.stat-value {
-    font-size: 25px;
-
-    font-weight: bold;
-
+.stat-card p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
     color: #126b35;
-
-    word-break: break-word;
 }
 
+/* ================================
+   RESPONSIVE DASHBOARD
+================================ */
+
+@media (max-width: 1200px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 15px 10px;
+    }
+
+    .stat-card p {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 450px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* =========================================================
    SECTIONS
