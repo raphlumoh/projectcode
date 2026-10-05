@@ -121,17 +121,20 @@ header p {
     margin-bottom: 25px;
 }
 */
+```css
+/* =========================================================
+   LOGIN
+========================================================= */
+
 .login-wrapper {
+    width: 100%;
     min-height: 100vh;
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
 
-    padding: 30px 15px;
-
+    padding: 20px;
     box-sizing: border-box;
 }
 
@@ -139,7 +142,6 @@ header p {
     background: white;
 
     width: 100%;
-
     max-width: 430px;
 
     padding: 30px;
@@ -170,6 +172,7 @@ header p {
 
     margin-bottom: 25px;
 }
+
 
 
 
