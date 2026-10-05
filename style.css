@@ -71,62 +71,43 @@ header p {
 }
 
 
+
+
 /* =========================================================
    LOGIN
 ========================================================= */
-
 .login-wrapper {
     width: 100%;
-
-    min-height: calc(100vh - 180px);
-
+    min-height: calc(100vh - 160px); /* accounts for header + footer */
     display: flex;
-
     justify-content: center;
-
     align-items: center;
-
-    padding: 30px 15px;
-
+    padding: 20px;
     box-sizing: border-box;
 }
 
 .login-card {
     background: white;
-
     width: 100%;
-
     max-width: 430px;
-
     padding: 30px;
-
     border-radius: 12px;
-
-    box-shadow:
-        0 5px 25px
-        rgba(0, 0, 0, 0.12);
-
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
     box-sizing: border-box;
 }
 
 .login-card h2 {
     text-align: center;
-
     margin-top: 0;
-
     color: #126b35;
 }
 
 .login-description {
     text-align: center;
-
     color: #666;
-
     line-height: 1.5;
-
     margin-bottom: 25px;
 }
-
 /* =========================================================
    FORMS
 ========================================================= */
