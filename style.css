@@ -1,207 +1,198 @@
-/* =========================================================
-   IDOGWU FAMILY DATABASE
-   COMPLETE STYLE.CSS
-========================================================= */
-
-
-/* =========================================================
-   GLOBAL
-========================================================= */
-
 * {
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-}
 
 body {
     margin: 0;
-    padding: 0;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background: #f4f7f9;
-
+    font-family: Arial, sans-serif;
+    background: #f4f7f5;
     color: #222;
 }
 
 
-/* =========================================================
+/* ================================
    HEADER
-========================================================= */
+================================ */
 
 header {
+    width: 100%;
     background: #126b35;
-
     color: white;
-
+    padding: 25px 20px;
     text-align: center;
-
-    padding: 28px 15px;
 }
 
-header h1 {
-    margin: 0 0 8px;
 
+header h1 {
+    margin: 0;
+    text-align: center;
     font-size: 30px;
 }
 
-header p {
-    margin: 5px 0;
 
-    font-size: 15px;
+header p {
+    margin: 8px 0 0;
+    text-align: center;
 }
 
 
-/* =========================================================
-   CONTAINER
-========================================================= */
+
+/* ================================
+   MAIN CONTAINER
+================================ */
 
 .container {
     width: 95%;
-
-    max-width: 1350px;
-
+    max-width: 1200px;
     margin: 25px auto;
 }
 
 
 
+/* ================================
+   DASHBOARD
+================================ */
 
-/* =========================================================
-   LOGIN SECTION
-   ========================================================= */
-
-.login-wrapper {
-    width: 100%;
-    min-height: calc(100vh - 180px);
-
+.dashboard {
     display: grid;
-    place-items: center;
-
-    padding: 30px 15px;
-
-    margin: 0;
-}
-
-.login-card {
-    width: 100%;
-    max-width: 430px;
-
-    padding: 30px;
-
-    margin: 0;
-
-    background: #ffffff;
-
-    border-radius: 12px;
-
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
-}
-/* Login card */
-
-.login-card h2 {
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #126b35;
-    font-size: 25px;
-}
-
-/* Login description */
-
-.login-description {
-    text-align: center;
-    color: #666;
-    line-height: 1.5;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
     margin-bottom: 25px;
 }
-/* =========================================================
-   FORMS
-========================================================= */
 
-.form-group {
-    margin-bottom: 15px;
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-label {
-    display: block;
+
+.card h3 {
+    margin: 0 0 10px;
+
+    font-size: 15px;
+
+    color: #555;
+}
+
+
+.card p {
+    margin: 0;
+
+    font-size: 24px;
 
     font-weight: bold;
 
-    margin-bottom: 6px;
+    color: #126b35;
 }
 
-input,
-select,
-textarea {
-    width: 100%;
 
-    padding: 12px;
 
-    border:
-        1px solid #ccc;
+/* ================================
+   FORM / TABLE BOX
+================================ */
+
+.form-box,
+.table-box {
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+.form-box h2,
+.table-box h2 {
+    margin-top: 0;
+
+    color: #126b35;
+}
+
+
+
+/* ================================
+   FORM
+================================ */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+}
+
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.form-group label {
+    margin-bottom: 6px;
+
+    font-weight: bold;
+}
+
+
+.form-group input,
+.form-group textarea {
+
+    padding: 11px;
+
+    border: 1px solid #ccc;
 
     border-radius: 6px;
 
     font-size: 15px;
 
-    outline: none;
-
-    background: white;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: #126b35;
-
-    box-shadow:
-        0 0 0 2px
-        rgba(18, 107, 53, 0.08);
+    width: 100%;
 }
 
 
-/* =========================================================
+.full-width {
+    grid-column: 1 / -1;
+}
+
+
+
+/* ================================
    BUTTONS
-========================================================= */
+================================ */
 
-.btn {
+button {
+
     border: none;
 
-    border-radius: 6px;
+    padding: 10px 15px;
 
-    padding: 11px 17px;
+    border-radius: 6px;
 
     cursor: pointer;
 
     font-size: 14px;
 
-    font-weight: bold;
-
-    transition:
-        opacity 0.2s ease,
-        transform 0.1s ease;
 }
 
-.btn:hover {
+
+button:hover {
     opacity: 0.9;
 }
 
-.btn:active {
-    transform: translateY(1px);
-}
-
-.btn:disabled {
-    opacity: 0.6;
-
-    cursor: not-allowed;
-}
 
 .btn-primary {
     background: #126b35;
@@ -209,11 +200,13 @@ textarea:focus {
     color: white;
 }
 
+
 .btn-secondary {
-    background: #555;
+    background: #777;
 
     color: white;
 }
+
 
 .btn-danger {
     background: #c62828;
@@ -221,668 +214,475 @@ textarea:focus {
     color: white;
 }
 
+
 .btn-warning {
     background: #e69500;
 
     color: white;
 }
 
-.btn-light {
-    background: #e9ecef;
 
-    color: #222;
-}
+.btn-small {
 
-.full-width {
-    width: 100%;
-}
+    padding: 7px 10px;
 
+    font-size: 12px;
 
-/* =========================================================
-   LOGIN BUTTON SPACING
-========================================================= */
-
-#forgotPasswordButton {
-    margin-top: 10px;
+    margin: 2px;
 }
 
 
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-.message {
-    margin-top: 12px;
-
-    text-align: center;
-
-    font-size: 14px;
-
-    min-height: 20px;
-
-    line-height: 1.5;
+.button-row {
+    margin-top: 15px;
 }
 
 
-/* =========================================================
-   ADMIN APPLICATION
-========================================================= */
 
-#adminApplication {
-    display: none;
+/* ================================
+   SEARCH
+================================ */
+
+.search-box {
+    margin-bottom: 15px;
 }
 
 
-/* =========================================================
-   TOP BAR
-========================================================= */
-
-.top-bar {
-    background: white;
-
-    padding: 15px 20px;
-
-    border-radius: 10px;
-
-    margin-bottom: 20px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 15px;
-
-    flex-wrap: wrap;
-
-    box-shadow:
-        0 2px 8px
-        rgba(0, 0, 0, 0.08);
-}
-
-.top-bar strong {
-    color: #126b35;
-
-    font-size: 18px;
-}
-
-.logged-user {
-    margin-top: 5px;
-
-    color: #777;
-
-    font-size: 13px;
-}
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-.dashboard {
-    display: grid;
-
-    grid-template-columns: repeat(6, 1fr);
-
-    gap: 15px;
+.search-box input {
 
     width: 100%;
 
-    margin-bottom: 25px;
-}
+    padding: 12px;
 
-.stat-card {
-    background: #ffffff;
+    border: 1px solid #ccc;
 
-    border-radius: 10px;
+    border-radius: 6px;
 
-    padding: 18px 15px;
-
-    text-align: center;
-
-    border: 1px solid #e5e5e5;
-
-    box-shadow:
-        0 2px 8px
-        rgba(0, 0, 0, 0.08);
-
-    min-width: 0;
-}
-
-.stat-card h3 {
-    margin: 0 0 8px;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    color: #555;
-
-    line-height: 1.3;
-}
-
-.stat-value {
-    font-size: 24px;
-
-    font-weight: 700;
-
-    color: #126b35;
-
-    line-height: 1.2;
-
-    word-break: break-word;
+    font-size: 15px;
 }
 
 
-/* =========================================================
-   DASHBOARD RESPONSIVE
-========================================================= */
 
-@media (max-width: 1200px) {
-
-    .dashboard {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-}
-
-
-@media (max-width: 700px) {
-
-    .dashboard {
-        grid-template-columns: repeat(2, 1fr);
-
-        gap: 10px;
-    }
-
-    .stat-card {
-        padding: 15px 10px;
-    }
-
-    .stat-card h3 {
-        font-size: 13px;
-    }
-
-    .stat-value {
-        font-size: 20px;
-    }
-
-}
-
-
-@media (max-width: 400px) {
-
-    .dashboard {
-        grid-template-columns: 1fr;
-    }
-
-}
-
-/* =========================================================
-   SECTIONS
-========================================================= */
-
-.section {
-    background: white;
-
-    padding: 20px;
-
-    margin-bottom: 25px;
-
-    border-radius: 10px;
-
-    box-shadow:
-        0 2px 8px
-        rgba(0, 0, 0, 0.08);
-}
-
-.section h2 {
-    margin-top: 0;
-
-    color: #126b35;
-}
-
-
-/* =========================================================
-   SECTION SUBTITLE
-========================================================= */
-
-.section-subtitle {
-    color: #666;
-
-    margin-top: -5px;
-
-    margin-bottom: 15px;
-
-    line-height: 1.5;
-
-    font-size: 14px;
-}
-
-
-/* =========================================================
-   FAMILY LOCATION SUMMARY
-========================================================= */
-
-.location-statistics-section {
-    margin-bottom: 25px;
-}
-
-.location-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(180px, 1fr)
-        );
-
-    gap: 15px;
-
-    margin-top: 20px;
-}
-
-.location-card {
-    background: #f8faf9;
-
-    border:
-        1px solid #dfe7e2;
-
-    border-radius: 10px;
-
-    padding: 20px 15px;
-
-    text-align: center;
-
-    min-height: 100px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: center;
-
-    align-items: center;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        border-color 0.2s ease;
-}
-
-.location-card:hover {
-    transform: translateY(-2px);
-
-    border-color: #126b35;
-
-    box-shadow:
-        0 4px 12px
-        rgba(0, 0, 0, 0.08);
-}
-
-.location-name {
-    font-size: 17px;
-
-    font-weight: bold;
-
-    color: #126b35;
-
-    margin-bottom: 8px;
-
-    word-break: break-word;
-}
-
-.location-count {
-    font-size: 14px;
-
-    color: #666;
-
-    font-weight: 600;
-}
-
-
-/* =========================================================
-   FORM GRID
-========================================================= */
-
-.form-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(220px, 1fr)
-        );
-
-    gap: 15px;
-}
-
-.form-actions {
-    margin-top: 18px;
-
-    display: flex;
-
-    gap: 10px;
-
-    flex-wrap: wrap;
-}
-
-
-/* =========================================================
-   TOOLBAR
-========================================================= */
-
-.toolbar {
-    display: flex;
-
-    gap: 10px;
-
-    margin-bottom: 15px;
-
-    flex-wrap: wrap;
-}
-
-.toolbar input {
-    flex: 1;
-
-    min-width: 220px;
-}
-
-
-/* =========================================================
+/* ================================
    TABLE
-========================================================= */
+================================ */
 
 .table-container {
-    width: 100%;
-
     overflow-x: auto;
-
-    -webkit-overflow-scrolling: touch;
 }
 
+
 table {
+
     width: 100%;
 
     border-collapse: collapse;
 
-    min-width: 1000px;
+    min-width: 950px;
 }
+
 
 th,
 td {
-    padding: 11px;
 
-    border-bottom:
-        1px solid #ddd;
+    padding: 10px;
+
+    border-bottom: 1px solid #ddd;
 
     text-align: left;
-
-    vertical-align: middle;
 }
 
+
 th {
+
     background: #126b35;
 
     color: white;
-
-    white-space: nowrap;
 }
 
-tbody tr:hover {
+
+tr:hover {
+
     background: #f5f5f5;
 }
 
-.table-message {
+
+.paid {
+
+    color: #126b35;
+
+    font-weight: bold;
+}
+
+
+.balance {
+
+    color: #c62828;
+
+    font-weight: bold;
+}
+
+
+.empty-message {
+
     text-align: center;
 
-    padding: 25px;
+    padding: 20px;
 
-    color: #666;
+    color: #777;
 }
 
 
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
 
-.action-buttons {
-    display: flex;
-
-    gap: 5px;
-
-    flex-wrap: wrap;
-}
-
-.action-buttons .btn {
-    padding: 7px 10px;
-
-    font-size: 12px;
-}
-
-
-/* =========================================================
+/* ================================
    MODAL
-========================================================= */
+================================ */
 
 .modal {
+
     display: none;
 
     position: fixed;
 
-    z-index: 9999;
+    z-index: 1000;
 
-    inset: 0;
+    left: 0;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 100%;
 
     background:
         rgba(0, 0, 0, 0.55);
 
-    justify-content: center;
-
-    align-items: center;
-
-    padding: 20px;
-}
-
-.modal-card {
-    background: white;
-
-    width: 100%;
-
-    max-width: 450px;
-
-    border-radius: 10px;
-
-    padding: 25px;
-
-    box-shadow:
-        0 10px 40px
-        rgba(0, 0, 0, 0.25);
-
-    max-height: 90vh;
-
     overflow-y: auto;
 }
 
-.modal-card h2 {
-    margin-top: 0;
 
-    color: #126b35;
-}
+.modal-content {
 
-.modal-card p {
-    color: #666;
+    background: white;
 
-    line-height: 1.5;
-}
+    width: 95%;
 
-.modal-actions {
-    margin-top: 15px;
+    max-width: 900px;
 
-    display: flex;
-
-    gap: 10px;
-
-    justify-content: flex-end;
-
-    flex-wrap: wrap;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-footer {
-    text-align: center;
+    margin: 40px auto;
 
     padding: 25px;
 
-    color: #777;
+    border-radius: 10px;
+
+    position: relative;
+}
+
+
+.close {
+
+    position: absolute;
+
+    right: 20px;
+
+    top: 15px;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    color: #555;
+}
+
+
+
+/* ================================
+   REPAYMENT SUMMARY
+================================ */
+
+.repayment-summary {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, 1fr);
+
+    gap: 10px;
+
+    margin: 20px 0;
+}
+
+
+.summary-box {
+
+    background: #f4f7f5;
+
+    padding: 15px;
+
+    border-radius: 8px;
+}
+
+
+.summary-box h4 {
+
+    margin: 0 0 8px;
 
     font-size: 13px;
 
-    line-height: 1.7;
+    color: #ebe7e7;
 }
 
 
-/* =========================================================
+.summary-box p {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: bold;
+}
+
+
+
+/* ================================
+   REPAYMENT FORM
+================================ */
+
+.repayment-form {
+
+    background: #f8f8f8;
+
+    padding: 15px;
+
+    border-radius: 8px;
+
+    margin-bottom: 20px;
+}
+
+
+.repayment-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 12px;
+}
+
+
+.repayment-grid .full-width {
+
+    grid-column: 1 / -1;
+}
+
+
+.repayment-grid label {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-weight: bold;
+}
+
+
+.repayment-grid input,
+.repayment-grid textarea {
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+    font-size: 14px;
+}
+
+
+
+/* ================================
    MOBILE
-========================================================= */
+================================ */
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
 
-    header {
-        padding: 24px 12px;
-    }
+    .dashboard {
 
-    header h1 {
-        font-size: 23px;
-    }
-
-    header p {
-        font-size: 14px;
-    }
-
-    .container {
-        width: 94%;
-
-        margin-top: 18px;
-    }
-
-    .section {
-        padding: 15px;
-    }
-
-    .login-card {
-        padding: 20px;
-    }
-
-    .top-bar {
-        align-items: stretch;
-    }
-
-    .top-bar button {
-        width: 100%;
-    }
-
-    .form-actions .btn {
-        width: 100%;
-    }
-
-    .toolbar {
-        flex-direction: column;
-    }
-
-    .toolbar input,
-    .toolbar .btn {
-        width: 100%;
-    }
-
-    .location-grid {
         grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
-
-        gap: 10px;
+            repeat(2, 1fr);
     }
 
-    .location-card {
-        padding: 16px 10px;
 
-        min-height: 90px;
-    }
+    .form-grid,
+    .repayment-grid {
 
-    .location-name {
-        font-size: 15px;
-    }
-
-    .location-count {
-        font-size: 13px;
-    }
-
-}
-
-
-/* =========================================================
-   VERY SMALL SCREENS
-========================================================= */
-
-@media (max-width: 400px) {
-
-    header {
-        padding: 22px 10px;
-    }
-
-    header h1 {
-        font-size: 20px;
-    }
-
-    header p {
-        font-size: 13px;
-    }
-
-    .stat-value {
-        font-size: 21px;
-    }
-
-    .location-grid {
         grid-template-columns: 1fr;
     }
 
-    .location-card {
-        min-height: 85px;
-    }
 
-    .location-name {
-        font-size: 16px;
+    .repayment-summary {
+
+        grid-template-columns:
+            repeat(2, 1fr);
     }
 
 }
 
 
-/* =========================================================
-   ACCESSIBILITY / FOCUS
-========================================================= */
+@media (max-width: 500px) {
 
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline:
-        2px solid #126b35;
+    header h1 {
 
-    outline-offset: 2px;
+        font-size: 24px;
+    }
+
+
+    .dashboard {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .repayment-summary {
+
+        grid-template-columns: 1fr;
+    }
+
 }
 
+/* ================================
+   REPAYMENT HISTORY SCROLL
+================================ */
 
-/* =========================================================
-   HIDDEN ELEMENTS
-========================================================= */
+#repaymentModal .table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
 
-[hidden] {
-    display: none !important;
+/* Keep the table width stable */
+#repaymentModal .table-container table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+}
+
+/* Keep table header visible while scrolling */
+#repaymentModal .table-container thead th {
+    position: sticky;
+    top: 0;
+    background: #126b35;
+    color: white;
+    z-index: 2;
+}
+
+/* Table cells */
+#repaymentModal .table-container th,
+#repaymentModal .table-container td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+/* Make scrollbar easier to use */
+#repaymentModal .table-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+#repaymentModal .table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#repaymentModal .table-container::-webkit-scrollbar-thumb {
+    background: #f6f1f1;
+    border-radius: 5px;
+}
+
+#repaymentModal .table-container::-webkit-scrollbar-thumb:hover {
+    background: #e3dede;
+}
+
+/* =================================
+   REPAYMENT HISTORY TABLE
+================================= */
+
+#repaymentModal .table-container {
+    background: #ffffff;
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Repayment table */
+#repaymentModal .table-container table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    background: #ffffff;
+}
+
+/* Repayment table header */
+#repaymentModal .table-container thead {
+    background: #126b35;
+}
+
+#repaymentModal .table-container thead th {
+    position: sticky;
+    top: 0;
+    background: #126b35;
+    color: #ffffff;
+    z-index: 10;
+    padding: 12px;
+    text-align: left;
+}
+
+/* Repayment rows */
+#repaymentModal .table-container tbody {
+    background: #ffffff;
+}
+
+#repaymentModal .table-container tbody tr {
+    background: #ffffff;
+}
+
+/* Alternate rows */
+#repaymentModal .table-container tbody tr:nth-child(even) {
+    background: #f8f8f8;
+}
+
+/* Cells */
+#repaymentModal .table-container td {
+    background: inherit;
+    color: #222222;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Hover */
+#repaymentModal .table-container tbody tr:hover {
+    background: #eef6f1;
+}
+
+/* Scrollbar */
+#repaymentModal .table-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+#repaymentModal .table-container::-webkit-scrollbar-track {
+    background: #eeeeee;
+}
+
+#repaymentModal .table-container::-webkit-scrollbar-thumb {
+    background: #888888;
+    border-radius: 5px;
+}
+
+#repaymentModal .table-container::-webkit-scrollbar-thumb:hover {
+    background: #555555;
 }

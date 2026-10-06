@@ -1,2440 +1,1340 @@
-// =========================================================
-// IDOGWU FAMILY DATABASE
-// COMPLETE SCRIPT.JS
-// =========================================================
+// ======================================================
+// SUPABASE CONNECTION
+// ======================================================
 
-
-// =========================================================
-// SUPABASE CONFIGURATION
-// =========================================================
-
-const SUPABASE_URL =
-    "https://hzqawunnchuryzgmgiwi.supabase.co";
+const SUPABASE_URL = "https://ynqxjcugrdsogwrkhgor.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_IBjtMX_HXiG1drNw8MksRg_PtddAlBa";
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-
-// =========================================================
-// GLOBAL VARIABLES
-// =========================================================
-
-let currentUser = null;
-
-let currentRole = "member";
-
-let currentUsername = "";
-
-let allMembers = [];
-
-
-// =========================================================
-// PAGE ELEMENTS
-// =========================================================
-
-const adminLoginBox =
-    document.getElementById("adminLoginBox");
-
-const adminApplication =
-    document.getElementById("adminApplication");
-
-const adminEmail =
-    document.getElementById("adminEmail");
-
-const adminPassword =
-    document.getElementById("adminPassword");
-
-const adminLoginButton =
-    document.getElementById("adminLoginButton");
-
-const forgotPasswordButton =
-    document.getElementById("forgotPasswordButton");
-
-const loginMessage =
-    document.getElementById("loginMessage");
-
-const logoutButton =
-    document.getElementById("logoutButton");
-
-const loggedInUser =
-    document.getElementById("loggedInUser");
-
-
-// =========================================================
-// MEMBER FORM ELEMENTS
-// =========================================================
-
-const memberId =
-    document.getElementById("memberId");
-
-const fullName =
-    document.getElementById("fullName");
-
-const phone =
-    document.getElementById("phone");
-
-const email =
-    document.getElementById("email");
-
-const locationInput =
-    document.getElementById("location");
-
-const amount =
-    document.getElementById("amount");
-
-const purpose =
-    document.getElementById("purpose");
-
-const saveMemberButton =
-    document.getElementById("saveMemberButton");
-
-const clearFormButton =
-    document.getElementById("clearFormButton");
-
-const memberMessage =
-    document.getElementById("memberMessage");
-
-
-// =========================================================
-// DATABASE ELEMENTS
-// =========================================================
-
-const searchInput =
-    document.getElementById("searchInput");
-
-const refreshButton =
-    document.getElementById("refreshButton");
-
-const exportButton =
-    document.getElementById("exportButton");
-
-const membersTableBody =
-    document.getElementById("membersTableBody");
-
-
-// =========================================================
-// DASHBOARD ELEMENTS
-// =========================================================
-
-const totalMembers =
-    document.getElementById("totalMembers");
-
-const paidMembers =
-    document.getElementById("paidMembers");
-
-const unpaidMembers =
-    document.getElementById("unpaidMembers");
-
-const totalAmount =
-    document.getElementById("totalAmount");
-
-const averageAmount =
-    document.getElementById("averageAmount");
-
-const totalLocations =
-    document.getElementById("totalLocations");
-
-
-// =========================================================
-// LOCATION SUMMARY
-// =========================================================
-
-const locationStatistics =
-    document.getElementById("locationStatistics");
-
-
-// =========================================================
-// FORGOT PASSWORD ELEMENTS
-// =========================================================
-
-const forgotPasswordBox =
-    document.getElementById("forgotPasswordBox");
-
-const recoveryEmail =
-    document.getElementById("recoveryEmail");
-
-const sendRecoveryButton =
-    document.getElementById("sendRecoveryButton");
-
-const recoveryMessage =
-    document.getElementById("recoveryMessage");
-
-const closeForgotPassword =
-    document.getElementById("closeForgotPassword");
-
-
-// =========================================================
-// PASSWORD RESET ELEMENTS
-// =========================================================
-
-const passwordResetBox =
-    document.getElementById("passwordResetBox");
-
-const newAdminPassword =
-    document.getElementById("newAdminPassword");
-
-const confirmAdminPassword =
-    document.getElementById("confirmAdminPassword");
-
-const saveNewPassword =
-    document.getElementById("saveNewPassword");
-
-const resetMessage =
-    document.getElementById("resetMessage");
-
-
-// =========================================================
-// INITIAL PAGE STATE
-// =========================================================
-
-if (adminApplication) {
-    adminApplication.style.display = "none";
-}
-
-if (adminLoginBox) {
-    adminLoginBox.style.display = "block";
+    "sb_publishable_4W0EBlrR4djDQ5QXTFtLkg_esHU8L_-";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+// ===============================
+// ADMIN LOGIN & SESSION
+// ===============================
+
+const loginForm = document.getElementById("loginForm");
+const loginMessage = document.getElementById("loginMessage");
+const adminLoginBox = document.getElementById("adminLoginBox");
+const adminStatusBox = document.getElementById("adminStatusBox");
+const adminStatusMessage = document.getElementById("adminStatusMessage");
+const logoutButton = document.getElementById("logoutButton");
+
+// Admin-only borrower form
+const adminBorrowerForm =
+    document.getElementById("adminBorrowerForm");  
+
+// Check current login session
+async function checkAdminSession() {
+
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if (error) {
+        console.error("Session check error:", error);
+        return;
+    }
+
+    updateAdminInterface(data.session);
 }
 
 
-// =========================================================
-// PAGE LOAD
-// =========================================================
+// Update the login/logout display
+function updateAdminInterface(session) {
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
+    if (session) {
 
-        setupEventListeners();
+        // Admin is logged in
+        adminLoginBox.style.display = "none";
+        adminStatusBox.style.display = "block";
 
-        await checkExistingSession();
+        adminStatusMessage.textContent =
+            "You are logged in as administrator.";
 
+        // Show borrower form
+        if (adminBorrowerForm) {
+            adminBorrowerForm.style.display = "block";
+        }
+
+    } else {
+
+        // Nobody is logged in
+        adminLoginBox.style.display = "block";
+        adminStatusBox.style.display = "none";
+
+        // Hide borrower form
+        if (adminBorrowerForm) {
+            adminBorrowerForm.style.display = "none";
+        }
+    }
+}
+
+// Login
+if (loginForm) {
+
+    loginForm.addEventListener("submit", async function (event) {
+
+        event.preventDefault();
+
+        const email =
+            document.getElementById("loginEmail").value.trim();
+
+        const password =
+            document.getElementById("loginPassword").value;
+
+        loginMessage.textContent = "Logging in...";
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+        if (error) {
+
+            console.error(error);
+
+            loginMessage.textContent =
+                error.message;
+
+            return;
+        }
+
+        console.log("Login successful:", data);
+
+        loginMessage.textContent =
+            "Login successful.";
+
+        updateAdminInterface(data.session);
+    });
+}
+
+
+// Logout
+if (logoutButton) {
+
+    logoutButton.addEventListener("click", async function () {
+
+        const { error } =
+            await supabaseClient.auth.signOut();
+
+        if (error) {
+
+            console.error(error);
+
+            alert("Logout failed: " + error.message);
+
+            return;
+        }
+
+        updateAdminInterface(null);
+
+        alert("You have been logged out.");
+    });
+}
+
+
+// Automatically update interface if auth changes
+supabaseClient.auth.onAuthStateChange(
+    function (event, session) {
+
+        console.log("Auth event:", event);
+
+        updateAdminInterface(session);
     }
 );
 
 
-// =========================================================
-// EVENT LISTENERS
-// =========================================================
+// Check session when page loads
+checkAdminSession();
 
-function setupEventListeners() {
 
-    if (adminLoginButton) {
 
-        adminLoginButton.addEventListener(
-            "click",
-            loginUser
+// ======================================================
+// APPLICATION STATE
+// ======================================================
+
+let loans = [];
+
+let editingLoanId = null;
+
+let selectedLoanId = null;
+
+
+// ======================================================
+// GET ELEMENTS
+// ======================================================
+
+const loanForm = document.getElementById("loanForm");
+const formTitle = document.getElementById("formTitle");
+
+const borrowerName = document.getElementById("borrowerName");
+const guarantor1 = document.getElementById("guarantor1");
+const guarantor2 = document.getElementById("guarantor2");
+const loanAmount = document.getElementById("loanAmount");
+const repayAmount = document.getElementById("repayAmount");
+
+const saveButton = document.getElementById("saveButton");
+const cancelButton = document.getElementById("cancelButton");
+
+const searchInput = document.getElementById("searchInput");
+const loanTableBody = document.getElementById("loanTableBody");
+const emptyMessage = document.getElementById("emptyMessage");
+
+const totalBorrowers = document.getElementById("totalBorrowers");
+const totalLoans = document.getElementById("totalLoans");
+const totalRepaid = document.getElementById("totalRepaid");
+const totalOutstanding = document.getElementById("totalOutstanding");
+
+const repaymentModal =
+    document.getElementById("repaymentModal");
+
+const modalBorrowerName =
+    document.getElementById("modalBorrowerName");
+
+const modalLoanAmount =
+    document.getElementById("modalLoanAmount");
+
+const modalRepayAmount =
+    document.getElementById("modalRepayAmount");
+
+const modalTotalPaid =
+    document.getElementById("modalTotalPaid");
+
+const modalTotalPenalty =
+    document.getElementById("modalTotalPenalty");
+
+const modalBalance =
+    document.getElementById("modalBalance");
+
+const repaymentForm =
+    document.getElementById("repaymentForm");
+
+const paymentDate =
+    document.getElementById("paymentDate");
+
+const paymentAmount =
+    document.getElementById("paymentAmount");
+
+const paymentPenalty =
+    document.getElementById("paymentPenalty");
+
+const paymentNote =
+    document.getElementById("paymentNote");
+
+const repaymentHistory =
+    document.getElementById("repaymentHistory");
+
+
+// ======================================================
+// HELPER FUNCTIONS
+// ======================================================
+
+function formatMoney(amount) {
+
+    return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ======================================================
+// CONVERT SUPABASE LOAN INTO APP FORMAT
+// ======================================================
+
+function convertLoan(row) {
+
+    return {
+        id: row.id,
+
+        borrower: row.borrower_name,
+
+        guarantor1: row.guarantor1,
+
+        guarantor2: row.guarantor2,
+
+        loanAmount: Number(row.loan_amount || 0),
+
+        repayAmount: Number(row.repay_amount || 0),
+
+        repayments: [],
+
+        createdAt: row.created_at
+    };
+}
+
+
+// ======================================================
+// LOAD REPAYMENTS
+// ======================================================
+
+async function loadRepayments() {
+
+    const { data, error } = await supabaseClient
+        .from("repayments")
+        .select("*")
+        .order("payment_date", {
+            ascending: true
+        });
+
+    if (error) {
+
+        console.error("Error loading repayments:", error);
+
+        alert(
+            "Unable to load repayment records.\n\n" +
+            error.message
         );
 
+        return;
     }
 
 
-    if (logoutButton) {
+    loans.forEach(function (loan) {
 
-        logoutButton.addEventListener(
-            "click",
-            logoutUser
+        loan.repayments = [];
+    });
+
+
+    data.forEach(function (payment) {
+
+        const loan = loans.find(
+            loanRecord =>
+                Number(loanRecord.id) === Number(payment.loan_id)
         );
 
+        if (!loan) return;
+
+
+        loan.repayments.push({
+
+            id: payment.id,
+
+            date: payment.payment_date,
+
+            amount: Number(payment.payment_amount || 0),
+
+            penalty: Number(payment.penalty || 0),
+
+            note: payment.note || ""
+        });
+    });
+}
+
+
+// ======================================================
+// LOAD LOANS
+// ======================================================
+
+async function loadLoans() {
+
+    loanTableBody.innerHTML = `
+        <tr>
+            <td colspan="10" style="text-align:center; padding:20px;">
+                Loading borrowers...
+            </td>
+        </tr>
+    `;
+
+
+    const { data, error } = await supabaseClient
+        .from("loans")
+        .select("*")
+        .order("id", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error("Error loading loans:", error);
+
+        loanTableBody.innerHTML = "";
+
+        alert(
+            "Unable to load loan records.\n\n" +
+            error.message
+        );
+
+        return;
     }
 
 
-    if (saveMemberButton) {
-
-        saveMemberButton.addEventListener(
-            "click",
-            saveMember
-        );
-
-    }
+    loans = data.map(convertLoan);
 
 
-    if (clearFormButton) {
-
-        clearFormButton.addEventListener(
-            "click",
-            clearMemberForm
-        );
-
-    }
+    await loadRepayments();
 
 
-    if (refreshButton) {
+    renderLoans();
 
-        refreshButton.addEventListener(
-            "click",
-            loadMembers
-        );
-
-    }
+    updateDashboard();
+}
 
 
-    if (searchInput) {
+// ======================================================
+// CALCULATE TOTAL PAID
+// ======================================================
 
-        searchInput.addEventListener(
-            "input",
-            renderMembers
-        );
+function getTotalPaid(loan) {
 
-    }
-
-
-    if (exportButton) {
-
-        exportButton.addEventListener(
-            "click",
-            exportCSV
-        );
-
-    }
+    if (!loan.repayments) return 0;
 
 
-    if (forgotPasswordButton) {
+    return loan.repayments.reduce(
+        function (total, payment) {
 
-        forgotPasswordButton.addEventListener(
-            "click",
-            openForgotPassword
-        );
+            return total +
+                Number(payment.amount || 0);
 
-    }
-
-
-    if (closeForgotPassword) {
-
-        closeForgotPassword.addEventListener(
-            "click",
-            closeForgotPasswordBox
-        );
-
-    }
+        },
+        0
+    );
+}
 
 
-    if (sendRecoveryButton) {
+// ======================================================
+// CALCULATE TOTAL PENALTY
+// ======================================================
 
-        sendRecoveryButton.addEventListener(
-            "click",
-            sendPasswordRecovery
-        );
+function getTotalPenalty(loan) {
 
-    }
-
-
-    if (saveNewPassword) {
-
-        saveNewPassword.addEventListener(
-            "click",
-            updatePassword
-        );
-
-    }
+    if (!loan.repayments) return 0;
 
 
-    // Allow ENTER key for login
-    if (adminPassword) {
+    return loan.repayments.reduce(
+        function (total, payment) {
 
-        adminPassword.addEventListener(
-            "keydown",
-            function (event) {
+            return total +
+                Number(payment.penalty || 0);
 
-                if (event.key === "Enter") {
-
-                    loginUser();
-
-                }
-
-            }
-        );
-
-    }
+        },
+        0
+    );
+}
 
 
-    // Allow ENTER key for email recovery
-    if (recoveryEmail) {
+// ======================================================
+// CALCULATE BALANCE
+// ======================================================
 
-        recoveryEmail.addEventListener(
-            "keydown",
-            function (event) {
+function getBalance(loan) {
 
-                if (event.key === "Enter") {
+    const repay =
+        Number(loan.repayAmount || 0);
 
-                    sendPasswordRecovery();
+    const paid =
+        getTotalPaid(loan);
 
-                }
-
-            }
-        );
-
-    }
+    const penalty =
+        getTotalPenalty(loan);
 
 
-    // Supabase authentication changes
-    supabaseClient.auth.onAuthStateChange(
-        async function (event, session) {
+    return Math.max(
+        0,
+        repay + penalty - paid
+    );
+}
 
-            if (
-                event === "PASSWORD_RECOVERY"
-            ) {
 
-                currentUser =
-                    session?.user || null;
+// ======================================================
+// ADD / UPDATE LOAN
+// ======================================================
 
-                showPasswordReset();
+loanForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+
+        const borrower =
+            borrowerName.value.trim();
+
+        const g1 =
+            guarantor1.value.trim();
+
+        const g2 =
+            guarantor2.value.trim();
+
+        const loan =
+            Number(loanAmount.value);
+
+        const repay =
+            Number(repayAmount.value);
+
+
+        if (!borrower || !g1 || !g2) {
+
+            alert(
+                "Please fill in all borrower and guarantor fields."
+            );
+
+            return;
+        }
+
+
+        if (loan <= 0 || repay <= 0) {
+
+            alert(
+                "Please enter valid loan and repayment amounts."
+            );
+
+            return;
+        }
+
+
+        saveButton.disabled = true;
+
+
+        // ==================================================
+        // UPDATE EXISTING LOAN
+        // ==================================================
+
+        if (editingLoanId !== null) {
+
+            const { error } = await supabaseClient
+                .from("loans")
+                .update({
+
+                    borrower_name: borrower,
+
+                    guarantor1: g1,
+
+                    guarantor2: g2,
+
+                    loan_amount: loan,
+
+                    repay_amount: repay
+
+                })
+                .eq("id", editingLoanId);
+
+
+            if (error) {
+
+                console.error(
+                    "Update loan error:",
+                    error
+                );
+
+                alert(
+                    "Unable to update borrower.\n\n" +
+                    error.message
+                );
+
+                saveButton.disabled = false;
 
                 return;
             }
 
 
-            if (
-                event === "SIGNED_OUT"
-            ) {
+            alert(
+                "Borrower updated successfully."
+            );
 
-                currentUser = null;
+        }
 
-                currentRole = "member";
 
-                currentUsername = "";
+        // ==================================================
+        // ADD NEW LOAN
+        // ==================================================
 
-                showLoginScreen();
+        else {
 
+            const { error } = await supabaseClient
+                .from("loans")
+                .insert({
+
+                    borrower_name: borrower,
+
+                    guarantor1: g1,
+
+                    guarantor2: g2,
+
+                    loan_amount: loan,
+
+                    repay_amount: repay
+
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Insert loan error:",
+                    error
+                );
+
+                alert(
+                    "Unable to save borrower.\n\n" +
+                    error.message
+                );
+
+                saveButton.disabled = false;
+
+                return;
             }
 
-        }
-    );
 
-}
-
-
-// =========================================================
-// CHECK EXISTING SESSION
-// =========================================================
-
-async function checkExistingSession() {
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.getSession();
-
-
-        if (error) {
-
-            console.error(
-                "Session error:",
-                error
+            alert(
+                "Borrower saved successfully."
             );
-
-            showLoginScreen();
-
-            return;
         }
 
 
-        if (data.session) {
+        saveButton.disabled = false;
 
-            currentUser =
-                data.session.user;
 
-            await startApplication();
+        resetLoanForm();
 
-        } else {
-
-            showLoginScreen();
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Session check failed:",
-            error
-        );
-
-        showLoginScreen();
-
+        await loadLoans();
     }
+);
 
+
+// ======================================================
+// RESET FORM
+// ======================================================
+
+function resetLoanForm() {
+
+    loanForm.reset();
+
+    editingLoanId = null;
+
+    formTitle.textContent =
+        "Add New Borrower";
+
+    saveButton.textContent =
+        "Save Borrower";
+
+    cancelButton.style.display =
+        "none";
 }
 
 
-// =========================================================
-// LOGIN
-// =========================================================
+// ======================================================
+// CANCEL EDIT
+// ======================================================
 
-async function loginUser() {
+cancelButton.addEventListener(
+    "click",
+    function () {
 
-    const emailValue =
-        adminEmail?.value.trim();
-
-    const passwordValue =
-        adminPassword?.value;
-
-
-    if (!emailValue || !passwordValue) {
-
-        showLoginMessage(
-            "Please enter your email and password.",
-            "error"
-        );
-
-        return;
+        resetLoanForm();
     }
+);
 
 
-    showLoginMessage(
-        "Signing in...",
-        "info"
-    );
+// ======================================================
+// RENDER LOANS
+// ======================================================
 
+function renderLoans(data = loans) {
 
-    if (adminLoginButton) {
+    loanTableBody.innerHTML = "";
 
-        adminLoginButton.disabled = true;
 
-    }
+    if (data.length === 0) {
 
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient.auth.signInWithPassword({
-
-                email: emailValue,
-
-                password: passwordValue
-
-            });
-
-
-        if (error) {
-
-            showLoginMessage(
-                error.message,
-                "error"
-            );
-
-            return;
-        }
-
-
-        currentUser =
-            data.user;
-
-
-        // Clear password field after login
-        if (adminPassword) {
-
-            adminPassword.value = "";
-
-        }
-
-
-        await startApplication();
-
-
-    } catch (error) {
-
-        console.error(
-            "Login error:",
-            error
-        );
-
-        showLoginMessage(
-            "Unable to sign in. Please try again.",
-            "error"
-        );
-
-    } finally {
-
-        if (adminLoginButton) {
-
-            adminLoginButton.disabled = false;
-
-        }
-
-    }
-
-}
-
-
-// =========================================================
-// START APPLICATION
-// =========================================================
-
-async function startApplication() {
-
-    if (!currentUser) {
-
-        showLoginScreen();
-
-        return;
-
-    }
-
-
-    await loadUserRole(
-        currentUser.id
-    );
-
-
-    showApplication();
-
-
-    await loadMembers();
-
-}
-
-
-// =========================================================
-// LOAD USER ROLE
-// =========================================================
-
-async function loadUserRole(userId) {
-
-    currentRole = "member";
-
-    currentUsername =
-        currentUser?.email || "";
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("user_roles")
-                .select("role, username")
-                .eq("user_id", userId)
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.warn(
-                "Role lookup:",
-                error.message
-            );
-
-            return;
-
-        }
-
-
-        if (data) {
-
-            currentRole =
-                String(
-                    data.role || "member"
-                ).toLowerCase();
-
-
-            if (data.username) {
-
-                currentUsername =
-                    data.username;
-
-            }
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Role error:",
-            error
-        );
-
-    }
-
-
-    applyPermissions();
-
-}
-
-
-// =========================================================
-// CHECK ADMIN
-// =========================================================
-
-function isAdmin() {
-
-    return currentRole === "admin";
-
-}
-
-
-// =========================================================
-// APPLY PERMISSIONS
-// =========================================================
-
-function applyPermissions() {
-
-    const registrationSection =
-        document.getElementById(
-            "memberRegistrationSection"
-        );
-
-
-    // -----------------------------------------------------
-    // ADMIN
-    // -----------------------------------------------------
-
-    if (isAdmin()) {
-
-        if (registrationSection) {
-
-            registrationSection.style.display =
-                "block";
-
-        }
-
-
-        if (exportButton) {
-
-            exportButton.style.display =
-                "inline-block";
-
-        }
-
-
-        return;
-    }
-
-
-    // -----------------------------------------------------
-    // NORMAL LOGGED-IN MEMBER
-    // -----------------------------------------------------
-
-    if (registrationSection) {
-
-        registrationSection.style.display =
-            "none";
-
-    }
-
-
-    if (exportButton) {
-
-        exportButton.style.display =
-            "none";
-
-    }
-
-}
-
-
-// =========================================================
-// SHOW APPLICATION
-// =========================================================
-
-function showApplication() {
-
-    if (adminLoginBox) {
-
-        adminLoginBox.style.display =
-            "none";
-
-    }
-
-
-    if (adminApplication) {
-
-        adminApplication.style.display =
+        emptyMessage.style.display =
             "block";
 
-    }
-
-
-    if (loggedInUser) {
-
-        loggedInUser.textContent =
-            "Logged in as: " +
-            currentUsername +
-            " (" +
-            currentRole +
-            ")";
-
-    }
-
-}
-
-
-// =========================================================
-// SHOW LOGIN SCREEN
-// =========================================================
-
-function showLoginScreen() {
-
-    if (adminApplication) {
-
-        adminApplication.style.display =
-            "none";
-
-    }
-
-
-    if (adminLoginBox) {
-
-        adminLoginBox.style.display =
-            "block";
-
-    }
-
-
-    if (adminEmail) {
-
-        adminEmail.value = "";
-
-    }
-
-
-    if (adminPassword) {
-
-        adminPassword.value = "";
-
-    }
-
-
-    showLoginMessage(
-        "",
-        ""
-    );
-
-}
-
-
-// =========================================================
-// LOGOUT
-// =========================================================
-
-async function logoutUser() {
-
-    try {
-
-        await supabaseClient.auth.signOut();
-
-    } catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-    }
-
-
-    currentUser = null;
-
-    currentRole = "member";
-
-    currentUsername = "";
-
-    allMembers = [];
-
-    clearMemberForm();
-
-    showLoginScreen();
-
-}
-
-
-// =========================================================
-// LOAD MEMBERS
-// =========================================================
-
-async function loadMembers() {
-
-    if (!currentUser) {
-
         return;
-
     }
 
 
-    if (membersTableBody) {
+    emptyMessage.style.display =
+        "none";
 
-        membersTableBody.innerHTML = `
-            <tr>
-                <td colspan="9" class="table-message">
-                    Loading members...
-                </td>
-            </tr>
+
+    data.forEach(function (loan, index) {
+
+        const paid =
+            getTotalPaid(loan);
+
+        const penalty =
+            getTotalPenalty(loan);
+
+        const balance =
+            getBalance(loan);
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${index + 1}
+            </td>
+
+            <td>
+                ${escapeHTML(loan.borrower)}
+            </td>
+
+            <td>
+                ${escapeHTML(loan.guarantor1)}
+            </td>
+
+            <td>
+                ${escapeHTML(loan.guarantor2)}
+            </td>
+
+            <td>
+                ${formatMoney(loan.loanAmount)}
+            </td>
+
+            <td>
+                ${formatMoney(loan.repayAmount)}
+            </td>
+
+            <td>
+                ${formatMoney(paid)}
+            </td>
+
+            <td>
+                ${formatMoney(penalty)}
+            </td>
+
+            <td>
+                ${formatMoney(balance)}
+            </td>
+
+            <td>
+
+                <button
+                    type="button"
+                    class="repayment-btn"
+                    data-action="repayment"
+                    data-id="${loan.id}">
+                    Repayment
+                </button>
+
+                <button
+                    type="button"
+                    class="edit-btn"
+                    data-action="edit"
+                    data-id="${loan.id}">
+                    Edit
+                </button>
+
+                <button
+                    type="button"
+                    class="delete-btn"
+                    data-action="delete"
+                    data-id="${loan.id}">
+                    Delete
+                </button>
+
+            </td>
         `;
 
+
+        loanTableBody.appendChild(row);
+    });
+}
+
+
+// ======================================================
+// TABLE BUTTON ACTIONS
+// ======================================================
+
+loanTableBody.addEventListener(
+    "click",
+    function (event) {
+
+        const button =
+            event.target.closest("button");
+
+
+        if (!button) return;
+
+
+        const id =
+            Number(button.dataset.id);
+
+        const action =
+            button.dataset.action;
+
+
+        if (action === "repayment") {
+
+            openRepayment(id);
+
+        }
+
+        else if (action === "edit") {
+
+            editLoan(id);
+
+        }
+
+        else if (action === "delete") {
+
+            deleteLoan(id);
+        }
+    }
+);
+
+
+// ======================================================
+// EDIT LOAN
+// ======================================================
+
+function editLoan(id) {
+
+    const loan =
+        loans.find(
+            loanRecord =>
+                Number(loanRecord.id) === Number(id)
+        );
+
+
+    if (!loan) {
+
+        alert(
+            "Borrower record not found."
+        );
+
+        return;
     }
 
 
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("idogwu_members")
-                .select(`
-                    id,
-                    full_name,
-                    phone,
-                    email,
-                    location,
-                    amount,
-                    purpose,
-                    created_at
-                `)
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                );
+    editingLoanId = id;
 
 
-        if (error) {
+    borrowerName.value =
+        loan.borrower;
 
-            console.error(
-                "Load members error:",
-                error
-            );
+    guarantor1.value =
+        loan.guarantor1;
 
-            if (membersTableBody) {
+    guarantor2.value =
+        loan.guarantor2;
 
-                membersTableBody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="table-message">
-                            Unable to load members.
-                        </td>
-                    </tr>
-                `;
+    loanAmount.value =
+        loan.loanAmount;
 
-            }
-
-            return;
-        }
+    repayAmount.value =
+        loan.repayAmount;
 
 
-        allMembers =
-            data || [];
+    formTitle.textContent =
+        "Edit Borrower";
+
+    saveButton.textContent =
+        "Update Borrower";
+
+    cancelButton.style.display =
+        "inline-block";
 
 
-        updateDashboard();
+    window.scrollTo({
 
-        renderMembers();
+        top: 0,
 
-        renderLocationStatistics();
+        behavior: "smooth"
+
+    });
+}
 
 
-    } catch (error) {
+// ======================================================
+// DELETE LOAN
+// ======================================================
+
+async function deleteLoan(id) {
+
+    const loan =
+        loans.find(
+            loanRecord =>
+                Number(loanRecord.id) === Number(id)
+        );
+
+
+    if (!loan) {
+
+        alert(
+            "Borrower record not found."
+        );
+
+        return;
+    }
+
+
+    const answer =
+        confirm(
+            `Are you sure you want to delete ${loan.borrower}?`
+        );
+
+
+    if (!answer) return;
+
+
+    const { error } =
+        await supabaseClient
+            .from("loans")
+            .delete()
+            .eq("id", id);
+
+
+    if (error) {
 
         console.error(
-            "Unexpected load error:",
+            "Delete loan error:",
             error
         );
 
+        alert(
+            "Unable to delete borrower.\n\n" +
+            error.message
+        );
+
+        return;
     }
 
-}
 
-
-// =========================================================
-// UPDATE DASHBOARD
-// =========================================================
-
-function updateDashboard() {
-
-    const total =
-        allMembers.length;
-
-
-    let paid = 0;
-
-    let unpaid = 0;
-
-    let contributionTotal = 0;
-
-
-    const locations =
-        new Set();
-
-
-    allMembers.forEach(
-        function (member) {
-
-            const memberAmount =
-                Number(
-                    member.amount || 0
-                );
-
-
-            contributionTotal +=
-                memberAmount;
-
-
-            if (memberAmount > 0) {
-
-                paid++;
-
-            } else {
-
-                unpaid++;
-
-            }
-
-
-            const location =
-                String(
-                    member.location || ""
-                ).trim();
-
-
-            if (location) {
-
-                locations.add(
-                    location.toLowerCase()
-                );
-
-            }
-
-        }
+    alert(
+        "Borrower deleted successfully."
     );
 
 
-    const average =
-        total > 0
-            ? contributionTotal / total
-            : 0;
-
-
-    if (totalMembers) {
-
-        totalMembers.textContent =
-            total;
-
-    }
-
-
-    if (paidMembers) {
-
-        paidMembers.textContent =
-            paid;
-
-    }
-
-
-    if (unpaidMembers) {
-
-        unpaidMembers.textContent =
-            unpaid;
-
-    }
-
-
-    if (totalAmount) {
-
-        totalAmount.textContent =
-            formatCurrency(
-                contributionTotal
-            );
-
-    }
-
-
-    if (averageAmount) {
-
-        averageAmount.textContent =
-            formatCurrency(
-                average
-            );
-
-    }
-
-
-    if (totalLocations) {
-
-        totalLocations.textContent =
-            locations.size;
-
-    }
-
+    await loadLoans();
 }
 
 
-// =========================================================
-// RENDER MEMBERS TABLE
-// =========================================================
+// ======================================================
+// SEARCH
+// ======================================================
 
-function renderMembers() {
+searchInput.addEventListener(
+    "input",
+    function () {
 
-    if (!membersTableBody) {
-
-        return;
-
-    }
-
-
-    const searchTerm =
-        String(
-            searchInput?.value || ""
-        )
-            .trim()
-            .toLowerCase();
+        const search =
+            searchInput.value
+                .toLowerCase()
+                .trim();
 
 
-    let filteredMembers =
-        allMembers;
+        const results =
+            loans.filter(
+                function (loan) {
 
+                    return (
 
-    if (searchTerm) {
+                        loan.borrower
+                            .toLowerCase()
+                            .includes(search)
 
-        filteredMembers =
-            allMembers.filter(
-                function (member) {
+                        ||
 
-                    return [
+                        loan.guarantor1
+                            .toLowerCase()
+                            .includes(search)
 
-                        member.full_name,
+                        ||
 
-                        member.phone,
+                        loan.guarantor2
+                            .toLowerCase()
+                            .includes(search)
 
-                        member.email,
-
-                        member.location,
-
-                        member.purpose
-
-                    ]
-                        .some(
-                            function (value) {
-
-                                return String(
-                                    value || ""
-                                )
-                                    .toLowerCase()
-                                    .includes(
-                                        searchTerm
-                                    );
-
-                            }
-                        );
-
+                    );
                 }
             );
 
+
+        renderLoans(results);
+    }
+);
+
+
+// ======================================================
+// OPEN REPAYMENT
+// ======================================================
+
+function openRepayment(id) {
+
+    const loan =
+        loans.find(
+            loanRecord =>
+                Number(loanRecord.id) === Number(id)
+        );
+
+
+    if (!loan) {
+
+        alert(
+            "Borrower record not found."
+        );
+
+        return;
     }
 
 
-    if (filteredMembers.length === 0) {
+    selectedLoanId = id;
 
-        membersTableBody.innerHTML = `
+
+    modalBorrowerName.textContent =
+        loan.borrower;
+
+
+    modalLoanAmount.textContent =
+        formatMoney(
+            loan.loanAmount
+        );
+
+
+    modalRepayAmount.textContent =
+        formatMoney(
+            loan.repayAmount
+        );
+
+
+    updateRepaymentModal();
+
+
+    repaymentModal.style.display =
+        "flex";
+}
+
+
+// ======================================================
+// UPDATE REPAYMENT MODAL
+// ======================================================
+
+function updateRepaymentModal() {
+
+    const loan =
+        loans.find(
+            loanRecord =>
+                Number(loanRecord.id) === Number(selectedLoanId)
+        );
+
+
+    if (!loan) return;
+
+
+    const paid =
+        getTotalPaid(loan);
+
+    const penalty =
+        getTotalPenalty(loan);
+
+    const balance =
+        getBalance(loan);
+
+
+    modalTotalPaid.textContent =
+        formatMoney(paid);
+
+
+    modalTotalPenalty.textContent =
+        formatMoney(penalty);
+
+
+    modalBalance.textContent =
+        formatMoney(balance);
+
+
+    displayRepaymentHistory(loan);
+}
+
+
+// ======================================================
+// DISPLAY PAYMENT HISTORY
+// ======================================================
+
+function displayRepaymentHistory(loan) {
+
+    repaymentHistory.innerHTML = "";
+
+
+    if (
+        !loan.repayments ||
+        loan.repayments.length === 0
+    ) {
+
+        repaymentHistory.innerHTML = `
+
             <tr>
-                <td colspan="9" class="table-message">
-                    No members found.
+
+                <td
+                    colspan="5"
+                    style="text-align:center; padding:20px;"
+                >
+                    No repayment recorded yet.
                 </td>
+
             </tr>
+
         `;
 
         return;
-
     }
 
 
-    membersTableBody.innerHTML = "";
-
-
-    filteredMembers.forEach(
-        function (member, index) {
+    loan.repayments.forEach(
+        function (payment) {
 
             const row =
                 document.createElement("tr");
 
 
-            const amountValue =
-                Number(
-                    member.amount || 0
-                );
-
-
-            const actionHTML =
-                isAdmin()
-                    ? `
-                        <div class="action-buttons">
-
-                            <button
-                                class="btn btn-warning"
-                                onclick="editMember('${member.id}')">
-                                Edit
-                            </button>
-
-                            <button
-                                class="btn btn-danger"
-                                onclick="deleteMember('${member.id}')">
-                                Delete
-                            </button>
-
-                        </div>
-                    `
-                    : `
-                        <span>
-                            View only
-                        </span>
-                    `;
-
-
             row.innerHTML = `
 
                 <td>
-                    ${index + 1}
+                    ${escapeHTML(payment.date)}
+                </td>
+
+                <td>
+                    ${formatMoney(payment.amount)}
+                </td>
+
+                <td>
+                    ${formatMoney(payment.penalty)}
                 </td>
 
                 <td>
                     ${escapeHTML(
-                        member.full_name
+                        payment.note || "No note"
                     )}
                 </td>
 
                 <td>
-                    ${escapeHTML(
-                        member.phone
-                    )}
-                </td>
 
-                <td>
-                    ${escapeHTML(
-                        member.email
-                    )}
-                </td>
+                    <button
+                        type="button"
+                        class="delete-btn repayment-delete-btn"
+                        data-payment-id="${payment.id}">
+                        Delete
+                    </button>
 
-                <td>
-                    ${escapeHTML(
-                        member.location
-                    )}
                 </td>
-
-                <td>
-                    ${formatCurrency(
-                        amountValue
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHTML(
-                        member.purpose
-                    )}
-                </td>
-
-                <td>
-                    ${formatDate(
-                        member.created_at
-                    )}
-                </td>
-
-                <td>
-                    ${actionHTML}
-                </td>
-
             `;
 
 
-            membersTableBody.appendChild(
-                row
-            );
-
+            repaymentHistory.appendChild(row);
         }
     );
-
 }
 
 
-// =========================================================
-// FAMILY LOCATION SUMMARY
-// =========================================================
+// ======================================================
+// DELETE REPAYMENT
+// ======================================================
 
-function renderLocationStatistics() {
+repaymentHistory.addEventListener(
+    "click",
+    function (event) {
 
-    if (!locationStatistics) {
-
-        return;
-
-    }
-
-
-    locationStatistics.innerHTML = "";
-
-
-    if (
-        !allMembers ||
-        allMembers.length === 0
-    ) {
-
-        locationStatistics.innerHTML = `
-            <div class="table-message">
-                No location statistics available.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    const locationCounts = {};
-
-
-    allMembers.forEach(
-        function (member) {
-
-            let location =
-                String(
-                    member.location || ""
-                ).trim();
-
-
-            if (!location) {
-
-                location =
-                    "Location Not Provided";
-
-            }
-
-
-            // Ignore capitalization when grouping
-            const key =
-                location.toLowerCase();
-
-
-            if (!locationCounts[key]) {
-
-                locationCounts[key] = {
-
-                    name: location,
-
-                    count: 0
-
-                };
-
-            }
-
-
-            locationCounts[key].count++;
-
-        }
-    );
-
-
-    const locations =
-        Object.values(
-            locationCounts
-        )
-            .sort(
-                function (a, b) {
-
-                    return b.count - a.count;
-
-                }
+        const button =
+            event.target.closest(
+                ".repayment-delete-btn"
             );
 
 
-    locations.forEach(
-        function (location) {
+        if (!button) return;
 
-            const card =
-                document.createElement("div");
 
-
-            card.className =
-                "location-card";
-
-
-            const name =
-                document.createElement("div");
-
-
-            name.className =
-                "location-name";
-
-
-            name.textContent =
-                location.name;
-
-
-            const count =
-                document.createElement("div");
-
-
-            count.className =
-                "location-count";
-
-
-            count.textContent =
-                location.count +
-                (
-                    location.count === 1
-                        ? " Member"
-                        : " Members"
-                );
-
-
-            card.appendChild(name);
-
-            card.appendChild(count);
-
-
-            locationStatistics.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-
-// =========================================================
-// SAVE MEMBER
-// =========================================================
-
-async function saveMember() {
-
-    // Only administrators can add/edit
-    if (!isAdmin()) {
-
-        showMemberMessage(
-            "You do not have permission to add or edit members.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const nameValue =
-        fullName?.value.trim();
-
-    const phoneValue =
-        phone?.value.trim();
-
-    const emailValue =
-        email?.value.trim();
-
-    const locationValue =
-        locationInput?.value.trim();
-
-    const amountValue =
-        Number(
-            amount?.value || 0
-        );
-
-    const purposeValue =
-        purpose?.value.trim();
-
-
-    if (!nameValue) {
-
-        showMemberMessage(
-            "Please enter the member's full name.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (!phoneValue) {
-
-        showMemberMessage(
-            "Please enter the member's phone number.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (!locationValue) {
-
-        showMemberMessage(
-            "Please enter the member's location.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        Number.isNaN(amountValue) ||
-        amountValue < 0
-    ) {
-
-        showMemberMessage(
-            "Please enter a valid amount.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (saveMemberButton) {
-
-        saveMemberButton.disabled = true;
-
-    }
-
-
-    showMemberMessage(
-        "Saving member...",
-        "info"
-    );
-
-
-    try {
-
-        let result;
-
-
-        // -------------------------------------------------
-        // EDIT EXISTING MEMBER
-        // -------------------------------------------------
-
-        if (memberId?.value) {
-
-            result =
-                await supabaseClient
-                    .from("idogwu_members")
-                    .update({
-
-                        full_name:
-                            nameValue,
-
-                        phone:
-                            phoneValue,
-
-                        email:
-                            emailValue || null,
-
-                        location:
-                            locationValue,
-
-                        amount:
-                            amountValue,
-
-                        purpose:
-                            purposeValue || null
-
-                    })
-                    .eq(
-                        "id",
-                        memberId.value
-                    );
-
-        }
-
-
-        // -------------------------------------------------
-        // ADD NEW MEMBER
-        // -------------------------------------------------
-
-        else {
-
-            result =
-                await supabaseClient
-                    .from("idogwu_members")
-                    .insert({
-
-                        full_name:
-                            nameValue,
-
-                        phone:
-                            phoneValue,
-
-                        email:
-                            emailValue || null,
-
-                        location:
-                            locationValue,
-
-                        amount:
-                            amountValue,
-
-                        purpose:
-                            purposeValue || null
-
-                    });
-
-        }
-
-
-        if (result.error) {
-
-            console.error(
-                "Save member error:",
-                result.error
+        const paymentId =
+            Number(
+                button.dataset.paymentId
             );
 
 
-            showMemberMessage(
-                result.error.message,
-                "error"
-            );
-
-            return;
-
-        }
+        deleteRepayment(paymentId);
+    }
+);
 
 
-        showMemberMessage(
-            memberId?.value
-                ? "Member information updated successfully."
-                : "Member added successfully.",
-            "success"
+async function deleteRepayment(paymentId) {
+
+    const answer =
+        confirm(
+            "Are you sure you want to delete this repayment?"
         );
 
 
-        clearMemberForm();
+    if (!answer) return;
 
 
-        await loadMembers();
+    const { error } =
+        await supabaseClient
+            .from("repayments")
+            .delete()
+            .eq("id", paymentId);
 
 
-    } catch (error) {
+    if (error) {
 
         console.error(
-            "Save error:",
+            "Delete repayment error:",
             error
         );
 
-
-        showMemberMessage(
-            "Unable to save member.",
-            "error"
-        );
-
-    } finally {
-
-        if (saveMemberButton) {
-
-            saveMemberButton.disabled = false;
-
-        }
-
-    }
-
-}
-
-
-// =========================================================
-// EDIT MEMBER
-// =========================================================
-
-async function editMember(id) {
-
-    if (!isAdmin()) {
-
         alert(
-            "You do not have permission to edit members."
+            "Unable to delete repayment.\n\n" +
+            error.message
         );
 
         return;
-
     }
 
 
-    const member =
-        allMembers.find(
-            function (item) {
-
-                return String(
-                    item.id
-                ) === String(id);
-
-            }
-        );
+    await loadLoans();
 
 
-    if (!member) {
+    updateRepaymentModal();
 
-        alert(
-            "Member not found."
-        );
+    renderLoans();
 
-        return;
-
-    }
+    updateDashboard();
 
 
-    if (memberId) {
-
-        memberId.value =
-            member.id;
-
-    }
-
-
-    if (fullName) {
-
-        fullName.value =
-            member.full_name || "";
-
-    }
-
-
-    if (phone) {
-
-        phone.value =
-            member.phone || "";
-
-    }
-
-
-    if (email) {
-
-        email.value =
-            member.email || "";
-
-    }
-
-
-    if (locationInput) {
-
-        locationInput.value =
-            member.location || "";
-
-    }
-
-
-    if (amount) {
-
-        amount.value =
-            member.amount || 0;
-
-    }
-
-
-    if (purpose) {
-
-        purpose.value =
-            member.purpose || "";
-
-    }
-
-
-    if (saveMemberButton) {
-
-        saveMemberButton.textContent =
-            "Update Member";
-
-    }
-
-
-    showMemberMessage(
-        "You are editing this member.",
-        "info"
+    alert(
+        "Repayment deleted successfully."
     );
-
-
-    // Scroll to form
-    const formSection =
-        document.getElementById(
-            "memberRegistrationSection"
-        );
-
-
-    if (formSection) {
-
-        formSection.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }
-
 }
 
 
-// =========================================================
-// DELETE MEMBER
-// =========================================================
+// ======================================================
+// ADD REPAYMENT
+// ======================================================
 
-async function deleteMember(id) {
+repaymentForm.addEventListener(
+    "submit",
+    async function (event) {
 
-    if (!isAdmin()) {
-
-        alert(
-            "You do not have permission to delete members."
-        );
-
-        return;
-
-    }
+        event.preventDefault();
 
 
-    const member =
-        allMembers.find(
-            function (item) {
-
-                return String(
-                    item.id
-                ) === String(id);
-
-            }
-        );
-
-
-    if (!member) {
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            "Are you sure you want to delete " +
-            (member.full_name || "this member") +
-            "?"
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient
-                .from("idogwu_members")
-                .delete()
-                .eq(
-                    "id",
-                    id
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Delete error:",
-                error
+        const loan =
+            loans.find(
+                loanRecord =>
+                    Number(loanRecord.id) === Number(selectedLoanId)
             );
 
+
+        if (!loan) {
 
             alert(
-                error.message
+                "Borrower record not found."
             );
 
             return;
-
         }
 
 
-        alert(
-            "Member deleted successfully."
-        );
+        const date =
+            paymentDate.value;
 
 
-        await loadMembers();
-
-
-    } catch (error) {
-
-        console.error(
-            "Delete error:",
-            error
-        );
-
-
-        alert(
-            "Unable to delete member."
-        );
-
-    }
-
-}
-
-
-// =========================================================
-// CLEAR MEMBER FORM
-// =========================================================
-
-function clearMemberForm() {
-
-    if (memberId) {
-
-        memberId.value = "";
-
-    }
-
-
-    if (fullName) {
-
-        fullName.value = "";
-
-    }
-
-
-    if (phone) {
-
-        phone.value = "";
-
-    }
-
-
-    if (email) {
-
-        email.value = "";
-
-    }
-
-
-    if (locationInput) {
-
-        locationInput.value = "";
-
-    }
-
-
-    if (amount) {
-
-        amount.value = "";
-
-    }
-
-
-    if (purpose) {
-
-        purpose.value = "";
-
-    }
-
-
-    if (saveMemberButton) {
-
-        saveMemberButton.textContent =
-            "Save Member";
-
-    }
-
-
-    if (memberMessage) {
-
-        memberMessage.textContent = "";
-
-    }
-
-}
-
-
-// =========================================================
-// EXPORT CSV
-// =========================================================
-
-function exportCSV() {
-
-    // VERY IMPORTANT:
-    // Only administrators can export/download data.
-
-    if (!isAdmin()) {
-
-        alert(
-            "Only administrators can export member data."
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !allMembers ||
-        allMembers.length === 0
-    ) {
-
-        alert(
-            "There are no members to export."
-        );
-
-        return;
-
-    }
-
-
-    const searchTerm =
-        String(
-            searchInput?.value || ""
-        )
-            .trim()
-            .toLowerCase();
-
-
-    let membersToExport =
-        allMembers;
-
-
-    if (searchTerm) {
-
-        membersToExport =
-            allMembers.filter(
-                function (member) {
-
-                    return [
-
-                        member.full_name,
-
-                        member.phone,
-
-                        member.email,
-
-                        member.location,
-
-                        member.purpose
-
-                    ]
-                        .some(
-                            function (value) {
-
-                                return String(
-                                    value || ""
-                                )
-                                    .toLowerCase()
-                                    .includes(
-                                        searchTerm
-                                    );
-
-                            }
-                        );
-
-                }
-            );
-
-    }
-
-
-    const headers = [
-
-        "S/N",
-
-        "Full Name",
-
-        "Phone",
-
-        "Email",
-
-        "Location",
-
-        "Amount",
-
-        "Purpose",
-
-        "Date"
-
-    ];
-
-
-    const rows =
-        membersToExport.map(
-            function (member, index) {
-
-                return [
-
-                    index + 1,
-
-                    member.full_name || "",
-
-                    member.phone || "",
-
-                    member.email || "",
-
-                    member.location || "",
-
-                    Number(
-                        member.amount || 0
-                    ).toFixed(2),
-
-                    member.purpose || "",
-
-                    formatDate(
-                        member.created_at
-                    )
-
-                ];
-
-            }
-        );
-
-
-    const csv = [
-
-        headers,
-
-        ...rows
-
-    ]
-        .map(
-            function (row) {
-
-                return row
-                    .map(
-                        function (value) {
-
-                            return '"' +
-                                String(
-                                    value
-                                )
-                                    .replace(
-                                        /"/g,
-                                        '""'
-                                    ) +
-                                '"';
-
-                        }
-                    )
-                    .join(",");
-
-            }
-        )
-        .join("\n");
-
-
-    const blob =
-        new Blob(
-            [csv],
-            {
-                type:
-                    "text/csv;charset=utf-8;"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement("a");
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        "idogwu_family_members.csv";
-
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-
-    document.body.removeChild(
-        link
-    );
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-// =========================================================
-// FORGOT PASSWORD
-// =========================================================
-
-function openForgotPassword() {
-
-    if (!forgotPasswordBox) {
-
-        return;
-
-    }
-
-
-    forgotPasswordBox.style.display =
-        "flex";
-
-
-    if (recoveryEmail) {
-
-        recoveryEmail.value = "";
-
-        recoveryEmail.focus();
-
-    }
-
-
-    if (recoveryMessage) {
-
-        recoveryMessage.textContent = "";
-
-    }
-
-}
-
-
-// =========================================================
-// CLOSE FORGOT PASSWORD
-// =========================================================
-
-function closeForgotPasswordBox() {
-
-    if (forgotPasswordBox) {
-
-        forgotPasswordBox.style.display =
-            "none";
-
-    }
-
-}
-
-
-// =========================================================
-// SEND PASSWORD RECOVERY
-// =========================================================
-
-async function sendPasswordRecovery() {
-
-    const emailValue =
-        recoveryEmail?.value.trim();
-
-
-    if (!emailValue) {
-
-        showRecoveryMessage(
-            "Please enter your registered email address.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (sendRecoveryButton) {
-
-        sendRecoveryButton.disabled = true;
-
-    }
-
-
-    showRecoveryMessage(
-        "Sending password recovery email...",
-        "info"
-    );
-
-
-    try {
-
-        const redirectUrl =
-            window.location.origin +
-            window.location.pathname;
-
-
-        const {
-            error
-        } =
-            await supabaseClient.auth
-                .resetPasswordForEmail(
-                    emailValue,
-                    {
-                        redirectTo:
-                            redirectUrl
-                    }
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Recovery error:",
-                error
+        const amount =
+            Number(
+                paymentAmount.value || 0
             );
 
 
-            showRecoveryMessage(
-                error.message,
-                "error"
+        const penalty =
+            Number(
+                paymentPenalty.value || 0
+            );
+
+
+        const note =
+            paymentNote.value.trim();
+
+
+        if (!date) {
+
+            alert(
+                "Please select payment date."
             );
 
             return;
-
         }
 
 
-        showRecoveryMessage(
-            "Password recovery email sent. Please check your email.",
-            "success"
-        );
+        if (amount < 0) {
 
+            alert(
+                "Payment amount cannot be negative."
+            );
 
-    } catch (error) {
-
-        console.error(
-            "Recovery error:",
-            error
-        );
-
-
-        showRecoveryMessage(
-            "Unable to send recovery email.",
-            "error"
-        );
-
-    } finally {
-
-        if (sendRecoveryButton) {
-
-            sendRecoveryButton.disabled = false;
-
+            return;
         }
 
-    }
 
-}
+        if (penalty < 0) {
 
+            alert(
+                "Penalty cannot be negative."
+            );
 
-// =========================================================
-// SHOW PASSWORD RESET
-// =========================================================
-
-function showPasswordReset() {
-
-    if (passwordResetBox) {
-
-        passwordResetBox.style.display =
-            "flex";
-
-    }
+            return;
+        }
 
 
-    if (newAdminPassword) {
+        if (
+            amount === 0 &&
+            penalty === 0
+        ) {
 
-        newAdminPassword.value = "";
+            alert(
+                "Please enter either a payment amount or a penalty."
+            );
 
-    }
-
-
-    if (confirmAdminPassword) {
-
-        confirmAdminPassword.value = "";
-
-    }
-
-
-    if (resetMessage) {
-
-        resetMessage.textContent = "";
-
-    }
-
-}
+            return;
+        }
 
 
-// =========================================================
-// UPDATE PASSWORD
-// =========================================================
-
-async function updatePassword() {
-
-    const newPassword =
-        newAdminPassword?.value || "";
+        const balance =
+            getBalance(loan);
 
 
-    const confirmPassword =
-        confirmAdminPassword?.value || "";
+        if (amount > balance) {
+
+            alert(
+                "Payment cannot be greater than the current balance of " +
+                formatMoney(balance)
+            );
+
+            return;
+        }
 
 
-    if (!newPassword) {
+        const { error } =
+            await supabaseClient
+                .from("repayments")
+                .insert({
 
-        showResetMessage(
-            "Please enter a new password.",
-            "error"
-        );
+                    loan_id: loan.id,
 
-        return;
+                    payment_date: date,
 
-    }
+                    payment_amount: amount,
 
+                    penalty: penalty,
 
-    if (newPassword.length < 6) {
-
-        showResetMessage(
-            "Password must be at least 6 characters.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        newPassword !==
-        confirmPassword
-    ) {
-
-        showResetMessage(
-            "The passwords do not match.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    if (saveNewPassword) {
-
-        saveNewPassword.disabled = true;
-
-    }
-
-
-    showResetMessage(
-        "Updating password...",
-        "info"
-    );
-
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient.auth
-                .updateUser({
-
-                    password:
-                        newPassword
+                    note: note
 
                 });
 
@@ -2442,375 +1342,144 @@ async function updatePassword() {
         if (error) {
 
             console.error(
-                "Password update error:",
+                "Insert repayment error:",
                 error
             );
 
-
-            showResetMessage(
-                error.message,
-                "error"
+            alert(
+                "Unable to save repayment.\n\n" +
+                error.message
             );
 
             return;
-
         }
 
 
-        showResetMessage(
-            "Password updated successfully.",
-            "success"
+        repaymentForm.reset();
+
+
+        await loadLoans();
+
+
+        updateRepaymentModal();
+
+        renderLoans();
+
+        updateDashboard();
+
+
+        alert(
+            "Repayment saved successfully."
         );
+    }
+);
 
 
-        if (newAdminPassword) {
+// ======================================================
+// CLOSE REPAYMENT MODAL
+// ======================================================
 
-            newAdminPassword.value = "";
+function closeRepaymentModal() {
 
+    repaymentModal.style.display =
+        "none";
+
+
+    selectedLoanId = null;
+
+
+    repaymentForm.reset();
+}
+
+
+// ======================================================
+// CLOSE MODAL BY CLICKING OUTSIDE
+// ======================================================
+
+window.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target ===
+            repaymentModal
+        ) {
+
+            closeRepaymentModal();
         }
+    }
+);
 
 
-        if (confirmAdminPassword) {
+// ======================================================
+// DASHBOARD
+// ======================================================
 
-            confirmAdminPassword.value = "";
+function updateDashboard() {
 
-        }
+    totalBorrowers.textContent =
+        loans.length;
 
 
-        setTimeout(
-            function () {
+    const totalLoanAmount =
+        loans.reduce(
+            function (total, loan) {
 
-                if (passwordResetBox) {
-
-                    passwordResetBox.style.display =
-                        "none";
-
-                }
+                return total +
+                    Number(
+                        loan.loanAmount || 0
+                    );
 
             },
-            2000
+            0
         );
 
 
-    } catch (error) {
+    const totalPaidAmount =
+        loans.reduce(
+            function (total, loan) {
 
-        console.error(
-            "Password update error:",
-            error
+                return total +
+                    getTotalPaid(loan);
+
+            },
+            0
         );
 
 
-        showResetMessage(
-            "Unable to update password.",
-            "error"
+    const totalOutstandingAmount =
+        loans.reduce(
+            function (total, loan) {
+
+                return total +
+                    getBalance(loan);
+
+            },
+            0
         );
 
-    } finally {
 
-        if (saveNewPassword) {
-
-            saveNewPassword.disabled = false;
-
-        }
-
-    }
-
-}
-
-
-// =========================================================
-// MESSAGE FUNCTIONS
-// =========================================================
-
-function showLoginMessage(
-    message,
-    type
-) {
-
-    if (!loginMessage) {
-
-        return;
-
-    }
-
-
-    loginMessage.textContent =
-        message;
-
-
-    loginMessage.className =
-        "message";
-
-
-    if (type === "error") {
-
-        loginMessage.style.color =
-            "#c62828";
-
-    }
-
-    else if (type === "success") {
-
-        loginMessage.style.color =
-            "#126b35";
-
-    }
-
-    else {
-
-        loginMessage.style.color =
-            "#666";
-
-    }
-
-}
-
-
-function showMemberMessage(
-    message,
-    type
-) {
-
-    if (!memberMessage) {
-
-        return;
-
-    }
-
-
-    memberMessage.textContent =
-        message;
-
-
-    memberMessage.className =
-        "message";
-
-
-    if (type === "error") {
-
-        memberMessage.style.color =
-            "#c62828";
-
-    }
-
-    else if (type === "success") {
-
-        memberMessage.style.color =
-            "#126b35";
-
-    }
-
-    else {
-
-        memberMessage.style.color =
-            "#666";
-
-    }
-
-}
-
-
-function showRecoveryMessage(
-    message,
-    type
-) {
-
-    if (!recoveryMessage) {
-
-        return;
-
-    }
-
-
-    recoveryMessage.textContent =
-        message;
-
-
-    recoveryMessage.className =
-        "message";
-
-
-    if (type === "error") {
-
-        recoveryMessage.style.color =
-            "#c62828";
-
-    }
-
-    else if (type === "success") {
-
-        recoveryMessage.style.color =
-            "#126b35";
-
-    }
-
-    else {
-
-        recoveryMessage.style.color =
-            "#666";
-
-    }
-
-}
-
-
-function showResetMessage(
-    message,
-    type
-) {
-
-    if (!resetMessage) {
-
-        return;
-
-    }
-
-
-    resetMessage.textContent =
-        message;
-
-
-    resetMessage.className =
-        "message";
-
-
-    if (type === "error") {
-
-        resetMessage.style.color =
-            "#c62828";
-
-    }
-
-    else if (type === "success") {
-
-        resetMessage.style.color =
-            "#126b35";
-
-    }
-
-    else {
-
-        resetMessage.style.color =
-            "#666";
-
-    }
-
-}
-
-
-// =========================================================
-// FORMAT CURRENCY
-// =========================================================
-
-function formatCurrency(value) {
-
-    const number =
-        Number(value || 0);
-
-
-    return new Intl.NumberFormat(
-        "en-NG",
-        {
-            style: "currency",
-
-            currency: "NGN",
-
-            minimumFractionDigits: 2
-        }
-    ).format(number);
-
-}
-
-
-// =========================================================
-// FORMAT DATE
-// =========================================================
-
-function formatDate(value) {
-
-    if (!value) {
-
-        return "";
-
-    }
-
-
-    const date =
-        new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return "";
-
-    }
-
-
-    return new Intl.DateTimeFormat(
-        "en-NG",
-        {
-            day: "2-digit",
-
-            month: "short",
-
-            year: "numeric"
-        }
-    ).format(date);
-
-}
-
-
-// =========================================================
-// ESCAPE HTML
-// =========================================================
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
+    totalLoans.textContent =
+        formatMoney(
+            totalLoanAmount
         );
 
+
+    totalRepaid.textContent =
+        formatMoney(
+            totalPaidAmount
+        );
+
+
+    totalOutstanding.textContent =
+        formatMoney(
+            totalOutstandingAmount
+        );
 }
 
 
-// =========================================================
-// MAKE FUNCTIONS AVAILABLE TO HTML BUTTONS
-// =========================================================
+// ======================================================
+// START APPLICATION
+// ======================================================
 
-window.editMember =
-    editMember;
-
-window.deleteMember =
-    deleteMember;
+loadLoans();
