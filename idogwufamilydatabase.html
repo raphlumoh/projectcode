@@ -325,12 +325,15 @@
                 IDOGWU FAMILY WORLDWIDE
             </h2>
 
+
             <p>
-                <strong> Introduction<br>  </strong>
-                    Unity, Love, Heritage and Progress<br> Idogwu Family Worldwide is a global platform created to bring 
-                    members of the Idogwu family together, regardless of their location, age, background, or country of residence.
-                </strong>
+                <strong>Introduction<br></strong>
+                Unity, Love, Heritage and Progress<br>
+                Idogwu Family Worldwide is a global platform created to bring
+                members of the Idogwu family together, regardless of their location,
+                age, background, or country of residence.
             </p>
+
 
 
             <h3>
@@ -453,6 +456,68 @@
 
                 </div>
 
+
+                <!-- Gender -->
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+
+                <!-- Age -->
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input
+                        type="number"
+                        id="age"
+                        name="age"
+                        min="1"
+                        max="120"
+                        step="1"
+                        required
+                    >
+                </div>
+
+                <!-- Educational Qualification -->
+                <div class="form-group">
+                    <label for="education">Highest Educational Qualification</label>
+                    <select id="education" name="education" required>
+                        <option value="">Select qualification</option>
+                        <option value="No Formal Education">No Formal Education</option>
+                        <option value="Primary">Primary</option>
+                        <option value="Secondary">Secondary</option>
+                        <option value="OND/NCE">OND/NCE</option>
+                        <option value="HND/Bachelor's Degree">HND/Bachelor's Degree</option>
+                        <option value="Postgraduate">Postgraduate</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Marital Status -->
+                <div class="form-group">
+                    <label for="marital_status">Marital Status</label>
+                    <select id="marital_status" name="marital_status" required>
+                        <option value="">Select marital status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widowed">Widowed</option>
+                    </select>
+                </div>
+
+                <!-- Occupation (Optional) -->
+                <div class="form-group">
+                    <label for="occupation">Occupation (Optional)</label>
+                    <input
+                        type="text"
+                        id="occupation"
+                        name="occupation"
+                        placeholder="Enter occupation"
+                    >
+                </div>
 
                 <!-- EMAIL -->
 
@@ -578,12 +643,14 @@
 
             <div class="toolbar">
 
+                
                 <input
                     type="text"
                     id="searchInput"
-                    placeholder="Search by name, phone, email, location or purpose..."
+                    placeholder="Search by name, phone, email, location, gender, age or occupation..."
                     autocomplete="off"
                 >
+
 
 
                 <button
@@ -606,79 +673,43 @@
             </div>
 
 
-            <!-- TABLE -->
+            
+<!-- TABLE -->
+<div class="table-container">
 
-            <div class="table-container">
+    <table>
 
-                <table>
+        <thead>
+            <tr>
+                <th>S/N</th>
+                <th>Full Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Location</th>
+                <th>Gender</th>
+                <th>Age</th>
+                <th>Education</th>
+                <th>Marital Status</th>
+                <th>Occupation</th>
+                <th>Amount</th>
+                <th>Purpose</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
 
-                    <thead>
+        <tbody id="membersTableBody">
+            <tr>
+                <td colspan="14" class="table-message">
+                    Please login to view members.
+                </td>
+            </tr>
+        </tbody>
 
-                        <tr>
+    </table>
 
-                            <th>
-                                S/N
-                            </th>
+</div>
 
-                            <th>
-                                Full Name
-                            </th>
-
-                            <th>
-                                Phone
-                            </th>
-
-                            <th>
-                                Email
-                            </th>
-
-                            <th>
-                                Location
-                            </th>
-
-                            <th>
-                                Amount
-                            </th>
-
-                            <th>
-                                Purpose
-                            </th>
-
-                            <th>
-                                Date
-                            </th>
-
-                            <th>
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="membersTableBody">
-
-                        <tr>
-
-                            <td
-                                colspan="9"
-                                class="table-message"
-                            >
-                                Please login to view members.
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-    </main>
 
 
     <!-- =====================================================
