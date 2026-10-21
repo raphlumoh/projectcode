@@ -1,8 +1,11 @@
+
 "use strict";
 
 // =========================================================
 // IDOGWU FAMILY DATABASE
 // COMPLETE SCRIPT.JS
+// Email and Occupation removed from member interface
+// Age and Education are optional
 // =========================================================
 
 
@@ -16,11 +19,10 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_IBjtMX_HXiG1drNw8MksRg_PtddAlBa";
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 
 // =========================================================
@@ -37,170 +39,85 @@ let allMembers = [];
 // PAGE ELEMENTS
 // =========================================================
 
-const adminLoginBox =
-    document.getElementById("adminLoginBox");
-
-const adminApplication =
-    document.getElementById("adminApplication");
-
-const adminEmail =
-    document.getElementById("adminEmail");
-
-const adminPassword =
-    document.getElementById("adminPassword");
-
-const adminLoginButton =
-    document.getElementById("adminLoginButton");
-
-const forgotPasswordButton =
-    document.getElementById("forgotPasswordButton");
-
-const loginMessage =
-    document.getElementById("loginMessage");
-
-const logoutButton =
-    document.getElementById("logoutButton");
-
-const loggedInUser =
-    document.getElementById("loggedInUser");
+const adminLoginBox = document.getElementById("adminLoginBox");
+const adminApplication = document.getElementById("adminApplication");
+const adminEmail = document.getElementById("adminEmail");
+const adminPassword = document.getElementById("adminPassword");
+const adminLoginButton = document.getElementById("adminLoginButton");
+const forgotPasswordButton = document.getElementById("forgotPasswordButton");
+const loginMessage = document.getElementById("loginMessage");
+const logoutButton = document.getElementById("logoutButton");
+const loggedInUser = document.getElementById("loggedInUser");
 
 
 // =========================================================
 // MEMBER FORM ELEMENTS
 // =========================================================
 
-const memberId =
-    document.getElementById("memberId");
-
-const fullName =
-    document.getElementById("fullName");
-
-const phone =
-    document.getElementById("phone");
-
-const email =
-    document.getElementById("email");
-
-const locationInput =
-    document.getElementById("location");
-
-const gender =
-    document.getElementById("gender");
-
-const age =
-    document.getElementById("age");
-
-const education =
-    document.getElementById("education");
-
-const maritalStatus =
-    document.getElementById("marital_status");
-
-const occupation =
-    document.getElementById("occupation");
-
-const amount =
-    document.getElementById("amount");
-
-const purpose =
-    document.getElementById("purpose");
-
-const saveMemberButton =
-    document.getElementById("saveMemberButton");
-
-const clearFormButton =
-    document.getElementById("clearFormButton");
-
-const memberMessage =
-    document.getElementById("memberMessage");
+const memberId = document.getElementById("memberId");
+const fullName = document.getElementById("fullName");
+const phone = document.getElementById("phone");
+const locationInput = document.getElementById("location");
+const gender = document.getElementById("gender");
+const age = document.getElementById("age");
+const education = document.getElementById("education");
+const maritalStatus = document.getElementById("marital_status");
+const amount = document.getElementById("amount");
+const purpose = document.getElementById("purpose");
+const saveMemberButton = document.getElementById("saveMemberButton");
+const clearFormButton = document.getElementById("clearFormButton");
+const memberMessage = document.getElementById("memberMessage");
 
 
 // =========================================================
 // DATABASE ELEMENTS
 // =========================================================
 
-const searchInput =
-    document.getElementById("searchInput");
-
-const refreshButton =
-    document.getElementById("refreshButton");
-
-const exportButton =
-    document.getElementById("exportButton");
-
-const membersTableBody =
-    document.getElementById("membersTableBody");
+const searchInput = document.getElementById("searchInput");
+const refreshButton = document.getElementById("refreshButton");
+const exportButton = document.getElementById("exportButton");
+const membersTableBody = document.getElementById("membersTableBody");
 
 
 // =========================================================
 // DASHBOARD ELEMENTS
 // =========================================================
 
-const totalMembers =
-    document.getElementById("totalMembers");
-
-const paidMembers =
-    document.getElementById("paidMembers");
-
-const unpaidMembers =
-    document.getElementById("unpaidMembers");
-
-const totalAmount =
-    document.getElementById("totalAmount");
-
-const averageAmount =
-    document.getElementById("averageAmount");
-
-const totalLocations =
-    document.getElementById("totalLocations");
+const totalMembers = document.getElementById("totalMembers");
+const paidMembers = document.getElementById("paidMembers");
+const unpaidMembers = document.getElementById("unpaidMembers");
+const totalAmount = document.getElementById("totalAmount");
+const averageAmount = document.getElementById("averageAmount");
+const totalLocations = document.getElementById("totalLocations");
 
 
 // =========================================================
 // LOCATION SUMMARY
 // =========================================================
 
-const locationStatistics =
-    document.getElementById("locationStatistics");
+const locationStatistics = document.getElementById("locationStatistics");
 
 
 // =========================================================
 // FORGOT PASSWORD ELEMENTS
 // =========================================================
 
-const forgotPasswordBox =
-    document.getElementById("forgotPasswordBox");
-
-const recoveryEmail =
-    document.getElementById("recoveryEmail");
-
-const sendRecoveryButton =
-    document.getElementById("sendRecoveryButton");
-
-const recoveryMessage =
-    document.getElementById("recoveryMessage");
-
-const closeForgotPassword =
-    document.getElementById("closeForgotPassword");
+const forgotPasswordBox = document.getElementById("forgotPasswordBox");
+const recoveryEmail = document.getElementById("recoveryEmail");
+const sendRecoveryButton = document.getElementById("sendRecoveryButton");
+const recoveryMessage = document.getElementById("recoveryMessage");
+const closeForgotPassword = document.getElementById("closeForgotPassword");
 
 
 // =========================================================
 // PASSWORD RESET ELEMENTS
 // =========================================================
 
-const passwordResetBox =
-    document.getElementById("passwordResetBox");
-
-const newAdminPassword =
-    document.getElementById("newAdminPassword");
-
-const confirmAdminPassword =
-    document.getElementById("confirmAdminPassword");
-
-const saveNewPassword =
-    document.getElementById("saveNewPassword");
-
-const resetMessage =
-    document.getElementById("resetMessage");
+const passwordResetBox = document.getElementById("passwordResetBox");
+const newAdminPassword = document.getElementById("newAdminPassword");
+const confirmAdminPassword = document.getElementById("confirmAdminPassword");
+const saveNewPassword = document.getElementById("saveNewPassword");
+const resetMessage = document.getElementById("resetMessage");
 
 
 // =========================================================
@@ -231,98 +148,87 @@ document.addEventListener("DOMContentLoaded", async function () {
 // =========================================================
 
 function setupEventListeners() {
-    if (adminLoginButton) {
-        adminLoginButton.addEventListener("click", loginUser);
-    }
+    adminLoginButton?.addEventListener("click", loginUser);
+    logoutButton?.addEventListener("click", logoutUser);
+    saveMemberButton?.addEventListener("click", saveMember);
+    clearFormButton?.addEventListener("click", clearMemberForm);
+    refreshButton?.addEventListener("click", loadMembers);
+    searchInput?.addEventListener("input", renderMembers);
+    exportButton?.addEventListener("click", exportCSV);
 
-    if (logoutButton) {
-        logoutButton.addEventListener("click", logoutUser);
-    }
+    forgotPasswordButton?.addEventListener(
+        "click",
+        openForgotPassword
+    );
 
-    if (saveMemberButton) {
-        saveMemberButton.addEventListener("click", saveMember);
-    }
+    closeForgotPassword?.addEventListener(
+        "click",
+        closeForgotPasswordBox
+    );
 
-    if (clearFormButton) {
-        clearFormButton.addEventListener("click", clearMemberForm);
-    }
+    sendRecoveryButton?.addEventListener(
+        "click",
+        sendPasswordRecovery
+    );
 
-    if (refreshButton) {
-        refreshButton.addEventListener("click", loadMembers);
-    }
+    saveNewPassword?.addEventListener(
+        "click",
+        updatePassword
+    );
 
-    if (searchInput) {
-        searchInput.addEventListener("input", renderMembers);
-    }
+    // Login using ENTER.
+    adminPassword?.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            loginUser();
+        }
+    });
 
-    if (exportButton) {
-        exportButton.addEventListener("click", exportCSV);
-    }
+    // Password recovery using ENTER.
+    recoveryEmail?.addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            sendPasswordRecovery();
+        }
+    });
 
-    if (forgotPasswordButton) {
-        forgotPasswordButton.addEventListener(
-            "click",
-            openForgotPassword
-        );
-    }
+    // One delegated handler for Edit and Delete.
+    // This continues working after the table is re-rendered.
+    membersTableBody?.addEventListener("click", function (event) {
+        const button = event.target.closest("button[data-action]");
 
-    if (closeForgotPassword) {
-        closeForgotPassword.addEventListener(
-            "click",
-            closeForgotPasswordBox
-        );
-    }
+        if (!button || !membersTableBody.contains(button)) {
+            return;
+        }
 
-    if (sendRecoveryButton) {
-        sendRecoveryButton.addEventListener(
-            "click",
-            sendPasswordRecovery
-        );
-    }
+        const id = button.dataset.id;
+        const action = button.dataset.action;
 
-    if (saveNewPassword) {
-        saveNewPassword.addEventListener(
-            "click",
-            updatePassword
-        );
-    }
+        if (!id) {
+            return;
+        }
 
-    // Allow ENTER key for login.
-    if (adminPassword) {
-        adminPassword.addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                loginUser();
-            }
-        });
-    }
-
-    // Allow ENTER key for password recovery.
-    if (recoveryEmail) {
-        recoveryEmail.addEventListener("keydown", function (event) {
-            if (event.key === "Enter") {
-                sendPasswordRecovery();
-            }
-        });
-    }
+        if (action === "edit") {
+            editMember(id);
+        } else if (action === "delete") {
+            deleteMember(id);
+        }
+    });
 
     // Handle Supabase authentication changes.
-    supabaseClient.auth.onAuthStateChange(
-        function (event, session) {
-            if (event === "PASSWORD_RECOVERY") {
-                currentUser = session?.user || null;
-                showPasswordReset();
-                return;
-            }
-
-            if (event === "SIGNED_OUT") {
-                currentUser = null;
-                currentRole = "member";
-                currentUsername = "";
-                allMembers = [];
-                showLoginScreen();
-            }
+    supabaseClient.auth.onAuthStateChange(function (event, session) {
+        if (event === "PASSWORD_RECOVERY") {
+            currentUser = session?.user || null;
+            showPasswordReset();
+            return;
         }
-    );
+
+        if (event === "SIGNED_OUT") {
+            currentUser = null;
+            currentRole = "member";
+            currentUsername = "";
+            allMembers = [];
+            showLoginScreen();
+        }
+    });
 }
 
 
@@ -359,8 +265,8 @@ async function checkExistingSession() {
 // =========================================================
 
 async function loginUser() {
-    const emailValue = adminEmail?.value.trim();
-    const passwordValue = adminPassword?.value;
+    const emailValue = adminEmail?.value.trim() || "";
+    const passwordValue = adminPassword?.value || "";
 
     if (!emailValue || !passwordValue) {
         showLoginMessage(
@@ -431,17 +337,15 @@ async function startApplication() {
 // =========================================================
 
 async function loadUserRole(userId) {
-    // Default to member unless the database confirms admin.
     currentRole = "member";
     currentUsername = currentUser?.email || "";
 
     try {
-        const { data, error } =
-            await supabaseClient
-                .from("user_roles")
-                .select("role, username")
-                .eq("user_id", userId)
-                .maybeSingle();
+        const { data, error } = await supabaseClient
+            .from("user_roles")
+            .select("role, username")
+            .eq("user_id", userId)
+            .maybeSingle();
 
         if (error) {
             console.warn("Role lookup:", error.message);
@@ -466,17 +370,12 @@ async function loadUserRole(userId) {
 
 
 // =========================================================
-// CHECK ADMIN
+// PERMISSIONS
 // =========================================================
 
 function isAdmin() {
     return currentRole === "admin";
 }
-
-
-// =========================================================
-// APPLY PERMISSIONS
-// =========================================================
 
 function applyPermissions() {
     const registrationSection =
@@ -521,9 +420,7 @@ function showApplication() {
         loggedInUser.textContent =
             "Logged in as: " +
             currentUsername +
-            " (" +
-            currentRole +
-            ")";
+            " (" + currentRole + ")";
     }
 }
 
@@ -541,13 +438,8 @@ function showLoginScreen() {
         adminLoginBox.style.display = "block";
     }
 
-    if (adminEmail) {
-        adminEmail.value = "";
-    }
-
-    if (adminPassword) {
-        adminPassword.value = "";
-    }
+    if (adminEmail) adminEmail.value = "";
+    if (adminPassword) adminPassword.value = "";
 
     showLoginMessage("", "");
 }
@@ -559,8 +451,7 @@ function showLoginScreen() {
 
 async function logoutUser() {
     try {
-        const { error } =
-            await supabaseClient.auth.signOut();
+        const { error } = await supabaseClient.auth.signOut();
 
         if (error) {
             console.error("Logout error:", error);
@@ -591,7 +482,7 @@ async function loadMembers() {
     if (membersTableBody) {
         membersTableBody.innerHTML = `
             <tr>
-                <td colspan="14" class="table-message">
+                <td colspan="12" class="table-message">
                     Loading members...
                 </td>
             </tr>
@@ -599,27 +490,24 @@ async function loadMembers() {
     }
 
     try {
-        const { data, error } =
-            await supabaseClient
-                .from("idogwu_members")
-                .select(`
-                    id,
-                    full_name,
-                    phone,
-                    email,
-                    location,
-                    gender,
-                    age,
-                    education,
-                    marital_status,
-                    occupation,
-                    amount,
-                    purpose,
-                    created_at
-                `)
-                .order("created_at", {
-                    ascending: false
-                });
+        const { data, error } = await supabaseClient
+            .from("idogwu_members")
+            .select(`
+                id,
+                full_name,
+                phone,
+                location,
+                gender,
+                age,
+                education,
+                marital_status,
+                amount,
+                purpose,
+                created_at
+            `)
+            .order("full_name", {
+                ascending: true
+            });
 
         if (error) {
             console.error("Load members error:", error);
@@ -627,8 +515,9 @@ async function loadMembers() {
             if (membersTableBody) {
                 membersTableBody.innerHTML = `
                     <tr>
-                        <td colspan="14" class="table-message">
-                            Unable to load members. ${escapeHTML(error.message)}
+                        <td colspan="12" class="table-message">
+                            Unable to load members.
+                            ${escapeHTML(error.message)}
                         </td>
                     </tr>
                 `;
@@ -642,13 +531,14 @@ async function loadMembers() {
         updateDashboard();
         renderMembers();
         renderLocationStatistics();
+
     } catch (error) {
         console.error("Unexpected load error:", error);
 
         if (membersTableBody) {
             membersTableBody.innerHTML = `
                 <tr>
-                    <td colspan="14" class="table-message">
+                    <td colspan="12" class="table-message">
                         An unexpected error occurred while loading members.
                     </td>
                 </tr>
@@ -693,17 +583,9 @@ function updateDashboard() {
     const average =
         total > 0 ? contributionTotal / total : 0;
 
-    if (totalMembers) {
-        totalMembers.textContent = total;
-    }
-
-    if (paidMembers) {
-        paidMembers.textContent = paid;
-    }
-
-    if (unpaidMembers) {
-        unpaidMembers.textContent = unpaid;
-    }
+    if (totalMembers) totalMembers.textContent = total;
+    if (paidMembers) paidMembers.textContent = paid;
+    if (unpaidMembers) unpaidMembers.textContent = unpaid;
 
     if (totalAmount) {
         totalAmount.textContent =
@@ -711,8 +593,7 @@ function updateDashboard() {
     }
 
     if (averageAmount) {
-        averageAmount.textContent =
-            formatCurrency(average);
+        averageAmount.textContent = formatCurrency(average);
     }
 
     if (totalLocations) {
@@ -722,20 +603,19 @@ function updateDashboard() {
 
 
 // =========================================================
-// SEARCH HELPER
+// SEARCH
+// Email and Occupation are excluded.
 // =========================================================
 
 function memberMatchesSearch(member, searchTerm) {
     const searchableValues = [
         member.full_name,
         member.phone,
-        member.email,
         member.location,
         member.gender,
         member.age,
         member.education,
         member.marital_status,
-        member.occupation,
         member.amount,
         member.purpose
     ];
@@ -750,6 +630,7 @@ function memberMatchesSearch(member, searchTerm) {
 
 // =========================================================
 // RENDER MEMBERS TABLE
+// Exactly 12 columns, matching index.html.
 // =========================================================
 
 function renderMembers() {
@@ -762,19 +643,16 @@ function renderMembers() {
             .trim()
             .toLowerCase();
 
-    let filteredMembers = allMembers;
-
-    if (searchTerm) {
-        filteredMembers =
-            allMembers.filter(function (member) {
-                return memberMatchesSearch(member, searchTerm);
-            });
-    }
+    const filteredMembers = searchTerm
+        ? allMembers.filter(function (member) {
+            return memberMatchesSearch(member, searchTerm);
+        })
+        : allMembers;
 
     if (filteredMembers.length === 0) {
         membersTableBody.innerHTML = `
             <tr>
-                <td colspan="14" class="table-message">
+                <td colspan="12" class="table-message">
                     No members found.
                 </td>
             </tr>
@@ -786,7 +664,6 @@ function renderMembers() {
 
     filteredMembers.forEach(function (member, index) {
         const row = document.createElement("tr");
-
         const amountValue = Number(member.amount || 0);
 
         const actionHTML = isAdmin()
@@ -811,41 +688,22 @@ function renderMembers() {
             `
             : `<span>View only</span>`;
 
-        row.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${escapeHTML(member.full_name)}</td>
-            <td>${escapeHTML(member.phone)}</td>
-            <td>${escapeHTML(member.email)}</td>
-            <td>${escapeHTML(member.location)}</td>
-            <td>${escapeHTML(member.gender)}</td>
-            <td>${escapeHTML(member.age)}</td>
-            <td>${escapeHTML(member.education)}</td>
-            <td>${escapeHTML(member.marital_status)}</td>
-            <td>${escapeHTML(member.occupation)}</td>
-            <td>${formatCurrency(amountValue)}</td>
-            <td>${escapeHTML(member.purpose)}</td>
-            <td>${formatDate(member.created_at)}</td>
-            <td>${actionHTML}</td>
-        `;
-
+       row.innerHTML = `
+    <td>${index + 1}</td>
+    <td>${escapeHTML(member.full_name)}</td>
+    <td>${escapeHTML(member.phone)}</td>
+    <td>${escapeHTML(member.location)}</td>
+    <td>${escapeHTML(member.gender)}</td>
+    <td>${escapeHTML(member.age ?? "")}</td>
+    <td>${escapeHTML(member.education ?? "")}</td>
+    <td>${escapeHTML(member.marital_status)}</td>
+    <td>${formatCurrency(Number(member.amount || 0))}</td>
+    <td>${escapeHTML(member.purpose ?? "")}</td>
+    <td>${formatDate(member.created_at)}</td>
+    <td>${actionHTML}</td>
+`;
         membersTableBody.appendChild(row);
     });
-
-    // Connect Edit and Delete buttons safely.
-    membersTableBody.querySelectorAll("button[data-action]")
-        .forEach(function (button) {
-            button.addEventListener("click", function () {
-                const id = button.dataset.id;
-
-                if (button.dataset.action === "edit") {
-                    editMember(id);
-                }
-
-                if (button.dataset.action === "delete") {
-                    deleteMember(id);
-                }
-            });
-        });
 }
 
 
@@ -860,7 +718,7 @@ function renderLocationStatistics() {
 
     locationStatistics.innerHTML = "";
 
-    if (!allMembers || allMembers.length === 0) {
+    if (!allMembers.length) {
         locationStatistics.innerHTML = `
             <div class="table-message">
                 No location statistics available.
@@ -891,11 +749,10 @@ function renderLocationStatistics() {
         locationCounts[key].count++;
     });
 
-    const locations =
-        Object.values(locationCounts)
-            .sort(function (a, b) {
-                return b.count - a.count;
-            });
+    const locations = Object.values(locationCounts)
+        .sort(function (a, b) {
+            return b.count - a.count;
+        });
 
     locations.forEach(function (location) {
         const card = document.createElement("div");
@@ -920,7 +777,8 @@ function renderLocationStatistics() {
 
 // =========================================================
 // SAVE MEMBER
-// AGE AND EDUCATION ARE OPTIONAL
+// Age and education are optional.
+// Email and Occupation are not used.
 // =========================================================
 
 async function saveMember() {
@@ -934,20 +792,15 @@ async function saveMember() {
 
     const nameValue = fullName?.value.trim() || "";
     const phoneValue = phone?.value.trim() || "";
-    const emailValue = email?.value.trim() || "";
     const locationValue = locationInput?.value.trim() || "";
-
     const genderValue = gender?.value || "";
     const ageText = age?.value.trim() || "";
-    let ageValue = null;
     const educationValue = education?.value.trim() || "";
     const maritalStatusValue = maritalStatus?.value || "";
-    const occupationValue = occupation?.value.trim() || "";
-
-    const amountValue = Number(amount?.value || 0);
+    const amountText = amount?.value.trim() || "";
+    const amountValue = amountText === "" ? 0 : Number(amountText);
     const purposeValue = purpose?.value.trim() || "";
 
-    // Check that the necessary form elements exist.
     if (
         !fullName ||
         !phone ||
@@ -956,7 +809,7 @@ async function saveMember() {
         !maritalStatus
     ) {
         showMemberMessage(
-            "Some registration fields are missing from index.html. Check the field IDs.",
+            "Some required form elements are missing from index.html.",
             "error"
         );
         return;
@@ -967,7 +820,7 @@ async function saveMember() {
             "Please enter the member's full name.",
             "error"
         );
-        fullName?.focus();
+        fullName.focus();
         return;
     }
 
@@ -976,7 +829,7 @@ async function saveMember() {
             "Please enter the member's phone number.",
             "error"
         );
-        phone?.focus();
+        phone.focus();
         return;
     }
 
@@ -985,7 +838,7 @@ async function saveMember() {
             "Please enter the member's location.",
             "error"
         );
-        locationInput?.focus();
+        locationInput.focus();
         return;
     }
 
@@ -994,21 +847,22 @@ async function saveMember() {
             "Please select the member's gender.",
             "error"
         );
-        gender?.focus();
+        gender.focus();
         return;
     }
 
-    // Age is optional; validate only when entered.
+    let ageValue = null;
+
     if (ageText !== "") {
         ageValue = Number(ageText);
 
         if (
             !Number.isInteger(ageValue) ||
-            ageValue < 0 ||
-            ageValue > 150
+            ageValue < 1 ||
+            ageValue > 120
         ) {
             showMemberMessage(
-                "Please enter a valid age.",
+                "Please enter an age between 1 and 120, or leave it blank.",
                 "error"
             );
             age?.focus();
@@ -1016,21 +870,16 @@ async function saveMember() {
         }
     }
 
-    // Education is optional.
-
     if (!maritalStatusValue) {
         showMemberMessage(
             "Please select the marital status.",
             "error"
         );
-        maritalStatus?.focus();
+        maritalStatus.focus();
         return;
     }
 
-    if (
-        !Number.isFinite(amountValue) ||
-        amountValue < 0
-    ) {
+    if (!Number.isFinite(amountValue) || amountValue < 0) {
         showMemberMessage(
             "Please enter a valid contribution amount.",
             "error"
@@ -1043,40 +892,38 @@ async function saveMember() {
         saveMemberButton.disabled = true;
     }
 
-    showMemberMessage("Saving member...", "info");
+    showMemberMessage(
+        memberId?.value ? "Updating member..." : "Saving member...",
+        "info"
+    );
 
     try {
-        let result;
-
         const memberData = {
             full_name: nameValue,
             phone: phoneValue,
-            email: emailValue || null,
             location: locationValue,
-
             gender: genderValue,
-            age: ageText ? ageValue : null,
+            age: ageValue,
             education: educationValue || null,
             marital_status: maritalStatusValue,
-            occupation: occupationValue || null,
-
             amount: amountValue,
             purpose: purposeValue || null
         };
 
-        // EDIT EXISTING MEMBER
-        if (memberId?.value) {
+        let result;
+        const editing = Boolean(memberId?.value);
+
+        if (editing) {
             result = await supabaseClient
                 .from("idogwu_members")
                 .update(memberData)
-                .eq("id", memberId.value);
-        }
-
-        // ADD NEW MEMBER
-        else {
+                .eq("id", memberId.value)
+                .select("id");
+        } else {
             result = await supabaseClient
                 .from("idogwu_members")
-                .insert(memberData);
+                .insert(memberData)
+                .select("id");
         }
 
         if (result.error) {
@@ -1089,22 +936,32 @@ async function saveMember() {
             return;
         }
 
+        if (editing && (!result.data || result.data.length === 0)) {
+            showMemberMessage(
+                "No member was updated. Check your Supabase permissions.",
+                "error"
+            );
+            return;
+        }
+
+        clearMemberForm();
+        await loadMembers();
+
         showMemberMessage(
-            memberId?.value
+            editing
                 ? "Member information updated successfully."
                 : "Member added successfully.",
             "success"
         );
 
-        clearMemberForm();
-        await loadMembers();
     } catch (error) {
-        console.error("Save error:", error);
+    console.error("Save member failed:", error);
 
-        showMemberMessage(
-            "Unable to save member. Please try again.",
-            "error"
-        );
+    showMemberMessage(
+        "Save failed: " + (error?.message || String(error)),
+        "error"
+    );
+
     } finally {
         if (saveMemberButton) {
             saveMemberButton.disabled = false;
@@ -1117,7 +974,7 @@ async function saveMember() {
 // EDIT MEMBER
 // =========================================================
 
-async function editMember(id) {
+function editMember(id) {
     if (!isAdmin()) {
         alert("You do not have permission to edit members.");
         return;
@@ -1128,64 +985,32 @@ async function editMember(id) {
     });
 
     if (!member) {
-        alert("Member not found.");
+        alert(
+            "Member not found in the current list. Please refresh and try again."
+        );
         return;
     }
 
-    if (memberId) {
-        memberId.value = member.id;
-    }
-
-    if (fullName) {
-        fullName.value = member.full_name || "";
-    }
-
-    if (phone) {
-        phone.value = member.phone || "";
-    }
-
-    if (email) {
-        email.value = member.email || "";
-    }
-
-    if (locationInput) {
-        locationInput.value = member.location || "";
-    }
-
-    if (gender) {
-        gender.value = member.gender || "";
-    }
-
-    if (age) {
-        age.value = member.age ?? "";
-    }
-
-    if (education) {
-        education.value = member.education || "";
-    }
-
-    if (maritalStatus) {
-        maritalStatus.value = member.marital_status || "";
-    }
-
-    if (occupation) {
-        occupation.value = member.occupation || "";
-    }
-
-    if (amount) {
-        amount.value = member.amount ?? 0;
-    }
-
-    if (purpose) {
-        purpose.value = member.purpose || "";
-    }
+    // Populate every field in the registration form.
+    if (memberId) memberId.value = member.id;
+    if (fullName) fullName.value = member.full_name || "";
+    if (phone) phone.value = member.phone || "";
+    if (locationInput) locationInput.value = member.location || "";
+    if (gender) gender.value = member.gender || "";
+    if (age) age.value = member.age ?? "";
+    if (education) education.value = member.education || "";
+    if (maritalStatus) maritalStatus.value = member.marital_status || "";
+    if (amount) amount.value = member.amount ?? 0;
+    if (purpose) purpose.value = member.purpose || "";
 
     if (saveMemberButton) {
         saveMemberButton.textContent = "Update Member";
+        saveMemberButton.disabled = false;
     }
 
     showMemberMessage(
-        "You are editing this member.",
+        "Editing " + (member.full_name || "member") +
+        ". Make your changes, then click Update Member.",
         "info"
     );
 
@@ -1198,6 +1023,8 @@ async function editMember(id) {
             block: "start"
         });
     }
+
+    fullName?.focus();
 }
 
 
@@ -1216,7 +1043,7 @@ async function deleteMember(id) {
     });
 
     if (!member) {
-        alert("Member not found.");
+        alert("Member not found. Please refresh and try again.");
         return;
     }
 
@@ -1231,10 +1058,11 @@ async function deleteMember(id) {
     }
 
     try {
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from("idogwu_members")
             .delete()
-            .eq("id", id);
+            .eq("id", id)
+            .select("id");
 
         if (error) {
             console.error("Delete error:", error);
@@ -1242,11 +1070,23 @@ async function deleteMember(id) {
             return;
         }
 
-        alert("Member deleted successfully.");
+        if (!data || data.length === 0) {
+            alert(
+                "No member was deleted. Check your Supabase permissions."
+            );
+            return;
+        }
+
+        if (String(memberId?.value) === String(id)) {
+            clearMemberForm();
+        }
+
         await loadMembers();
+        alert("Member deleted successfully.");
+
     } catch (error) {
         console.error("Delete error:", error);
-        alert("Unable to delete member.");
+        alert("Unable to delete member. Please try again.");
     }
 }
 
@@ -1256,56 +1096,20 @@ async function deleteMember(id) {
 // =========================================================
 
 function clearMemberForm() {
-    if (memberId) {
-        memberId.value = "";
-    }
-
-    if (fullName) {
-        fullName.value = "";
-    }
-
-    if (phone) {
-        phone.value = "";
-    }
-
-    if (email) {
-        email.value = "";
-    }
-
-    if (locationInput) {
-        locationInput.value = "";
-    }
-
-    if (gender) {
-        gender.value = "";
-    }
-
-    if (age) {
-        age.value = "";
-    }
-
-    if (education) {
-        education.value = "";
-    }
-
-    if (maritalStatus) {
-        maritalStatus.value = "";
-    }
-
-    if (occupation) {
-        occupation.value = "";
-    }
-
-    if (amount) {
-        amount.value = "";
-    }
-
-    if (purpose) {
-        purpose.value = "";
-    }
+    if (memberId) memberId.value = "";
+    if (fullName) fullName.value = "";
+    if (phone) phone.value = "";
+    if (locationInput) locationInput.value = "";
+    if (gender) gender.value = "";
+    if (age) age.value = "";
+    if (education) education.value = "";
+    if (maritalStatus) maritalStatus.value = "";
+    if (amount) amount.value = "";
+    if (purpose) purpose.value = "";
 
     if (saveMemberButton) {
         saveMemberButton.textContent = "Save Member";
+        saveMemberButton.disabled = false;
     }
 
     if (memberMessage) {
@@ -1317,6 +1121,7 @@ function clearMemberForm() {
 
 // =========================================================
 // EXPORT CSV
+// No Email or Occupation columns.
 // =========================================================
 
 function exportCSV() {
@@ -1325,7 +1130,7 @@ function exportCSV() {
         return;
     }
 
-    if (!allMembers || allMembers.length === 0) {
+    if (!allMembers.length) {
         alert("There are no members to export.");
         return;
     }
@@ -1335,25 +1140,26 @@ function exportCSV() {
             .trim()
             .toLowerCase();
 
-    let membersToExport = allMembers;
-
-    if (searchTerm) {
-        membersToExport = allMembers.filter(function (member) {
+    const membersToExport = searchTerm
+        ? allMembers.filter(function (member) {
             return memberMatchesSearch(member, searchTerm);
-        });
+        })
+        : allMembers;
+
+    if (!membersToExport.length) {
+        alert("There are no matching members to export.");
+        return;
     }
 
     const headers = [
         "S/N",
         "Full Name",
         "Phone",
-        "Email",
         "Location",
         "Gender",
         "Age",
         "Educational Qualification",
         "Marital Status",
-        "Occupation",
         "Amount",
         "Purpose",
         "Date"
@@ -1364,13 +1170,11 @@ function exportCSV() {
             index + 1,
             member.full_name || "",
             member.phone || "",
-            member.email || "",
             member.location || "",
             member.gender || "",
             member.age ?? "",
             member.education || "",
             member.marital_status || "",
-            member.occupation || "",
             Number(member.amount || 0).toFixed(2),
             member.purpose || "",
             formatDate(member.created_at)
@@ -1400,20 +1204,21 @@ function exportCSV() {
 
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
 
-    URL.revokeObjectURL(url);
+    setTimeout(function () {
+        URL.revokeObjectURL(url);
+    }, 1000);
 }
 
 
 // =========================================================
 // FORGOT PASSWORD
+// Administrator email remains in use here.
 // =========================================================
 
 function openForgotPassword() {
-    if (!forgotPasswordBox) {
-        return;
-    }
+    if (!forgotPasswordBox) return;
 
     forgotPasswordBox.style.display = "flex";
 
@@ -1422,15 +1227,8 @@ function openForgotPassword() {
         recoveryEmail.focus();
     }
 
-    if (recoveryMessage) {
-        recoveryMessage.textContent = "";
-    }
+    showRecoveryMessage("", "");
 }
-
-
-// =========================================================
-// CLOSE FORGOT PASSWORD
-// =========================================================
 
 function closeForgotPasswordBox() {
     if (forgotPasswordBox) {
@@ -1444,11 +1242,11 @@ function closeForgotPasswordBox() {
 // =========================================================
 
 async function sendPasswordRecovery() {
-    const emailValue = recoveryEmail?.value.trim();
+    const emailValue = recoveryEmail?.value.trim() || "";
 
     if (!emailValue) {
         showRecoveryMessage(
-            "Please enter your registered email address.",
+            "Please enter your registered administrator email address.",
             "error"
         );
         return;
@@ -1483,6 +1281,7 @@ async function sendPasswordRecovery() {
             "Password recovery email sent. Please check your email.",
             "success"
         );
+
     } catch (error) {
         console.error("Recovery error:", error);
 
@@ -1507,17 +1306,10 @@ function showPasswordReset() {
         passwordResetBox.style.display = "flex";
     }
 
-    if (newAdminPassword) {
-        newAdminPassword.value = "";
-    }
+    if (newAdminPassword) newAdminPassword.value = "";
+    if (confirmAdminPassword) confirmAdminPassword.value = "";
 
-    if (confirmAdminPassword) {
-        confirmAdminPassword.value = "";
-    }
-
-    if (resetMessage) {
-        resetMessage.textContent = "";
-    }
+    showResetMessage("", "");
 }
 
 
@@ -1557,10 +1349,9 @@ async function updatePassword() {
     showResetMessage("Updating password...", "info");
 
     try {
-        const { error } =
-            await supabaseClient.auth.updateUser({
-                password: newPassword
-            });
+        const { error } = await supabaseClient.auth.updateUser({
+            password: newPassword
+        });
 
         if (error) {
             console.error("Password update error:", error);
@@ -1573,19 +1364,15 @@ async function updatePassword() {
             "success"
         );
 
-        if (newAdminPassword) {
-            newAdminPassword.value = "";
-        }
-
-        if (confirmAdminPassword) {
-            confirmAdminPassword.value = "";
-        }
+        if (newAdminPassword) newAdminPassword.value = "";
+        if (confirmAdminPassword) confirmAdminPassword.value = "";
 
         window.setTimeout(function () {
             if (passwordResetBox) {
                 passwordResetBox.style.display = "none";
             }
         }, 2000);
+
     } catch (error) {
         console.error("Password update error:", error);
 
@@ -1606,9 +1393,7 @@ async function updatePassword() {
 // =========================================================
 
 function setMessage(element, message, type) {
-    if (!element) {
-        return;
-    }
+    if (!element) return;
 
     element.textContent = message;
     element.className = "message";
@@ -1659,9 +1444,7 @@ function formatCurrency(value) {
 // =========================================================
 
 function formatDate(value) {
-    if (!value) {
-        return "";
-    }
+    if (!value) return "";
 
     const date = new Date(value);
 
