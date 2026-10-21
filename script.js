@@ -1,4 +1,3 @@
-
 "use strict";
 
 // =========================================================
@@ -85,8 +84,6 @@ const email =
 const locationInput =
     document.getElementById("location");
 
-// NEW FAMILY REGISTRATION FIELDS
-
 const gender =
     document.getElementById("gender");
 
@@ -101,8 +98,6 @@ const maritalStatus =
 
 const occupation =
     document.getElementById("occupation");
-
-// EXISTING CONTRIBUTION FIELDS
 
 const amount =
     document.getElementById("amount");
@@ -925,6 +920,7 @@ function renderLocationStatistics() {
 
 // =========================================================
 // SAVE MEMBER
+// AGE AND EDUCATION ARE OPTIONAL
 // =========================================================
 
 async function saveMember() {
@@ -941,26 +937,22 @@ async function saveMember() {
     const emailValue = email?.value.trim() || "";
     const locationValue = locationInput?.value.trim() || "";
 
-    // NEW REGISTRATION VALUES
     const genderValue = gender?.value || "";
     const ageText = age?.value.trim() || "";
-    const ageValue = Number(ageText);
-    const educationValue = education?.value || "";
+    let ageValue = null;
+    const educationValue = education?.value.trim() || "";
     const maritalStatusValue = maritalStatus?.value || "";
     const occupationValue = occupation?.value.trim() || "";
 
-    // EXISTING CONTRIBUTION VALUES
     const amountValue = Number(amount?.value || 0);
     const purposeValue = purpose?.value.trim() || "";
 
-    // Check that required form elements exist.
+    // Check that the necessary form elements exist.
     if (
         !fullName ||
         !phone ||
         !locationInput ||
         !gender ||
-        !age ||
-        !education ||
         !maritalStatus
     ) {
         showMemberMessage(
@@ -1006,28 +998,25 @@ async function saveMember() {
         return;
     }
 
-    if (
-        !ageText ||
-        !Number.isInteger(ageValue) ||
-        ageValue < 1 ||
-        ageValue > 120
-    ) {
-        showMemberMessage(
-            "Please enter a valid age between 1 and 120.",
-            "error"
-        );
-        age?.focus();
-        return;
+    // Age is optional; validate only when entered.
+    if (ageText !== "") {
+        ageValue = Number(ageText);
+
+        if (
+            !Number.isInteger(ageValue) ||
+            ageValue < 0 ||
+            ageValue > 150
+        ) {
+            showMemberMessage(
+                "Please enter a valid age.",
+                "error"
+            );
+            age?.focus();
+            return;
+        }
     }
 
-    if (!educationValue) {
-        showMemberMessage(
-            "Please select the highest educational qualification.",
-            "error"
-        );
-        education?.focus();
-        return;
-    }
+    // Education is optional.
 
     if (!maritalStatusValue) {
         showMemberMessage(
@@ -1059,7 +1048,6 @@ async function saveMember() {
     try {
         let result;
 
-        // All fields to save or update.
         const memberData = {
             full_name: nameValue,
             phone: phoneValue,
@@ -1067,8 +1055,8 @@ async function saveMember() {
             location: locationValue,
 
             gender: genderValue,
-            age: ageValue,
-            education: educationValue,
+            age: ageText ? ageValue : null,
+            education: educationValue || null,
             marital_status: maritalStatusValue,
             occupation: occupationValue || null,
 
@@ -1164,7 +1152,6 @@ async function editMember(id) {
         locationInput.value = member.location || "";
     }
 
-    // FILL THE FIVE NEW FIELDS
     if (gender) {
         gender.value = member.gender || "";
     }
@@ -1185,7 +1172,6 @@ async function editMember(id) {
         occupation.value = member.occupation || "";
     }
 
-    // EXISTING CONTRIBUTION FIELDS
     if (amount) {
         amount.value = member.amount ?? 0;
     }
@@ -1290,7 +1276,6 @@ function clearMemberForm() {
         locationInput.value = "";
     }
 
-    // CLEAR THE FIVE NEW FIELDS
     if (gender) {
         gender.value = "";
     }
@@ -1311,7 +1296,6 @@ function clearMemberForm() {
         occupation.value = "";
     }
 
-    // CLEAR EXISTING CONTRIBUTION FIELDS
     if (amount) {
         amount.value = "";
     }
