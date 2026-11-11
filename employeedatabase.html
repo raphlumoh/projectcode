@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Database Management System</title>
+
+    <link rel="stylesheet" href="employeedatabase.css">
+</head>
+
+<body>
+
+    <div id="app">
+
+        <!-- HEADER -->
+        <header class="header">
+
+            <h1>Employee Database Management</h1>
+
+            <button class="createEmployee" type="button">
+                + Add Employee
+            </button>
+
+        </header>
+
+
+        <!-- EMPLOYEE DISPLAY SECTION -->
+        <div class="employees">
+
+            <!-- EMPLOYEE LIST -->
+            <div class="employees__names">
+
+                <span class="employees__names--title">
+                    Employee List
+                </span>
+                <input
+                    type="text"
+                    id="employeeSearch"
+                    placeholder="Search employee by name..."
+                >
+
+                <div class="employees__names--list">
+                </div>
+                <div class="employees__names--list"></div>
+
+            </div>
+
+
+            <!-- EMPLOYEE INFORMATION -->
+            <div class="employees__single">
+
+                <div class="employees__single--title">
+                    Employee Information
+                </div>
+
+                <div class="employees__single--info"></div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ADD EMPLOYEE FORM -->
+        <div class="addEmployee">
+
+            <form class="addEmployee_create">
+
+                <h2>Add a New Employee</h2>
+
+                <div class="nameFields">
+
+                    <input
+                        type="text"
+                        name="firstName"
+                        placeholder="First Name"
+                        required
+                    >
+
+                    <input
+                        type="text"
+                        name="lastName"
+                        placeholder="Last Name"
+                        required
+                    >
+
+                </div>
+
+
+                
+                <div class="photoUpload">
+
+                    <label for="employeePhoto">
+                        Employee Photograph (Optional)
+                    </label>
+
+                    <input
+                        type="file"
+                        id="employeePhoto"
+                        name="employeePhoto"
+                        accept="image/jpeg, image/png"
+                    >
+
+                    <img
+                        id="photoPreview"
+                        src=""
+                        alt="Employee Photo Preview"
+                        style="display:none; width:120px; height:120px; object-fit:cover; border-radius:50%; margin-top:10px;"
+                    >
+
+                </div>
+
+
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    required
+                >
+
+
+                <input
+                    type="tel"
+                    name="contactNumber"
+                    placeholder="Contact Number"
+                    required
+                >
+
+
+                <input
+                    type="number"
+                    name="salary"
+                    placeholder="Monthly Salary"
+                    min="0"
+                    required
+                >
+
+
+                <input
+                    type="text"
+                    name="address"
+                    placeholder="Residential Address"
+                    required
+                >
+
+
+                <label for="dob">Date of Birth</label>
+
+                <input
+                    type="date"
+                    name="dob"
+                    id="dob"
+                    class="addEmployee_create--dob"
+                    required
+                >
+
+
+                <input
+                    type="submit"
+                    class="addEmployee_create--submit"
+                    value="Register Employee"
+                >
+
+                <button
+                    type="button"
+                    class="closeModal"
+                >
+                    Cancel
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="employeedatabase.css.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,376 @@
+/* ==============================
+   GENERAL SETTINGS
+================================ */
+
+:root {
+    --btn: #dbdbdb;
+    --btn-hover: #cacaca;
+    --item-bg: #f0f0f0;
+    --modal-bg: rgba(141, 141, 141, 0.541);
+
+    --primary: #183a63;
+    --secondary: #245b91;
+    --danger: #dc3545;
+    --white: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 0 10px;
+    margin: 0;
+    background-color: #f8f9fa;
+}
+
+#app {
+    max-width: 1200px;
+    margin: auto;
+}
+
+
+/* ==============================
+   HEADER
+================================ */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 10px;
+}
+
+.header h1 {
+    color: var(--primary);
+    font-size: 25px;
+}
+
+.header > button {
+    padding: 12px 18px;
+    border-radius: 20px;
+    border: none;
+    background-color: var(--primary);
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.header > button:hover {
+    background-color: var(--secondary);
+}
+
+
+/* ==============================
+   EMPLOYEE STRUCTURE
+================================ */
+
+.employees {
+    display: flex;
+    gap: 10px;
+}
+
+.employees > div {
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    height: 500px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+.employees__names {
+    width: 30%;
+}
+
+.employees__single {
+    width: 70%;
+}
+
+.employees__names,
+.employees__single {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.employees__names--title,
+.employees__single--title {
+    padding-bottom: 12px;
+    margin-bottom: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 18px;
+}
+
+
+/* ==============================
+   EMPLOYEE LIST
+================================ */
+
+.employees__names--list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.employees__names--item {
+    cursor: pointer;
+    padding: 12px 15px;
+    text-align: left;
+    background-color: var(--item-bg);
+    border-radius: 8px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    transition: 0.2s;
+}
+
+.employees__names--item:hover {
+    background-color: var(--btn);
+}
+
+.employees__names--item.selected {
+    background-color: var(--primary);
+    color: white;
+}
+
+.employeeDelete {
+    color: var(--danger);
+    cursor: pointer;
+    font-style: normal;
+    padding: 5px;
+}
+
+.employees__names--item.selected .employeeDelete {
+    color: white;
+}
+
+
+/* ==============================
+   EMPLOYEE INFORMATION
+================================ */
+
+.employees__single--heading {
+    text-align: center;
+    font-size: 25px;
+    text-transform: uppercase;
+    padding: 5px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.employees__single--info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+}
+
+.employees__single--info > img {
+    width: 220px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #ddd;
+}
+
+.employeeDetail {
+    font-size: 16px;
+    padding: 5px;
+    text-align: center;
+}
+
+.emptyMessage {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+}
+
+
+/* ==============================
+   ADD EMPLOYEE MODAL
+================================ */
+
+.addEmployee {
+    display: none;
+
+    width: 100%;
+    min-height: 100vh;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--modal-bg);
+
+    z-index: 1000;
+    padding: 15px;
+}
+
+.addEmployee_create {
+    width: 420px;
+    max-width: 100%;
+
+    background-color: white;
+
+    box-shadow: 0 0 50px grey;
+
+    padding: 25px;
+
+    border-radius: 10px;
+
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.addEmployee_create h2 {
+    color: var(--primary);
+    margin: 0 0 10px;
+}
+
+.addEmployee_create > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.addEmployee_create input {
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+    font-size: 14px;
+}
+
+.addEmployee_create label {
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.addEmployee_create input:focus {
+    outline: none;
+    border-color: var(--secondary);
+}
+
+
+/* REMOVE NUMBER INPUT ARROWS */
+
+.addEmployee_create input::-webkit-outer-spin-button,
+.addEmployee_create input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* SUBMIT BUTTON */
+
+.addEmployee_create--submit {
+    padding: 12px !important;
+    border-radius: 5px;
+    border: none !important;
+
+    background-color: var(--primary);
+    color: white;
+
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.addEmployee_create--submit:hover {
+    background-color: var(--secondary);
+}
+
+
+/* CANCEL BUTTON */
+
+.closeModal {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.closeModal:hover {
+    background-color: #ddd;
+}
+
+
+/* ==============================
+   MOBILE RESPONSIVENESS
+================================ */
+
+@media (max-width: 700px) {
+
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .employees {
+        flex-direction: column;
+    }
+
+    .employees__names,
+    .employees__single {
+        width: 100%;
+    }
+
+    .employees > div {
+        height: auto;
+        min-height: 250px;
+        max-height: 400px;
+    }
+
+    .employees__single--info > img {
+        width: 160px;
+        height: 160px;
+    }
+
+}
+
+@media (max-width: 400px) {
+
+    .addEmployee_create {
+        padding: 15px;
+    }
+
+    .addEmployee_create > div {
+        grid-template-columns: 1fr;
+    }
+
+}
+#employeeSearch {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+}
+
+#employeeSearch:focus {
+    border-color: blue;
+}
